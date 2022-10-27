@@ -65,10 +65,15 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            showHelpPage();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+    // Método para lanzar la pantalla de ayuda.
+    private void showHelpPage() {
+        Intent i = new Intent(this, HelpActivity.class);
+        startActivity(i);
     }
 
 }
