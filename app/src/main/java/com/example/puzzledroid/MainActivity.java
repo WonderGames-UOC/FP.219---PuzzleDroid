@@ -24,10 +24,11 @@ public class MainActivity extends AppCompatActivity {
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
     Button play, hs;
-
+    String tag = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(tag, "onCreate");
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -39,7 +40,9 @@ public class MainActivity extends AppCompatActivity {
         //NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         play.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View view)
+            {
+                Log.d(tag, "onClick");
                 startGame();
             }
         });
