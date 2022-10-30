@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.opengl.Visibility;
 import android.os.Bundle;
 import android.text.Layout;
 import android.util.AttributeSet;
@@ -15,9 +16,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewDebug;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 import java.util.SplittableRandom;
@@ -58,21 +61,22 @@ public class Game01Activity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Log.d(tag,"buttonx4");
-                imagePrinter(imageDivider(4));
+                imagePrinter(imageDivider(4), 4);
             }
         });
         bx8.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d(tag,"buttonx8");
-                imagePrinter(imageDivider(8));
+                imagePrinter(imageDivider(9),9);
+
             }
         });
         bx16.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d(tag,"buttonx16");
-                imagePrinter(imageDivider(16));
+                imagePrinter(imageDivider(16),16);
             }
         });
     }
@@ -102,7 +106,7 @@ public class Game01Activity extends AppCompatActivity {
         Bitmap bm = bmDrawable.getBitmap();
         //Creamos una nueva imagen con las dimensiones escogidas. createSaledBitmap(source, width, high, filter)
         Bitmap bmEscalado = Bitmap.createScaledBitmap(bm,bm.getWidth(),bm.getHeight(),true);
-
+        Log.d(tag, "Tamaño img: " + bmEscalado.getWidth() + "x"+bmEscalado.getHeight());
         //TODO: crear método para determinar núm. filas y columas que generen trozos cuadrados.
         //Definimos el mismo número de filas y columnas.
         filas = columnas = (int) Math.sqrt(denominador);
@@ -117,28 +121,65 @@ public class Game01Activity extends AppCompatActivity {
         //Estos se almacenarán en el ArrayList definido anteriormente.
         int x, y = 0; //Iniciamos las coordenadas que marcaran el comienzo de los trozos.
         for(int i = 0; i < filas; i++){//El primer loop recorrerá las filas
-            Log.d(tag, String.valueOf(i));
-            x=0; //Volvemos a poner a 0 la coordenada de las columnas en cada iteración de el loop filas.
+            x=0; //Volvemos a poner a 0 la coordenada de las columnas en cada iteración del loop filas.
             for(int j = 0; j < columnas; j++){//El segundo loop las columnas
-                Log.d(tag, String.valueOf(j));
                 //Añadimos el trozo al array.
                 trozos.add(Bitmap.createBitmap(bmEscalado, x, y, anchoTrozo, altoTrozo));
                 x+=anchoTrozo; //Saltamos a la siguiente coordenada.
-                Log.d(tag, String.valueOf(x));
             }
             y+=altoTrozo; //saltamos a la siguiente coordenada
-            Log.d(tag, String.valueOf(y));
         }
         //Devolvemos el arrayList con las imagenes
         return trozos;
     };
-    private void imagePrinter(ArrayList<Bitmap> trozos){
+    private void imagePrinter(ArrayList<Bitmap> trozos, int columnas){
         Log.d(tag, "imagePrinter");
-        //findViewById(R.id.imageView_game01Activity).setVisibility(View.INVISIBLE);
+
+        //Definimos los atributos de los Linealayouts que conformarán la estructura.
+        LinearLayout.LayoutParams mainLpParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.VERTICAL);
+        LinearLayout.LayoutParams childLpParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.HORIZONTAL);
+
+        //Instanciamos el layout padre
+        LinearLayout mainLp = (LinearLayout) findViewById(R.id.puzzle_view);
+        mainLp.setLayoutParams(mainLpParams);
+        int ancho = (int)(mainLp.getWidth() / Math.sqrt(columnas));
+        int alto = (int) (mainLp.getHeight() / Math.sqrt(columnas));
+
+        //Creamos el primer LinarLayout child
+        LinearLayout childLp = new LinearLayout(this);
+
+        //Iniciamos el loop para insertar las imagenes
+        ImageView imageView;
+        int col = 0; //Iniciamos el contador de columnas
+        Log.d(tag, "Núm. trozos: " + String.valueOf(trozos.size()));
         for (Bitmap trozo: trozos
              ) {
-            ImageView imageView = new ImageView(this);
+            if(col == Math.sqrt(columnas)){ //Máx imagenes por fila
+                mainLp.addView(childLp, childLpParams); //Insertamos el layout con las N imágenes en el layout padre.
+                childLp = new LinearLayout(this); //Creamos un nuevo layout.
+                col = 0; //Ponemos a 0 el contador de imágenes por fila.
+            }
+            imageView = new ImageView(this);
             imageView.setImageBitmap(trozo);
+            //https://stackoverflow.com/questions/9685658/add-padding-on-view-programmatically
+            float scale = getResources().getDisplayMetrics().density;
+            int size = (int) (1*scale + 0.5f);
+            imageView.setPadding(size,size,size,size);
+            childLp.addView(imageView, ancho, alto); //Insertamos la imagen en el layout hijo.
+            col++;
         }
+        mainLp.addView(childLp, childLpParams); //Insertamos el últimno layout hijo.
+        findViewById(R.id.puzzleDroid_imageView).setVisibility(View.INVISIBLE); //Ocultamos el fondo
+    }
+    private void launchActivity(ArrayList<Bitmap> trozos){
+        Intent intent = new Intent(this, imgChunks.class);
+        intent.putParcelableArrayListExtra("Morceaux", trozos);
+        startActivity(intent);
     }
 }
