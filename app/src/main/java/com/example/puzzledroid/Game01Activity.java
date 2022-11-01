@@ -1,34 +1,25 @@
 package com.example.puzzledroid;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.opengl.Visibility;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.text.Layout;
-import android.util.AttributeSet;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewDebug;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
-import java.util.SplittableRandom;
 
 public class Game01Activity extends AppCompatActivity {
 
     //¡¡NO BORRAR!! Etiqueta para el depurador.
-    protected String tag = "Game01Activity";
+    private final String tag = "Game01Activity";
+    private puzzlePieces puzzleBlocks = new puzzlePieces();
+    private int rows, columns;
 
     //Imagenes preseleccionadas de RESOURCES (app/res/drawable)
     protected int[] images = {
@@ -61,26 +52,110 @@ public class Game01Activity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Log.d(tag,"buttonx4");
-                imagePrinter(imageDivider(4), 4);
+                genPuzzle(4, transformToBitmap(getDrawable(R.drawable.level1)));
+                imagePrinter(puzzleBlocks);
             }
         });
         bx8.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d(tag,"buttonx8");
-                imagePrinter(imageDivider(9),9);
-
+                genPuzzle(8, transformToBitmap(getDrawable(R.drawable.level1)));
+                imagePrinter(puzzleBlocks);
             }
         });
         bx16.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d(tag,"buttonx16");
-                imagePrinter(imageDivider(16),16);
+                genPuzzle(32, transformToBitmap(getDrawable(R.drawable.level1)));
+                imagePrinter(puzzleBlocks);
             }
         });
     }
-    //Funciones dividir y mostrar
+    //TODO: create method to work with any kind of image or drawable
+    private Bitmap transformToBitmap(Drawable img){
+        try{
+            BitmapDrawable bmDrawable = (BitmapDrawable) img;
+            Bitmap bm = bmDrawable.getBitmap();
+            return  bm;
+        }catch (Exception e){
+            Log.d(tag,e.getMessage());
+        }
+        return null;
+    }
+
+    private void genPuzzle(int numOfPieces, Bitmap image){
+        Log.d(tag, "genPuzzle");
+        //Divide the image
+        imageDivider images = new imageDivider(numOfPieces, image);
+        images.divideImageInSquares();
+        rows = images.getRows();
+        columns = images.getColumns();
+
+        //Build the blocks
+        this.puzzleBlocks.genPiecesCollection(images.getImages());
+
+        //Shuffle the blocks
+        this.puzzleBlocks.shuffle();
+
+        //Print the blocks
+        imagePrinter(this.puzzleBlocks);
+
+
+    }
+
+    private void imagePrinter(puzzlePieces blocks){
+        Log.d(tag, "imagePrinter");
+
+        //Definimos los atributos de los Linealayouts que conformarán la estructura.
+        //TODO: Definir estos parámetros fura del método.
+        LinearLayout.LayoutParams mainLpParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.VERTICAL);
+        LinearLayout.LayoutParams childLpParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.HORIZONTAL);
+
+        //Instantiate the parent layout.
+        LinearLayout mainLp = (LinearLayout) findViewById(R.id.puzzle_view);
+        mainLp.setLayoutParams(mainLpParams);
+
+        //Define the wide & high of the imageview of each block based on the current wide and high of the parent layout.
+        int imageViewWide = (int)(mainLp.getWidth() / columns);
+        int imageViewHigh = (int) (mainLp.getHeight() / rows);
+
+        //https://stackoverflow.com/questions/9685658/add-padding-on-view-programmatically
+        float scale = getResources().getDisplayMetrics().density;
+        int size = (int) (1*scale + 0.5f);
+
+        LinearLayout childLp = new LinearLayout(this);
+        ImageView imageView;
+        int col = 0;
+        for (puzzlePiece block :blocks.getPieces()
+             ) {
+            if(col == columns){ //New linear layout when last column reach.
+                mainLp.addView(childLp, childLpParams);
+                childLp = new LinearLayout(this);
+                col = 0; //As a new row is started, the column counter is set to zero.
+            }
+            //Insert in the imageView the image of the block and set the padding.
+            imageView = new ImageView(this);
+            imageView.setImageBitmap(block.getImage());
+            imageView.setPadding(size,size,size,size);
+
+            //Insert the imageView in the layout of the row.
+            childLp.addView(imageView, imageViewWide, imageViewHigh);
+            col++;
+        }
+        mainLp.addView(childLp, childLpParams);
+        //TODO: remove background image.
+        findViewById(R.id.puzzleDroid_imageView).setVisibility(View.INVISIBLE);
+    }
+
+    //Funciones dividir y mostrar. DEPRECATED
     private ArrayList<Bitmap> imageDivider(int denominador){
         Log.d(tag,"imageDivider");
 
@@ -132,54 +207,4 @@ public class Game01Activity extends AppCompatActivity {
         //Devolvemos el arrayList con las imagenes
         return trozos;
     };
-    private void imagePrinter(ArrayList<Bitmap> trozos, int columnas){
-        Log.d(tag, "imagePrinter");
-
-        //Definimos los atributos de los Linealayouts que conformarán la estructura.
-        LinearLayout.LayoutParams mainLpParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.VERTICAL);
-        LinearLayout.LayoutParams childLpParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.HORIZONTAL);
-
-        //Instanciamos el layout padre
-        LinearLayout mainLp = (LinearLayout) findViewById(R.id.puzzle_view);
-        mainLp.setLayoutParams(mainLpParams);
-        int ancho = (int)(mainLp.getWidth() / Math.sqrt(columnas));
-        int alto = (int) (mainLp.getHeight() / Math.sqrt(columnas));
-
-        //Creamos el primer LinarLayout child
-        LinearLayout childLp = new LinearLayout(this);
-
-        //Iniciamos el loop para insertar las imagenes
-        ImageView imageView;
-        int col = 0; //Iniciamos el contador de columnas
-        Log.d(tag, "Núm. trozos: " + String.valueOf(trozos.size()));
-        for (Bitmap trozo: trozos
-             ) {
-            if(col == Math.sqrt(columnas)){ //Máx imagenes por fila
-                mainLp.addView(childLp, childLpParams); //Insertamos el layout con las N imágenes en el layout padre.
-                childLp = new LinearLayout(this); //Creamos un nuevo layout.
-                col = 0; //Ponemos a 0 el contador de imágenes por fila.
-            }
-            imageView = new ImageView(this);
-            imageView.setImageBitmap(trozo);
-            //https://stackoverflow.com/questions/9685658/add-padding-on-view-programmatically
-            float scale = getResources().getDisplayMetrics().density;
-            int size = (int) (1*scale + 0.5f);
-            imageView.setPadding(size,size,size,size);
-            childLp.addView(imageView, ancho, alto); //Insertamos la imagen en el layout hijo.
-            col++;
-        }
-        mainLp.addView(childLp, childLpParams); //Insertamos el últimno layout hijo.
-        findViewById(R.id.puzzleDroid_imageView).setVisibility(View.INVISIBLE); //Ocultamos el fondo
-    }
-    private void launchActivity(ArrayList<Bitmap> trozos){
-        Intent intent = new Intent(this, imgChunks.class);
-        intent.putParcelableArrayListExtra("Morceaux", trozos);
-        startActivity(intent);
-    }
 }
