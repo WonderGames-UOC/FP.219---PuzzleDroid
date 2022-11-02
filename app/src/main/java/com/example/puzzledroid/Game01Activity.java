@@ -10,13 +10,15 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-
+import java.util.Timer;
 import java.util.ArrayList;
 
 import dbHelper.SQLiteHelper;
@@ -29,6 +31,13 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
     //TODO: Sound effects greetings
     //Sound Effect from <a href="https://pixabay.com/sound-effects/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=music&amp;utm_content=92097">Pixabay</a>
     //Sound Effect from <a href="https://pixabay.com/sound-effects/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=music&amp;utm_content=36118">Pixabay</a>
+
+    //declaraciones para el cronometro
+    private Chronometer chronometer;
+    //aqui guardamos el total de segundos que tardamos en resolver el puzzle
+    private long pauseOffset;
+    private boolean running;
+
 
     //¡¡NO BORRAR!! Etiqueta para el depurador.
     private final String TAG = "Game01Activity";
@@ -81,6 +90,9 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
 
         //Init selBlock variables
         resetSelection();
+
+        //creacion de cronometro
+        chronometer = findViewById(R.id.chronometer);
 
         //TODO: Eliminar botones y definir la división de la imagen en base al nivel seleccionado.
         Button bx4 = (Button) findViewById(R.id.button_x4);
@@ -172,7 +184,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
 
         //Print the blocks
         imagePrinter(this.puzzleBlocks);
-
+        startChronometer();
 
     }
 
@@ -249,6 +261,22 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
             findViewById(R.id.puzzleDroid_imageView).setVisibility(View.INVISIBLE);
         }
     }
+
+    public void startChronometer() {
+        if (!running) {
+            chronometer.setBase(SystemClock.elapsedRealtime() - pauseOffset);
+            chronometer.start();
+            running = true;
+        }
+    }
+    public void pauseChronometer() {
+        if (running) {
+            chronometer.stop();
+            pauseOffset = SystemClock.elapsedRealtime() - chronometer.getBase();
+            running = false;
+        }
+    }
+
 
     //Funciones dividir y mostrar. DEPRECATED
     private ArrayList<Bitmap> imageDivider(int denominador){
