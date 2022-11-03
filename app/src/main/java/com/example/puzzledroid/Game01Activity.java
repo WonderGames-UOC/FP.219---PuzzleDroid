@@ -14,7 +14,15 @@ import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 
+import android.widget.Toast;
+
+import dbHelper.SQLiteHelper;
+
+
+
 public class Game01Activity extends AppCompatActivity {
+    SQLiteHelper sqLiteHelper = new SQLiteHelper(this, "BD1_HighScores", null, 1);
+
 
     //¡¡NO BORRAR!! Etiqueta para el depurador.
     private final String tag = "Game01Activity";
