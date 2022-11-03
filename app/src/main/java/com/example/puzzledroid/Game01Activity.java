@@ -18,9 +18,6 @@ public class Game01Activity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game01);
-        sqLiteHelper.openDB();
-        sqLiteHelper.insertRow("Dev", "12/2/22", "00:17", "image1",32);
-        sqLiteHelper.closeDB();
-        Toast.makeText(this, "Closed DB", Toast.LENGTH_SHORT).show();
+        
     }
 }
