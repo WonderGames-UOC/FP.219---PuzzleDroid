@@ -2,10 +2,16 @@ package dbHelper;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import util.HighScore;
 
 public class SQLiteHelper extends SQLiteOpenHelper {
     public SQLiteHelper(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
@@ -32,23 +38,47 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     }
 
     // Método para la apertura de la BD
-
     public void openDB (){
         this.getWritableDatabase();
     }
+
     // Método para el cierre de la BD
     public void closeDB (){
         this.close();
     }
 
-    // Método para inserción de datos
-    public void insertRow(String user, String date, String time, String pic, int puzzres ){
+    // Método para inserción de High Scores
+    public void insert_HS_Row(HighScore highScore) {
         ContentValues content = new ContentValues();
-        content.put("User", user);
-        content.put("Date", date);
-        content.put("Time", time);
-        content.put("Pic", pic);
-        content.put("PuzzRes", puzzres);
+        content.put("User", highScore.getUser());
+        content.put("Date", highScore.getDate());
+        content.put("Time", highScore.getTime());
+        content.put("Pic", highScore.getPic());
+        content.put("PuzzRes", highScore.getPuzzres());
         this.getWritableDatabase().insert("HighScores", null, content);
+        this.close();
     }
+
+    // Método para listar los High Scores
+    public List<HighScore> return_HS_List(){
+        Cursor cursor = this.getReadableDatabase().rawQuery("SELECT * FROM HighScores", null);
+        List <HighScore> hs = new ArrayList<>();
+        if (cursor.moveToFirst()){
+            do {
+                hs.add(new HighScore(cursor.getInt(0), // _ID
+                        cursor.getString(1), // user
+                        cursor.getString(2), // date
+                        cursor.getString(3), // time
+                        cursor.getString(4), // pic
+                        cursor.getString(5)));  // puzzres
+            }while (cursor.moveToNext());
+        }
+        cursor.close();
+        this.close();
+        return hs;
+    }
+
 }
+
+
+
