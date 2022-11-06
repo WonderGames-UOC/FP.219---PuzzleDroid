@@ -46,11 +46,24 @@ public class MainActivity extends AppCompatActivity {
                 startGame();
             }
         });
+
+        hs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(tag,"High Scores Click");
+                hScores();
+            }
+        });
     }
 // Método para lanzar la pantalla de juego.
     private void startGame() {
         Intent i = new Intent(this, Game01Activity.class);
         startActivity(i);
+    }
+    // Método para lanzar la pantalla de puntuaciones.
+    private void hScores(){
+        Intent j = new Intent(this, HighScores.class);
+        startActivity(j);
     }
 
     @Override

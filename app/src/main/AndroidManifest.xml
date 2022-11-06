@@ -13,6 +13,13 @@
         android:theme="@style/Theme.PuzzleDroid"
         tools:targetApi="31">
         <activity
+            android:name=".HighScores"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".imgChunks"
             android:exported="false"
             android:label="@string/title_activity_img_chunks"
