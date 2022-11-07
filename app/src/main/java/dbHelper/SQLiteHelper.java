@@ -61,7 +61,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     // Método para listar los High Scores
     public List<HighScore> return_HS_List(){
-        Cursor cursor = this.getReadableDatabase().rawQuery("SELECT * FROM HighScores ORDER BY PuzzRes DESC,Time", null);
+        Cursor cursor = this.getReadableDatabase().rawQuery("SELECT * FROM HighScores ORDER BY PuzzRes DESC,Time LIMIT 5", null);
         List <HighScore> hs = new ArrayList<>();
         if (cursor.moveToFirst()){
             do {
