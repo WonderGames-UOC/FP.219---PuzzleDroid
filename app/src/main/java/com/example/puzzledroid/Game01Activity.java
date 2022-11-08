@@ -36,6 +36,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
     private Chronometer chronometer;
     //aqui guardamos el total de segundos que tardamos en resolver el puzzle
     private long pauseOffset;
+    private String offsetString = pauseOffset+"";
     private boolean running;
 
 
