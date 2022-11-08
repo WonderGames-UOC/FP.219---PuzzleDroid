@@ -158,6 +158,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
             }
             //Insert in the imageView the image of the block and set the padding.
             imageView = new ImageView(this);
+            imageView.setTag(block.getPosition());
             imageView.setImageBitmap(block.getImage());
             imageView.setPadding(size,size,size,size);
             imageView.setOnClickListener(this);
