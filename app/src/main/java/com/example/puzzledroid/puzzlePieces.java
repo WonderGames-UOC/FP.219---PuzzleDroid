@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class puzzlePieces {
-    final String tag = "puzzlePieces";
+    final String TAG = "puzzlePieces";
     private ArrayList<puzzlePiece> pieces;
     private puzzlePiece pieceA;
     private puzzlePiece pieceB;
@@ -40,7 +40,7 @@ public class puzzlePieces {
      * @return returns 0 if no error. Otherwise returns 1.
      */
     public int genPiecesCollection(ArrayList<Bitmap> images){
-        Log.d(tag, "genPiecesCollection");
+        Log.d(TAG, "genPiecesCollection");
         try{
             this.pieces = new ArrayList<puzzlePiece>();
             if(images.size() < 2){
@@ -56,7 +56,7 @@ public class puzzlePieces {
                 pos++;
             }
         }catch (Exception e){
-            Log.d(tag, e.getMessage());
+            Log.d(TAG, e.getMessage());
             return 1;
         }
         return 0;
@@ -68,11 +68,11 @@ public class puzzlePieces {
      * @return a puzzlePiece of the pieces collection of position pos or an empty puzzlePiece if there is an error.
      */
     public puzzlePiece getPieceByPos(int pos){
-        Log.d(tag, "getPieceByPos");
+        Log.d(TAG, "getPieceByPos");
         try {
             pieces.get(pos);
         }catch (Exception e){
-            Log.d(tag, e.getMessage());
+            Log.d(TAG, e.getMessage());
         }
         return new puzzlePiece();
     }
@@ -83,18 +83,51 @@ public class puzzlePieces {
      * @param posB index position on the collection of the pieceA.
      * @return returns 0 if no error. Otherwise returns 1.
      */
-    public int swapPieces(int posA, int posB){
-        Log.d(tag, "swapPieces");
+    private int swapPieces(int posA, int posB){
+        Log.d(TAG, "swapPieces");
         try {
             this.pieceA = pieces.get(posA);
             this.pieceB = pieces.get(posB);
             pieces.set(posA, pieceB);
             pieces.set(posB, pieceA);
         }catch (Exception e){
-            Log.d(tag, e.getMessage());
+            Log.d(TAG, e.getMessage());
             return 1;
         }
         return 0; //Success.
+    }
+
+    /**
+     *
+     * @param idA
+     * @param idB
+     */
+    public void swapPiecesById(int idA, int idB){
+        Log.d(TAG, "swapPiecesById");
+        int posA, posB = 0;
+        posA = getPieceIndexById(idA);
+        posB = getPieceIndexById(idB);
+        if(posA < 0 | posB < 0){
+            Log.d(TAG, Integer.toString(posA) +" "+ Integer.toString(posB) );
+            return;
+        }
+        swapPieces(posA, posB);
+    }
+
+    /**
+     *
+     * @param id
+     * @return
+     */
+    private int getPieceIndexById(int id){
+        Log.d(TAG, "getPieceById");
+        for(int i = 0; i < this.pieces.size(); i++){
+            if(pieces.get(i).getPosition() == id){
+                return i;
+            }
+        }
+        Log.d(TAG, Integer.toString(id) + " not found.");
+        return -1;
     }
 
     /**
@@ -102,7 +135,7 @@ public class puzzlePieces {
      * @return 1 for success, 0 for fail.
      */
     public int checkResult(){
-        Log.d(tag,"checkresult");
+        Log.d(TAG,"checkresult");
         try{
             int pos = 0;
             for(puzzlePiece piece:pieces
@@ -113,7 +146,7 @@ public class puzzlePieces {
                 pos++;
             }
         }catch (Exception e){
-            Log.d(tag, e.getMessage());
+            Log.d(TAG, e.getMessage());
             return  -1;
         }
         return 1;
@@ -123,7 +156,7 @@ public class puzzlePieces {
      * Randomize the puzzlePieces order of the pieces collection.
      */
     public void shuffle(){
-        Log.d(tag,"shuflle");
+        Log.d(TAG,"shuflle");
         int passes = this.pieces.size() * 10;
         try {
             for(int i = passes; i>=0; i--){
@@ -135,7 +168,7 @@ public class puzzlePieces {
                 shuffle();
             }
         }catch (Exception e){
-            Log.d(tag,e.getMessage());
+            Log.d(TAG,e.getMessage());
         }
     }
 }

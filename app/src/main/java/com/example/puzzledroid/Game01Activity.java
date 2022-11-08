@@ -15,8 +15,6 @@ import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 
-import android.widget.Toast;
-
 import dbHelper.SQLiteHelper;
 
 
@@ -26,10 +24,11 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
 
 
     //¡¡NO BORRAR!! Etiqueta para el depurador.
-    private final String tag = "Game01Activity";
+    private final String TAG = "Game01Activity";
 
     private puzzlePieces puzzleBlocks = new puzzlePieces();
     private int rows, columns;
+    protected int selBlockA, selBlockB;
 
     //Imagenes preseleccionadas de RESOURCES (app/res/drawable)
     protected int[] images = {
@@ -43,14 +42,16 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //¡¡NO BORRAR!! Registro para el depurador.
-        Log.d(tag, "onCreate");
+        Log.d(TAG, "onCreate");
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game01);
 
-        //Obtener la imagen del nivel seleccionado
+        //TODO: Obtener la imagen del nivel seleccionado
         //image = this.findViewById(R.id.imageView_game01Activity);
 
+        //Init selBlock variables
+        resetSelection();
 
         //TODO: Eliminar botones y definir la división de la imagen en base al nivel seleccionado.
         Button bx4 = (Button) findViewById(R.id.button_x4);
@@ -61,24 +62,24 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         bx4.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(tag,"buttonx4");
-                genPuzzle(4, transformToBitmap(getDrawable(R.drawable.level1)));
+                Log.d(TAG,"buttonx4");
+                genPuzzle(8, transformToBitmap(getDrawable(R.drawable.level1)));
                 imagePrinter(puzzleBlocks);
             }
         });
         bx8.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(tag,"buttonx8");
-                genPuzzle(8, transformToBitmap(getDrawable(R.drawable.level1)));
+                Log.d(TAG,"buttonx8");
+                genPuzzle(32, transformToBitmap(getDrawable(R.drawable.level1)));
                 imagePrinter(puzzleBlocks);
             }
         });
         bx16.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(tag,"buttonx16");
-                genPuzzle(32, transformToBitmap(getDrawable(R.drawable.level1)));
+                Log.d(TAG,"buttonx16");
+                genPuzzle(24, transformToBitmap(getDrawable(R.drawable.level1)));
                 imagePrinter(puzzleBlocks);
             }
         });
@@ -86,8 +87,28 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
 
     }
     public void onClick(View v){
-        Log.d(tag, (v.getId()) +" "+ v.getTag());
+        Log.d(TAG, "onClick: ");
+        Log.d(TAG, (v.getId()) +" "+ v.getTag());
+        int pos = Integer.parseInt(v.getTag().toString());
+        if(pos == selBlockA){
+            selBlockA = -1;
+            return;
+        }
+        if(selBlockA < 0){
+            selBlockA = pos;
+            return;
+        }
+        selBlockB = pos;
+        this.puzzleBlocks.swapPiecesById(selBlockA, selBlockB);
+        imagePrinter(puzzleBlocks);
+        resetSelection();
     }
+
+    private void resetSelection(){
+        selBlockA = selBlockB = -1;
+    }
+
+
     //TODO: create method to work with any kind of image or drawable
     private Bitmap transformToBitmap(Drawable img){
         try{
@@ -95,13 +116,13 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
             Bitmap bm = bmDrawable.getBitmap();
             return  bm;
         }catch (Exception e){
-            Log.d(tag,e.getMessage());
+            Log.d(TAG,e.getMessage());
         }
         return null;
     }
 
     private void genPuzzle(int numOfPieces, Bitmap image){
-        Log.d(tag, "genPuzzle");
+        Log.d(TAG, "genPuzzle");
         //Divide the image
         imageDivider images = new imageDivider(numOfPieces, image);
         images.divideImageInSquares();
@@ -120,8 +141,26 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
 
     }
 
+    private void cleanMainLayout(LinearLayout main){
+        Log.d(TAG, "cleanMainLayout");
+        int size = main.getChildCount();
+
+        for(int i = 0; i < size; i++){
+            main.removeViewAt(i);
+
+        }
+    }
+    private void cleanMainLayout(){
+        Log.d(TAG, "cleanMainLayout");
+        LinearLayout main = (LinearLayout) findViewById(R.id.puzzle_view);
+        int size = main.getChildCount();
+        for(int i = 0; i < size; i++){
+            main.removeViewAt(i);
+        }
+    }
+
     private void imagePrinter(puzzlePieces blocks){
-        Log.d(tag, "imagePrinter");
+        Log.d(TAG, "imagePrinter");
 
         //Definimos los atributos de los Linealayouts que conformarán la estructura.
         //TODO: Definir estos parámetros fura del método.
@@ -137,6 +176,8 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         //Instantiate the parent layout.
         LinearLayout mainLp = (LinearLayout) findViewById(R.id.puzzle_view);
         mainLp.setLayoutParams(mainLpParams);
+        mainLp.removeAllViewsInLayout();
+
 
         //Define the wide & high of the imageview of each block based on the current wide and high of the parent layout.
         int imageViewWide = (int)(mainLp.getWidth() / columns);
@@ -169,12 +210,14 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         }
         mainLp.addView(childLp, childLpParams);
         //TODO: remove background image.
-        findViewById(R.id.puzzleDroid_imageView).setVisibility(View.INVISIBLE);
+        if (findViewById(R.id.puzzleDroid_imageView).getVisibility() != View.INVISIBLE){
+            findViewById(R.id.puzzleDroid_imageView).setVisibility(View.INVISIBLE);
+        }
     }
 
     //Funciones dividir y mostrar. DEPRECATED
     private ArrayList<Bitmap> imageDivider(int denominador){
-        Log.d(tag,"imageDivider");
+        Log.d(TAG,"imageDivider");
 
         //Filas y columnas que obtendremos
         int filas, columnas;
@@ -198,15 +241,15 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         Bitmap bm = bmDrawable.getBitmap();
         //Creamos una nueva imagen con las dimensiones escogidas. createSaledBitmap(source, width, high, filter)
         Bitmap bmEscalado = Bitmap.createScaledBitmap(bm,bm.getWidth(),bm.getHeight(),true);
-        Log.d(tag, "Tamaño img: " + bmEscalado.getWidth() + "x"+bmEscalado.getHeight());
+        Log.d(TAG, "Tamaño img: " + bmEscalado.getWidth() + "x"+bmEscalado.getHeight());
         //TODO: crear método para determinar núm. filas y columas que generen trozos cuadrados.
         //Definimos el mismo número de filas y columnas.
         filas = columnas = (int) Math.sqrt(denominador);
-        Log.d(tag, String.valueOf(filas));
+        Log.d(TAG, String.valueOf(filas));
         //Calculamos el ancho de cada trozo en base al ancho y alto de la imagen original y función del número de filas y columnas definidos.
         altoTrozo = bm.getHeight() / filas; //Definimos la altura de cada trozo
         anchoTrozo = bm.getWidth() / filas; //Definimos el ancho de cada trozo
-        Log.d(tag, String.valueOf(altoTrozo) + " x " + String.valueOf(anchoTrozo));
+        Log.d(TAG, String.valueOf(altoTrozo) + " x " + String.valueOf(anchoTrozo));
 
         //Recorremos nuestra imagen de arriba a abajo (o viceversa) en saltos iguales ancho y alto definidos para cado trozo trozo.
         //Usaremos la funcion Bitmap.createBitmap(bmEscalado,coordX,coordY, ancho, alto) para crear los trozos.
