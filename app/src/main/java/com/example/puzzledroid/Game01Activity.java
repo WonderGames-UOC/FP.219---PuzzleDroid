@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -20,12 +21,13 @@ import dbHelper.SQLiteHelper;
 
 
 
-public class Game01Activity extends AppCompatActivity {
+public class Game01Activity extends AppCompatActivity implements OnClickListener {
     SQLiteHelper sqLiteHelper = new SQLiteHelper(this, "BD1_HighScores", null, 1);
 
 
     //¡¡NO BORRAR!! Etiqueta para el depurador.
     private final String tag = "Game01Activity";
+
     private puzzlePieces puzzleBlocks = new puzzlePieces();
     private int rows, columns;
 
@@ -56,7 +58,7 @@ public class Game01Activity extends AppCompatActivity {
         Button bx16 = (Button) findViewById(R.id.button_x16);
 
         //Funciones onClick
-        bx4.setOnClickListener(new View.OnClickListener() {
+        bx4.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d(tag,"buttonx4");
@@ -64,7 +66,7 @@ public class Game01Activity extends AppCompatActivity {
                 imagePrinter(puzzleBlocks);
             }
         });
-        bx8.setOnClickListener(new View.OnClickListener() {
+        bx8.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d(tag,"buttonx8");
@@ -72,7 +74,7 @@ public class Game01Activity extends AppCompatActivity {
                 imagePrinter(puzzleBlocks);
             }
         });
-        bx16.setOnClickListener(new View.OnClickListener() {
+        bx16.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d(tag,"buttonx16");
@@ -80,6 +82,11 @@ public class Game01Activity extends AppCompatActivity {
                 imagePrinter(puzzleBlocks);
             }
         });
+
+
+    }
+    public void onClick(View v){
+        Log.d(tag, (v.getId()) +" "+ v.getTag());
     }
     //TODO: create method to work with any kind of image or drawable
     private Bitmap transformToBitmap(Drawable img){
@@ -153,6 +160,7 @@ public class Game01Activity extends AppCompatActivity {
             imageView = new ImageView(this);
             imageView.setImageBitmap(block.getImage());
             imageView.setPadding(size,size,size,size);
+            imageView.setOnClickListener(this);
 
             //Insert the imageView in the layout of the row.
             childLp.addView(imageView, imageViewWide, imageViewHigh);
