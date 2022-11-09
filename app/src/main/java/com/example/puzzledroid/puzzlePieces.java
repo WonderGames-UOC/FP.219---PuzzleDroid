@@ -131,7 +131,7 @@ public class puzzlePieces {
     }
 
     /**
-     * Verifies if all the puzzlePieces are o
+     * Verifies if all the puzzlePieces are ok
      * @return 1 for success, 0 for fail.
      */
     public int checkResult(){
