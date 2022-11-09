@@ -42,11 +42,9 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
     private MediaPlayer selectSoundB;
     private MediaPlayer swapSound;
     */
-    private SoundPool cancelSound;
-    private SoundPool selectSoundA;
-    private SoundPool selectSoundB;
-    private SoundPool swapSound;
+    private int cancelSound, selectSoundA, selectSoundB, swapSound;
     private AudioAttributes soundAttrb;
+    private SoundPool soundPool;
 
     //Imagenes preseleccionadas de RESOURCES (app/res/drawable)
     protected int[] images = {
@@ -66,17 +64,17 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         setContentView(R.layout.activity_game01);
         try{
             soundAttrb = new AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
+                    .setUsage(AudioAttributes.USAGE_GAME)
                     .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                     .build();
-            this.cancelSound = new SoundPool.Builder().setAudioAttributes(soundAttrb).setMaxStreams(3).build();
-            this.selectSoundA = new SoundPool.Builder().setAudioAttributes(soundAttrb).setMaxStreams(3).build();
-            this.selectSoundB =new SoundPool.Builder().setAudioAttributes(soundAttrb).setMaxStreams(3).build();
-            this.swapSound = new SoundPool.Builder().setAudioAttributes(soundAttrb).setMaxStreams(3).build();
+            this.soundPool = new SoundPool.Builder().setAudioAttributes(soundAttrb).setMaxStreams(2).build();
+            this.cancelSound = this.soundPool.load(this, R.raw.cancel, 1);
+            this.selectSoundA = this.soundPool.load(this, R.raw.clickselect, 0);
+            this.selectSoundB = this.soundPool.load(this, R.raw.clickselect2, 0);
+            this.swapSound =  this.soundPool.load(this, R.raw.swap, 1);
         }catch (Exception e){
             Log.d(TAG, e.getMessage());
         }
-
 
         //TODO: Obtener la imagen del nivel seleccionado
         //image = this.findViewById(R.id.imageView_game01Activity);
@@ -123,18 +121,20 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         int pos = Integer.parseInt(v.getTag().toString());
         if(pos == this.selBlockA){
             this.selBlockA = -1;
-            this.cancelSound.play(R.raw.cancel, 1, 1, 1, 0, 1 );
+            this.soundPool.play(this.cancelSound, 1,1, 1,0,(float) 1.5);
             return;
         }
         if(this.selBlockA < 0){
             this.selBlockA = pos;
-            this.selectSoundA.play(R.raw.clickselect, 1, 1, 3, 0, 1 );
+            this.soundPool.play(this.selectSoundA, 1, 1, 0, 0, 2 );
             return;
         }
+        //this.soundPool.play(this.selectSoundB, 1, 1, 0, 0, 2 );
         this.selBlockB = pos;
-        this.selectSoundB.play(R.raw.clickselect2, 1, 1, 2, 0, 1 );
+
         this.puzzleBlocks.swapPiecesById(this.selBlockA, this.selBlockB);
-        this.swapSound.play(R.raw.swap, 1, 1, 0, 0, 1 );
+        this.soundPool.play(this.swapSound, 1, 1, 1, 0, (float) 1.5 );
+
         imagePrinter(puzzleBlocks);
         resetSelection();
     }
