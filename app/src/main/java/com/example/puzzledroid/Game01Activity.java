@@ -16,9 +16,6 @@ import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import java.util.ArrayList;
-import java.util.Random;
-
 import dbHelper.SQLiteHelper;
 
 
@@ -37,11 +34,11 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
     //¡¡NO BORRAR!! Etiqueta para el depurador.
     private final String TAG = "Game01Activity";
 
-    //PlayMechanics variables.
+    //Game mechanics variables.
     private puzzlePieces puzzleBlocks = new puzzlePieces();
     private int rows, columns;
-    protected int selBlockA, selBlockB;
     private Selector selector = new Selector();
+    private Counter counter = new Counter();
 
     //Sound variables.
     private SoundPool soundPool;
@@ -86,6 +83,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                 genPuzzle(8, transformToBitmap(getDrawable(images[rndmNum])));
                 imagePrinter(puzzleBlocks);
                 resetTimer();
+                counter.reset();
                 startChronometer();
             }
         });
@@ -97,6 +95,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                 genPuzzle(18, transformToBitmap(getDrawable(images[rndmNum])));
                 imagePrinter(puzzleBlocks);
                 resetTimer();
+                counter.reset();
                 startChronometer();
             }
         });
@@ -108,6 +107,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                 genPuzzle(32, transformToBitmap(getDrawable(images[rndmNum])));
                 imagePrinter(puzzleBlocks);
                 resetTimer();
+                counter.reset();
                 startChronometer();
             }
         });
@@ -132,6 +132,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                 break;
             case 1://If the touched imageView is the second.
                 this.puzzleBlocks.swapPiecesById(this.selector.getSelBlockA(), this.selector.getSelBlockB());
+                this.counter.add();
                 this.soundPool.play(this.sounds.getSwapSound(), 1, 1, 1, 0, (float) 1.5 );
                 //Print the new order of blocks and reset the selector variable.
                 imagePrinter(puzzleBlocks);
