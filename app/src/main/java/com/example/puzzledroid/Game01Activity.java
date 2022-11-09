@@ -85,6 +85,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                 int rndmNum = (int)(Math.random() * 3);
                 genPuzzle(8, transformToBitmap(getDrawable(images[rndmNum])));
                 imagePrinter(puzzleBlocks);
+                startChronometer();
             }
         });
         bx8.setOnClickListener(new OnClickListener() {
@@ -94,6 +95,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                 int rndmNum = (int)(Math.random() * 3);
                 genPuzzle(18, transformToBitmap(getDrawable(images[rndmNum])));
                 imagePrinter(puzzleBlocks);
+                startChronometer();
             }
         });
         bx16.setOnClickListener(new OnClickListener() {
@@ -103,6 +105,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                 int rndmNum = (int)(Math.random() * 3);
                 genPuzzle(32, transformToBitmap(getDrawable(images[rndmNum])));
                 imagePrinter(puzzleBlocks);
+                startChronometer();
             }
         });
 
@@ -131,6 +134,8 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                 imagePrinter(puzzleBlocks);
                 if(this.puzzleBlocks.checkResult() > 0){
                     this.soundPool.play(this.sounds.getVictorySound(),1, 1, 3, 0, (float) 1.5 );
+                    pauseChronometer();
+                    //INSERT TIME IN DB
                 }
                 this.selector.resetSelection();
                 break;
@@ -164,7 +169,6 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
 
         //Print the blocks
         imagePrinter(this.puzzleBlocks);
-        startChronometer();
     }
 
     private void imagePrinter(puzzlePieces blocks){
