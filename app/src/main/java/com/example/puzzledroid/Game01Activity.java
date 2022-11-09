@@ -6,7 +6,9 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.AudioAttributes;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -34,11 +36,17 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
     private puzzlePieces puzzleBlocks = new puzzlePieces();
     private int rows, columns;
     protected int selBlockA, selBlockB;
-
+    /*
     private MediaPlayer cancelSound;
     private MediaPlayer selectSoundA;
     private MediaPlayer selectSoundB;
     private MediaPlayer swapSound;
+    */
+    private SoundPool cancelSound;
+    private SoundPool selectSoundA;
+    private SoundPool selectSoundB;
+    private SoundPool swapSound;
+    private AudioAttributes soundAttrb;
 
     //Imagenes preseleccionadas de RESOURCES (app/res/drawable)
     protected int[] images = {
@@ -56,10 +64,19 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game01);
-        this.cancelSound = MediaPlayer.create(this, R.raw.cancel);
-        this.selectSoundA = MediaPlayer.create(this, R.raw.clickselect);
-        this.selectSoundB = MediaPlayer.create(this, R.raw.clickselect2);
-        this.swapSound = MediaPlayer.create(this, R.raw.swap);
+        try{
+            soundAttrb = new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .build();
+            this.cancelSound = new SoundPool.Builder().setAudioAttributes(soundAttrb).setMaxStreams(3).build();
+            this.selectSoundA = new SoundPool.Builder().setAudioAttributes(soundAttrb).setMaxStreams(3).build();
+            this.selectSoundB =new SoundPool.Builder().setAudioAttributes(soundAttrb).setMaxStreams(3).build();
+            this.swapSound = new SoundPool.Builder().setAudioAttributes(soundAttrb).setMaxStreams(3).build();
+        }catch (Exception e){
+            Log.d(TAG, e.getMessage());
+        }
+
 
         //TODO: Obtener la imagen del nivel seleccionado
         //image = this.findViewById(R.id.imageView_game01Activity);
@@ -106,18 +123,18 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         int pos = Integer.parseInt(v.getTag().toString());
         if(pos == this.selBlockA){
             this.selBlockA = -1;
-            this.cancelSound.start();
+            this.cancelSound.play(R.raw.cancel, 1, 1, 1, 0, 1 );
             return;
         }
         if(this.selBlockA < 0){
             this.selBlockA = pos;
-            this.selectSoundA.start();
+            this.selectSoundA.play(R.raw.clickselect, 1, 1, 3, 0, 1 );
             return;
         }
         this.selBlockB = pos;
-        this.selectSoundB.start();
+        this.selectSoundB.play(R.raw.clickselect2, 1, 1, 2, 0, 1 );
         this.puzzleBlocks.swapPiecesById(this.selBlockA, this.selBlockB);
-        this.swapSound.start();
+        this.swapSound.play(R.raw.swap, 1, 1, 0, 0, 1 );
         imagePrinter(puzzleBlocks);
         resetSelection();
     }
