@@ -85,6 +85,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                 int rndmNum = (int)(Math.random() * 3);
                 genPuzzle(8, transformToBitmap(getDrawable(images[rndmNum])));
                 imagePrinter(puzzleBlocks);
+                resetTimer();
                 startChronometer();
             }
         });
@@ -95,6 +96,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                 int rndmNum = (int)(Math.random() * 3);
                 genPuzzle(18, transformToBitmap(getDrawable(images[rndmNum])));
                 imagePrinter(puzzleBlocks);
+                resetTimer();
                 startChronometer();
             }
         });
@@ -105,6 +107,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                 int rndmNum = (int)(Math.random() * 3);
                 genPuzzle(32, transformToBitmap(getDrawable(images[rndmNum])));
                 imagePrinter(puzzleBlocks);
+                resetTimer();
                 startChronometer();
             }
         });
@@ -239,5 +242,13 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
             pauseOffset = SystemClock.elapsedRealtime() - chronometer.getBase();
             running = false;
         }
+    }
+    public void resetTimer(){
+        if(running){
+            chronometer.stop();
+            running = false;
+        }
+        pauseOffset = 0;
+        offsetString = pauseOffset+"";
     }
 }
