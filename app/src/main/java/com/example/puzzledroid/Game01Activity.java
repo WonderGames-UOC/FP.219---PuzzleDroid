@@ -5,9 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.media.AudioAttributes;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -18,8 +15,9 @@ import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import java.util.Timer;
+
 import java.util.ArrayList;
+import java.util.Random;
 
 import dbHelper.SQLiteHelper;
 
@@ -27,10 +25,6 @@ import dbHelper.SQLiteHelper;
 
 public class Game01Activity extends AppCompatActivity implements OnClickListener {
     SQLiteHelper sqLiteHelper = new SQLiteHelper(this, "BD1_HighScores", null, 1);
-
-    //TODO: Sound effects greetings
-    //Sound Effect from <a href="https://pixabay.com/sound-effects/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=music&amp;utm_content=92097">Pixabay</a>
-    //Sound Effect from <a href="https://pixabay.com/sound-effects/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=music&amp;utm_content=36118">Pixabay</a>
 
     //declaraciones para el cronometro
     private Chronometer chronometer;
@@ -43,18 +37,15 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
     //¡¡NO BORRAR!! Etiqueta para el depurador.
     private final String TAG = "Game01Activity";
 
+    //PlayMechanics variables.
     private puzzlePieces puzzleBlocks = new puzzlePieces();
     private int rows, columns;
     protected int selBlockA, selBlockB;
-    /*
-    private MediaPlayer cancelSound;
-    private MediaPlayer selectSoundA;
-    private MediaPlayer selectSoundB;
-    private MediaPlayer swapSound;
-    */
-    private int cancelSound, selectSoundA, selectSoundB, swapSound;
-    private AudioAttributes soundAttrb;
+    private Selector selector = new Selector();
+
+    //Sound variables.
     private SoundPool soundPool;
+    private Sounds sounds;
 
     //Imagenes preseleccionadas de RESOURCES (app/res/drawable)
     protected int[] images = {
@@ -62,8 +53,6 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
             R.drawable.level2,
             R.drawable.level3
     };
-    private ImageView image;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,25 +61,14 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game01);
-        try{
-            soundAttrb = new AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_GAME)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                    .build();
-            this.soundPool = new SoundPool.Builder().setAudioAttributes(soundAttrb).setMaxStreams(2).build();
-            this.cancelSound = this.soundPool.load(this, R.raw.cancel, 1);
-            this.selectSoundA = this.soundPool.load(this, R.raw.clickselect, 0);
-            this.selectSoundB = this.soundPool.load(this, R.raw.clickselect2, 0);
-            this.swapSound =  this.soundPool.load(this, R.raw.swap, 1);
-        }catch (Exception e){
-            Log.d(TAG, e.getMessage());
-        }
+
+        //Game sounds (Sounds config directly on the class).
+        this.sounds = new Sounds(this);
+        this.soundPool =  sounds.getSoundPool();
+
 
         //TODO: Obtener la imagen del nivel seleccionado
         //image = this.findViewById(R.id.imageView_game01Activity);
-
-        //Init selBlock variables
-        resetSelection();
 
         //creacion de cronometro
         chronometer = findViewById(R.id.chronometer);
@@ -99,13 +77,13 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         Button bx4 = (Button) findViewById(R.id.button_x4);
         Button bx8 = (Button) findViewById(R.id.button_x8);
         Button bx16 = (Button) findViewById(R.id.button_x16);
-
         //Funciones onClick
         bx4.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d(TAG,"buttonx4");
-                genPuzzle(8, transformToBitmap(getDrawable(R.drawable.level1)));
+                int rndmNum = (int)(Math.random() * 3);
+                genPuzzle(8, transformToBitmap(getDrawable(images[rndmNum])));
                 imagePrinter(puzzleBlocks);
             }
         });
@@ -113,7 +91,8 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
             @Override
             public void onClick(View view) {
                 Log.d(TAG,"buttonx8");
-                genPuzzle(32, transformToBitmap(getDrawable(R.drawable.level1)));
+                int rndmNum = (int)(Math.random() * 3);
+                genPuzzle(18, transformToBitmap(getDrawable(images[rndmNum])));
                 imagePrinter(puzzleBlocks);
             }
         });
@@ -121,43 +100,44 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
             @Override
             public void onClick(View view) {
                 Log.d(TAG,"buttonx16");
-                genPuzzle(24, transformToBitmap(getDrawable(R.drawable.level1)));
+                int rndmNum = (int)(Math.random() * 3);
+                genPuzzle(32, transformToBitmap(getDrawable(images[rndmNum])));
                 imagePrinter(puzzleBlocks);
             }
         });
-
 
     }
     public void onClick(View v){
         Log.d(TAG, "onClick: ");
         Log.d(TAG, (v.getId()) +" "+ v.getTag());
-        int pos = Integer.parseInt(v.getTag().toString());
-        if(pos == this.selBlockA){
-            this.selBlockA = -1;
-            this.soundPool.play(this.cancelSound, 1,1, 1,0,(float) 1.5);
-            return;
-        }
-        if(this.selBlockA < 0){
-            this.selBlockA = pos;
-            this.soundPool.play(this.selectSoundA, 1, 1, 0, 0, 2 );
-            return;
-        }
-        //this.soundPool.play(this.selectSoundB, 1, 1, 0, 0, 2 );
-        this.selBlockB = pos;
 
-        this.puzzleBlocks.swapPiecesById(this.selBlockA, this.selBlockB);
-        this.soundPool.play(this.swapSound, 1, 1, 1, 0, (float) 1.5 );
-
-        imagePrinter(puzzleBlocks);
-        resetSelection();
+        int pos = Integer.parseInt(v.getTag().toString());  //Get the position value stored in the touched imageView
+        selector(pos);                                      //Call selector function.
     }
 
-    private void resetSelection(){
-        this.selBlockA = this.selBlockB = -1;
+    private void selector(int pos){
+
+        switch (selector.memoryLikeSelector(pos)){
+            case -1: //If the same imageView is touched twice, selection is canceled.
+                this.soundPool.play(this.sounds.getCancelSound(), 1,1, 1,0,(float) 1.5);
+                break;
+            case 0://If the touched imageView is first one.
+                this.soundPool.play(this.sounds.getSelectSoundA(), 1, 1, 0, 0, 2 );
+                break;
+            case 1://If the touched imageView is the second.
+                this.puzzleBlocks.swapPiecesById(this.selector.getSelBlockA(), this.selector.getSelBlockB());
+                this.soundPool.play(this.sounds.getSwapSound(), 1, 1, 1, 0, (float) 1.5 );
+                //Print the new order of blocks and reset the selector variable.
+                imagePrinter(puzzleBlocks);
+                if(this.puzzleBlocks.checkResult() > 0){
+                    this.soundPool.play(this.sounds.getVictorySound(),1, 1, 3, 0, (float) 1.5 );
+                }
+                this.selector.resetSelection();
+                break;
+        }
     }
 
-
-    //TODO: create method to work with any kind of image or drawable
+    //TODO: create class to work with any kind of image or drawable
     private Bitmap transformToBitmap(Drawable img){
         try{
             BitmapDrawable bmDrawable = (BitmapDrawable) img;
@@ -168,7 +148,6 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         }
         return null;
     }
-
     private void genPuzzle(int numOfPieces, Bitmap image){
         Log.d(TAG, "genPuzzle");
         //Divide the image
@@ -186,25 +165,6 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         //Print the blocks
         imagePrinter(this.puzzleBlocks);
         startChronometer();
-
-    }
-
-    private void cleanMainLayout(LinearLayout main){
-        Log.d(TAG, "cleanMainLayout");
-        int size = main.getChildCount();
-
-        for(int i = 0; i < size; i++){
-            main.removeViewAt(i);
-
-        }
-    }
-    private void cleanMainLayout(){
-        Log.d(TAG, "cleanMainLayout");
-        LinearLayout main = (LinearLayout) findViewById(R.id.puzzle_view);
-        int size = main.getChildCount();
-        for(int i = 0; i < size; i++){
-            main.removeViewAt(i);
-        }
     }
 
     private void imagePrinter(puzzlePieces blocks){
@@ -276,58 +236,4 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
             running = false;
         }
     }
-
-
-    //Funciones dividir y mostrar. DEPRECATED
-    private ArrayList<Bitmap> imageDivider(int denominador){
-        Log.d(TAG,"imageDivider");
-
-        //Filas y columnas que obtendremos
-        int filas, columnas;
-
-        //Alto y ancho de cada trozo
-        int altoTrozo, anchoTrozo;
-
-        /*TODO: Los trozos de la imagen deberán almacenarse como colección de objetos con atributos:
-            coordenas original
-            coordenadas actuales
-            bitmap de la imagen
-         */
-        //ArrayList donde guardaremos cada trozo. Tipo bitmap. El número de trozos sera un parámetro de entrada del método.
-        ArrayList<Bitmap> trozos = new ArrayList<Bitmap>(denominador);
-
-        /*Determinar la escala de la imagen, el alto y el ancho. Usar la clase BitmapDrawable
-          https://developer.android.com/reference/android/graphics/Bitmap
-        */
-        //Creamos un bitmap de la imagen que nos permitirá determinar su ancho y alto-
-        BitmapDrawable bmDrawable = (BitmapDrawable) getDrawable(R.drawable.level1);
-        Bitmap bm = bmDrawable.getBitmap();
-        //Creamos una nueva imagen con las dimensiones escogidas. createSaledBitmap(source, width, high, filter)
-        Bitmap bmEscalado = Bitmap.createScaledBitmap(bm,bm.getWidth(),bm.getHeight(),true);
-        Log.d(TAG, "Tamaño img: " + bmEscalado.getWidth() + "x"+bmEscalado.getHeight());
-        //TODO: crear método para determinar núm. filas y columas que generen trozos cuadrados.
-        //Definimos el mismo número de filas y columnas.
-        filas = columnas = (int) Math.sqrt(denominador);
-        Log.d(TAG, String.valueOf(filas));
-        //Calculamos el ancho de cada trozo en base al ancho y alto de la imagen original y función del número de filas y columnas definidos.
-        altoTrozo = bm.getHeight() / filas; //Definimos la altura de cada trozo
-        anchoTrozo = bm.getWidth() / filas; //Definimos el ancho de cada trozo
-        Log.d(TAG, String.valueOf(altoTrozo) + " x " + String.valueOf(anchoTrozo));
-
-        //Recorremos nuestra imagen de arriba a abajo (o viceversa) en saltos iguales ancho y alto definidos para cado trozo trozo.
-        //Usaremos la funcion Bitmap.createBitmap(bmEscalado,coordX,coordY, ancho, alto) para crear los trozos.
-        //Estos se almacenarán en el ArrayList definido anteriormente.
-        int x, y = 0; //Iniciamos las coordenadas que marcaran el comienzo de los trozos.
-        for(int i = 0; i < filas; i++){//El primer loop recorrerá las filas
-            x=0; //Volvemos a poner a 0 la coordenada de las columnas en cada iteración del loop filas.
-            for(int j = 0; j < columnas; j++){//El segundo loop las columnas
-                //Añadimos el trozo al array.
-                trozos.add(Bitmap.createBitmap(bmEscalado, x, y, anchoTrozo, altoTrozo));
-                x+=anchoTrozo; //Saltamos a la siguiente coordenada.
-            }
-            y+=altoTrozo; //saltamos a la siguiente coordenada
-        }
-        //Devolvemos el arrayList con las imagenes
-        return trozos;
-    };
 }
