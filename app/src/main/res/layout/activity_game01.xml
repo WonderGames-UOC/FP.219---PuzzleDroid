@@ -48,14 +48,14 @@
             style="@style/Widget.MaterialComponents.Button"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="x4" />
+            android:text="x8" />
 
         <Button
             android:id="@+id/button_x8"
             style="@style/Widget.MaterialComponents.Button"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="x8"
+            android:text="x18"
             android:textColor="#FBF7F6"
             android:visibility="visible" />
 
@@ -65,7 +65,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginEnd="16dp"
-            android:text="x16"
+            android:text="x32"
             android:visibility="visible" />
 
     </LinearLayout>
