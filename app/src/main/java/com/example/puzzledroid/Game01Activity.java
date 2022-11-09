@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.AudioAttributes;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -22,6 +24,9 @@ import dbHelper.SQLiteHelper;
 public class Game01Activity extends AppCompatActivity implements OnClickListener {
     SQLiteHelper sqLiteHelper = new SQLiteHelper(this, "BD1_HighScores", null, 1);
 
+    //TODO: Sound effects greetings
+    //Sound Effect from <a href="https://pixabay.com/sound-effects/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=music&amp;utm_content=92097">Pixabay</a>
+    //Sound Effect from <a href="https://pixabay.com/sound-effects/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=music&amp;utm_content=36118">Pixabay</a>
 
     //¡¡NO BORRAR!! Etiqueta para el depurador.
     private final String TAG = "Game01Activity";
@@ -29,6 +34,11 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
     private puzzlePieces puzzleBlocks = new puzzlePieces();
     private int rows, columns;
     protected int selBlockA, selBlockB;
+
+    private MediaPlayer cancelSound;
+    private MediaPlayer selectSoundA;
+    private MediaPlayer selectSoundB;
+    private MediaPlayer swapSound;
 
     //Imagenes preseleccionadas de RESOURCES (app/res/drawable)
     protected int[] images = {
@@ -46,6 +56,10 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game01);
+        this.cancelSound = MediaPlayer.create(this, R.raw.cancel);
+        this.selectSoundA = MediaPlayer.create(this, R.raw.clickselect);
+        this.selectSoundB = MediaPlayer.create(this, R.raw.clickselect2);
+        this.swapSound = MediaPlayer.create(this, R.raw.swap);
 
         //TODO: Obtener la imagen del nivel seleccionado
         //image = this.findViewById(R.id.imageView_game01Activity);
@@ -90,22 +104,26 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         Log.d(TAG, "onClick: ");
         Log.d(TAG, (v.getId()) +" "+ v.getTag());
         int pos = Integer.parseInt(v.getTag().toString());
-        if(pos == selBlockA){
-            selBlockA = -1;
+        if(pos == this.selBlockA){
+            this.selBlockA = -1;
+            this.cancelSound.start();
             return;
         }
-        if(selBlockA < 0){
-            selBlockA = pos;
+        if(this.selBlockA < 0){
+            this.selBlockA = pos;
+            this.selectSoundA.start();
             return;
         }
-        selBlockB = pos;
-        this.puzzleBlocks.swapPiecesById(selBlockA, selBlockB);
+        this.selBlockB = pos;
+        this.selectSoundB.start();
+        this.puzzleBlocks.swapPiecesById(this.selBlockA, this.selBlockB);
+        this.swapSound.start();
         imagePrinter(puzzleBlocks);
         resetSelection();
     }
 
     private void resetSelection(){
-        selBlockA = selBlockB = -1;
+        this.selBlockA = this.selBlockB = -1;
     }
 
 
