@@ -264,12 +264,11 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
     }
 
     public void startChronometer() {
-        if (!running) {
             chronometer.setBase(SystemClock.elapsedRealtime() - pauseOffset);
             chronometer.start();
             running = true;
-        }
     }
+
     public void pauseChronometer() {
         if (running) {
             chronometer.stop();
