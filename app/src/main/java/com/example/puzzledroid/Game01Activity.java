@@ -25,10 +25,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
 
     //declaraciones para el cronometro
     private Chronometer chronometer;
-    //aqui guardamos el total de segundos que tardamos en resolver el puzzle
-    private long pauseOffset;
-    private String offsetString = pauseOffset+"";
-    private boolean running;
+    private Timer Timer = new Timer();
 
 
     //¡¡NO BORRAR!! Etiqueta para el depurador.
@@ -82,9 +79,9 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                 int rndmNum = (int)(Math.random() * 3);
                 genPuzzle(8, transformToBitmap(getDrawable(images[rndmNum])));
                 imagePrinter(puzzleBlocks);
-                resetTimer();
+                Timer.resetTimer(chronometer);
                 counter.reset();
-                startChronometer();
+                Timer.startChronometer(chronometer);
             }
         });
         bx8.setOnClickListener(new OnClickListener() {
@@ -94,9 +91,9 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                 int rndmNum = (int)(Math.random() * 3);
                 genPuzzle(18, transformToBitmap(getDrawable(images[rndmNum])));
                 imagePrinter(puzzleBlocks);
-                resetTimer();
+                Timer.resetTimer(chronometer);
                 counter.reset();
-                startChronometer();
+                Timer.startChronometer(chronometer);
             }
         });
         bx16.setOnClickListener(new OnClickListener() {
@@ -106,9 +103,9 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                 int rndmNum = (int)(Math.random() * 3);
                 genPuzzle(32, transformToBitmap(getDrawable(images[rndmNum])));
                 imagePrinter(puzzleBlocks);
-                resetTimer();
+                Timer.resetTimer(chronometer);
                 counter.reset();
-                startChronometer();
+                Timer.startChronometer(chronometer);
             }
         });
 
@@ -138,7 +135,10 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                 imagePrinter(puzzleBlocks);
                 if(this.puzzleBlocks.checkResult() > 0){
                     this.soundPool.play(this.sounds.getVictorySound(),1, 1, 3, 0, (float) 1.5 );
-                    pauseChronometer();
+                    Timer.pauseChronometer(chronometer);
+                    //para acceder al tiempo hacer Timer.offsetString, aparecera en milisegundos
+
+                    Log.d(TAG, Timer.offsetString);
                     //INSERT TIME AND COUNTER IN DB
                 }
                 this.selector.resetSelection();
@@ -229,27 +229,5 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         if (findViewById(R.id.puzzleDroid_imageView).getVisibility() != View.INVISIBLE){
             findViewById(R.id.puzzleDroid_imageView).setVisibility(View.INVISIBLE);
         }
-    }
-
-    public void startChronometer() {
-            chronometer.setBase(SystemClock.elapsedRealtime() - pauseOffset);
-            chronometer.start();
-            running = true;
-    }
-
-    public void pauseChronometer() {
-        if (running) {
-            chronometer.stop();
-            pauseOffset = SystemClock.elapsedRealtime() - chronometer.getBase();
-            running = false;
-        }
-    }
-    public void resetTimer(){
-        if(running){
-            chronometer.stop();
-            running = false;
-        }
-        pauseOffset = 0;
-        offsetString = pauseOffset+"";
     }
 }
