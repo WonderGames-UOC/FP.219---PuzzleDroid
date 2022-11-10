@@ -17,6 +17,8 @@
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="enter_user_name">Enter User Name</string>
+    <string name="select_level">Select Level:</string>
     <string name="high_scores">High Scores</string>
     <string name="exit">Exit</string>
 </resources>

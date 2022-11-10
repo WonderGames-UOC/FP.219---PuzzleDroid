@@ -1,5 +1,6 @@
 package com.example.puzzledroid;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -18,11 +19,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements custom_dialog_menu.returnDialogMenu {
 
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
+    Context context = this;
     Button play, hs;
     String tag = "MainActivity";
 
@@ -43,7 +46,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view)
             {
                 Log.d(tag, "onClick");
-                startGame();
+                new custom_dialog_menu(context, MainActivity.this);
+                //startGame();
             }
         });
 
@@ -92,4 +96,13 @@ public class MainActivity extends AppCompatActivity {
         startActivity(i);
     }
 
+    @Override
+    public void Result(String username, int puzzres) {
+        TextView txt = new TextView(this);
+        txt.setText(username.toString());
+        TextView txt2 = new TextView(this);
+        txt2.setText(puzzres);
+
+        //startGame();
+    }
 }
