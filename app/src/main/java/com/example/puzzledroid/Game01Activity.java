@@ -139,7 +139,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                 if(this.puzzleBlocks.checkResult() > 0){
                     this.soundPool.play(this.sounds.getVictorySound(),1, 1, 3, 0, (float) 1.5 );
                     pauseChronometer();
-                    //INSERT TIME IN DB
+                    //INSERT TIME AND COUNTER IN DB
                 }
                 this.selector.resetSelection();
                 break;
