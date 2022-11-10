@@ -2,6 +2,7 @@ package com.example.puzzledroid;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -60,6 +61,10 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         this.sounds = new Sounds(this);
         this.soundPool =  sounds.getSoundPool();
 
+
+        // RECEPCION DATOS DE MainActivity
+        String userName = getIntent().getStringExtra("userName");
+        int puzzres = getIntent().getIntExtra("puzzres", 8);
 
         //TODO: Obtener la imagen del nivel seleccionado
         //image = this.findViewById(R.id.imageView_game01Activity);

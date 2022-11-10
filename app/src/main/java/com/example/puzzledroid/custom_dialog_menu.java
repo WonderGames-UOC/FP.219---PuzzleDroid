@@ -5,23 +5,21 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.View;
-import android.view.Window;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import javax.xml.transform.Result;
 
 public class custom_dialog_menu {
 
-    public interface returnDialogMenu{
-         void Result(String username, int puzzres);
+    public interface returnDialogMenu {
+        void Result(String username, int puzzres);
 
     }
 
-    private returnDialogMenu intrfc;
+    private final returnDialogMenu intrfc;
 
-    public custom_dialog_menu (Context context, returnDialogMenu actividad) {
+    public custom_dialog_menu(Context context, returnDialogMenu actividad) {
         intrfc = actividad;
         final Dialog dialog = new Dialog(context);
         dialog.setCancelable(false);
@@ -37,33 +35,48 @@ public class custom_dialog_menu {
         lvl1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                intrfc.Result(userName.getText().toString(), 8);
-                dialog.dismiss();
+                if (userNameCheck(userName, context)) {
+                    intrfc.Result(userName.getText().toString(), 8);
+                    dialog.dismiss();
+                }
             }
         });
         lvl2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                intrfc.Result(userName.getText().toString(), 18);
-                dialog.dismiss();
+                if (userNameCheck(userName, context)) {
+                    intrfc.Result(userName.getText().toString(), 18);
+                    dialog.dismiss();
+                }
 
             }
         });
         lvl3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                intrfc.Result(userName.getText().toString(), 32);
-                dialog.dismiss();
+                if (userNameCheck(userName, context)) {
+                    intrfc.Result(userName.getText().toString(), 32);
+                    dialog.dismiss();
+
+                }
             }
         });
+
 
         dialog.show();
 
 
-
-
-
-
-
     }
+
+    public boolean userNameCheck(TextView userName, Context context) {
+        if (userName.getText().toString().equals("")) {
+            Toast.makeText(context, "Please, insert a valid user name", Toast.LENGTH_SHORT).show();
+            return false;
+        } else {
+            return true;
+        }
+    }
+
 }
+
+
