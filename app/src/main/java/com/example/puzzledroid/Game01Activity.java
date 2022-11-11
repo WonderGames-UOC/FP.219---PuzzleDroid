@@ -83,7 +83,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         //Set initial background image
         findViewById(R.id.puzzle_view).setBackground(getDrawable(imgId));
 
-        //TODO: Eliminar botones y definir la división de la imagen en base al nivel seleccionado.
+        //Starts the puzzle
         this.puzzleBlocks = genPuzzle(numBlocks, transformToBitmap(getDrawable(imgId)));
         imagePrinter(puzzleBlocks);
         try {

@@ -82,6 +82,21 @@ public class ImageDivider {
 
         imageDivider(scaledBm);
     }
+    public void divideImage(int high, int wide){
+        Log.d(tag, "divideImage");
+
+        //Empty image arrayList.
+        images = new ArrayList<Bitmap>();
+
+        //Set the images pieces high and wide.
+        this.wide = wide / columns;
+        this.high = high / rows;
+
+        //ScaledBitmap will allow us tu cut the image in pieces of exact wide and high.
+        Bitmap scaledBm = Bitmap.createScaledBitmap(image, wide, high, true);
+
+        imageDivider(scaledBm);
+    }
 
     /**
      * Divides the image provided in the number indicated of square blocks.
@@ -104,6 +119,34 @@ public class ImageDivider {
         //Scalate the original image based on the size and number of the square blocks.
         int scaledWide = (wide * columns);
         int scaledHigh = (high * rows);
+        Bitmap scaledImage = Bitmap.createScaledBitmap(image, scaledWide, scaledHigh, true);
+
+        imageDivider(scaledImage);
+    }
+
+    /**
+     * Divides the image provided in the number indicated of square blocks base on an specific image High and Wide.
+     * @param high
+     * @param wide
+     */
+    public void divideImageInSquares(int high, int wide){
+        Log.d(tag, "divideImageInSqueares");
+
+        //Empty image arrayList.
+        images = new ArrayList<Bitmap>();
+
+        //Calculate the area of the square blocks.
+        int imageArea = high * wide;
+        int partArea = imageArea / denominator;
+        this.wide = this.high = (int) Math.floor(Math.sqrt(partArea));
+
+        //Calculate the number of rows and columns base on the size of the image and the size of the squares blocks.
+        this.columns = (int) Math.floor(wide/this.wide);
+        this.rows = (int) Math.floor(high/this.high);
+
+        //Scalate the original image based on the size and number of the square blocks.
+        int scaledWide = (this.wide * columns);
+        int scaledHigh = (this.high * rows);
         Bitmap scaledImage = Bitmap.createScaledBitmap(image, scaledWide, scaledHigh, true);
 
         imageDivider(scaledImage);
