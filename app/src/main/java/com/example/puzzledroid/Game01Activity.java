@@ -22,6 +22,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.sql.Time;
+
 import dbHelper.SQLiteHelper;
 
 
@@ -158,18 +160,39 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings_game) {
-            exitGame();
+        switch (id){
+            case R.id.action_settings_game:{
+                exitGame();
+                break;
+            }
+            case R.id.reset_game:{
+                resetGame();
+                break;
+            }
+            default:{
+                break;
+            }
         }
-
         return super.onOptionsItemSelected(item);
     }
+
     // Método para lanzar la pantalla de ayuda.
     private void exitGame() {
         Intent i = new Intent(this, MainActivity.class);
         startActivity(i);
     }
+
+    /**
+     * Restarts the current puzzle game
+     */
+    private void resetGame(){
+        this.puzzleBlocks.shuffle();
+        Timer.resetTimer(this.chronometer);
+        counter.reset();
+        imagePrinter(this.puzzleBlocks);
+        Timer.startChronometer(this.chronometer);
+    }
+
 
 
     //TODO: create class to work with any kind of image or drawable
