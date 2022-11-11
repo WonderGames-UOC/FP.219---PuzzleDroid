@@ -15,6 +15,8 @@ import android.view.View.OnClickListener;
 import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+
 import dbHelper.SQLiteHelper;
 
 
@@ -22,10 +24,9 @@ import dbHelper.SQLiteHelper;
 public class Game01Activity extends AppCompatActivity implements OnClickListener {
     SQLiteHelper sqLiteHelper = new SQLiteHelper(this, "BD1_HighScores", null, 1);
 
-    //declaraciones para el cronometro
+    //Game data
     private Chronometer chronometer;
     private Timer Timer = new Timer();
-
 
     //¡¡NO BORRAR!! Etiqueta para el depurador.
     private final String TAG = "Game01Activity";
@@ -82,6 +83,11 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         Timer.resetTimer(chronometer);
         counter.reset();
         Timer.startChronometer(chronometer);
+        try {
+            ((TextView) findViewById(R.id.counter)).setText(Integer.toString(counter.getMovements()));
+        }catch (Exception e){
+            Log.d(TAG, e.getMessage());
+        }
     }
 
     /**
@@ -112,6 +118,11 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
             case 1://If the touched imageView is the second.
                 this.puzzleBlocks.swapPiecesById(this.selector.getSelBlockA(), this.selector.getSelBlockB());
                 this.counter.add();
+                try {
+                    ((TextView) findViewById(R.id.counter)).setText(Integer.toString(counter.getMovements()));
+                }catch (Exception e){
+                    Log.d(TAG, e.getMessage());
+                }
                 this.soundPool.play(this.sounds.getSwapSound(), 1, 1, 1, 0, (float) 1.5 );
                 //Print the new order of blocks and reset the selector variable.
                 imagePrinter(puzzleBlocks);
@@ -203,7 +214,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         );
 
         //Set left and right margins of the rows layouts to center the images in the screen.
-        int sideMarginLayout = (displayMetrics.widthPixels - (imageViewWide) * columns)/2;
+        int sideMarginLayout = (displayMetrics.widthPixels - (imageViewWide * columns)) / 2;
         childLpParams.setMargins(sideMarginLayout,0,sideMarginLayout,0);
 
 
