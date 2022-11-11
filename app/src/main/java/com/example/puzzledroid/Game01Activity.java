@@ -1,5 +1,6 @@
 package com.example.puzzledroid;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -51,6 +52,9 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game01);
+
+        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setCustomView(R.layout.custom_actionbar);
 
 
         //Game sounds (Sounds config directly on the class).
