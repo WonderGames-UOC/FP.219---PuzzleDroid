@@ -1,22 +1,21 @@
 package com.example.puzzledroid;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.SoundPool;
 import android.os.Bundle;
-import android.os.SystemClock;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-
 import dbHelper.SQLiteHelper;
 
 
@@ -48,6 +47,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
             R.drawable.level2,
             R.drawable.level3
     };
+    DisplayMetrics displayMetrics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,22 +57,46 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game01);
 
+
         //Game sounds (Sounds config directly on the class).
         this.sounds = new Sounds(this);
         this.soundPool =  sounds.getSoundPool();
 
 
+        //TODO: Obtener la imagen del nivel seleccionado
+        //Receive data from custom_dialog_menu
+        Bundle data = getIntent().getExtras();
+        int imgId, numBlocks;
+        try{
+            imgId = (int) data.get("imgId");
+            numBlocks = (int)data.get("puzzres");
+        }catch (Exception e){
+            imgId = R.drawable.level1;
+            numBlocks = 4;
+        }
+
+        //https://stackoverflow.com/questions/4743116/get-screen-width-and-height-in-android
+        displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        //Change background
+        findViewById(R.id.puzzle_view).setBackground(getDrawable(imgId));
+
         // RECEPCION DATOS DE MainActivity
         String userName = getIntent().getStringExtra("userName");
-        int puzzres = getIntent().getIntExtra("puzzres", 8);
+        //int puzzres = getIntent().getIntExtra("puzzres", 8);
 
-        //TODO: Obtener la imagen del nivel seleccionado
-        //image = this.findViewById(R.id.imageView_game01Activity);
 
         //creacion de cronometro
         chronometer = findViewById(R.id.chronometer);
 
         //TODO: Eliminar botones y definir la división de la imagen en base al nivel seleccionado.
+        genPuzzle(numBlocks, transformToBitmap(getDrawable(imgId)));
+        imagePrinter(puzzleBlocks);
+        Timer.resetTimer(chronometer);
+        counter.reset();
+        Timer.startChronometer(chronometer);
+
+
         Button bx4 = (Button) findViewById(R.id.button_x4);
         Button bx8 = (Button) findViewById(R.id.button_x8);
         Button bx16 = (Button) findViewById(R.id.button_x16);
@@ -175,11 +199,9 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
 
         //Shuffle the blocks
         this.puzzleBlocks.shuffle();
-
-        //Print the blocks
-        imagePrinter(this.puzzleBlocks);
     }
 
+    //TODO: move this function to a class.
     private void imagePrinter(puzzlePieces blocks){
         Log.d(TAG, "imagePrinter");
 
@@ -193,21 +215,29 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.HORIZONTAL);
+        childLpParams.gravity = Gravity.CENTER;
 
         //Instantiate the parent layout.
         LinearLayout mainLp = (LinearLayout) findViewById(R.id.puzzle_view);
         mainLp.setLayoutParams(mainLpParams);
-        mainLp.removeAllViewsInLayout();
-
+        mainLp.removeAllViewsInLayout(); //Remove all from mainLayout (allows reset)
 
         //Define the wide & high of the imageview of each block based on the current wide and high of the parent layout.
-        int imageViewWide = (int)(mainLp.getWidth() / columns);
-        int imageViewHigh = (int) (mainLp.getHeight() / rows);
+        int imageViewWide = displayMetrics.widthPixels / columns; //TODO Base on the screen width (need adjustment for screen rotation)
+        int imageViewHigh = imageViewWide; //Square blocks
+        //int imageViewHigh = mainLp.getHeight() / rows;
+        LinearLayout.LayoutParams imgViewParams = new LinearLayout.LayoutParams(
+                imageViewWide,
+                imageViewHigh
+        );
+        Log.d(TAG, "Wide: " + imageViewWide + " High: " + imageViewHigh);
 
+        //Padding base on display density.
         //https://stackoverflow.com/questions/9685658/add-padding-on-view-programmatically
         float scale = getResources().getDisplayMetrics().density;
         int size = (int) (1*scale + 0.5f);
 
+        //Start of the painting loop.
         LinearLayout childLp = new LinearLayout(this);
         ImageView imageView;
         int col = 0;
@@ -222,17 +252,15 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
             imageView = new ImageView(this);
             imageView.setTag(block.getPosition());
             imageView.setImageBitmap(block.getImage());
-            imageView.setPadding(size,size,size,size);
+            imageView.setPadding(0,0,size,size); //Padding on the right and bottom of each block.
             imageView.setOnClickListener(this);
 
             //Insert the imageView in the layout of the row.
-            childLp.addView(imageView, imageViewWide, imageViewHigh);
+            childLp.addView(imageView,imgViewParams);
             col++;
         }
         mainLp.addView(childLp, childLpParams);
-        //TODO: remove background image.
-        if (findViewById(R.id.puzzleDroid_imageView).getVisibility() != View.INVISIBLE){
-            findViewById(R.id.puzzleDroid_imageView).setVisibility(View.INVISIBLE);
-        }
+        mainLp.setBackgroundResource(0);    //Background image off.
+        mainLp.setBackgroundColor(Color.WHITE); //White backgound for better contrast.
     }
 }

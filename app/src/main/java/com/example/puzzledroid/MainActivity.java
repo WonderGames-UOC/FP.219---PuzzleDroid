@@ -47,7 +47,6 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
             {
                 Log.d(tag, "onClick");
                 new custom_dialog_menu(context, MainActivity.this);
-                //startGame();
             }
         });
 
@@ -60,10 +59,11 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
         });
     }
 // Método para lanzar la pantalla de juego.
-    private void startGame(String userName, int puzzres) {
+    private void startGame(String userName, int puzzres, int imgId) {
         Intent i = new Intent(this, Game01Activity.class);
         i.putExtra("userName", userName.toString());
         i.putExtra("puzzres", puzzres);
+        i.putExtra("imgId", imgId);
         startActivity(i);
     }
     // Método para lanzar la pantalla de puntuaciones.
@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
     }
 
     @Override
-    public void Result(String username, int puzzres) {
-        startGame(username, puzzres);
+    public void Result(String username, int puzzres, int imgId) {
+        startGame(username, puzzres, imgId);
     }
 }
