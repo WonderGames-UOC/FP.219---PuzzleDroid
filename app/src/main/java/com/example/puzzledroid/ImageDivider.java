@@ -1,12 +1,13 @@
 package com.example.puzzledroid;
 
 import android.graphics.Bitmap;
+import android.util.DisplayMetrics;
 import android.util.Log;
 
 import java.util.ArrayList;
 
 public class ImageDivider {
-    final private String tag = "imageDivider";
+    final private String TAG = "imageDivider";
     private int rows, columns, high, wide, denominator;
     private Bitmap image;
     private ArrayList<Bitmap> images;
@@ -24,7 +25,7 @@ public class ImageDivider {
      * It will return a number of columns an rows in case we ask for a number of pieces.
      */
     private void validDenominator(){
-        Log.d(tag, "validDenominator");
+        Log.d(TAG, "validDenominator");
         try{
             if(this.denominator < 2){
                 this.denominator = 2;
@@ -32,7 +33,7 @@ public class ImageDivider {
             double res = Math.sqrt(this.denominator);
             this.rows = this.columns = (int) Math.round(res);
         }catch (Exception e){
-            Log.d(tag, e.getMessage());
+            Log.d(TAG, e.getMessage());
         }
     }
 
@@ -41,7 +42,7 @@ public class ImageDivider {
      * @param image Scaled Bitmap of the image to divide.
      */
     private void imageDivider(Bitmap image){
-        Log.d(tag, "imageDivider");
+        Log.d(TAG, "imageDivider");
         /*
             Read the image from the {0,0} position, from left to right and up to down,
             in steps equal to the wide and high set for the pieces.
@@ -56,7 +57,7 @@ public class ImageDivider {
                     images.add(block);
                     x+=wide;
                 }catch (Exception e){
-                    Log.d(tag, e.getMessage());
+                    Log.d(TAG, e.getMessage());
                     return;
                 }
             }
@@ -68,7 +69,7 @@ public class ImageDivider {
      * Divides a Bitmap image in the indicated number of blocks.
      */
     public void divideImage(){
-        Log.d(tag, "divideImage");
+        Log.d(TAG, "divideImage");
 
         //Empty image arrayList.
         images = new ArrayList<Bitmap>();
@@ -82,8 +83,14 @@ public class ImageDivider {
 
         imageDivider(scaledBm);
     }
+
+    /**
+     * Divides a Bitmap image in the indicated number of blocks based on a specific image high and wide.
+     * @param high
+     * @param wide
+     */
     public void divideImage(int high, int wide){
-        Log.d(tag, "divideImage");
+        Log.d(TAG, "divideImage");
 
         //Empty image arrayList.
         images = new ArrayList<Bitmap>();
@@ -102,7 +109,7 @@ public class ImageDivider {
      * Divides the image provided in the number indicated of square blocks.
      */
     public void divideImageInSquares(){
-        Log.d(tag, "divideImageInSqueares");
+        Log.d(TAG, "divideImageInSqueares");
 
         //Empty image arrayList.
         images = new ArrayList<Bitmap>();
@@ -117,25 +124,26 @@ public class ImageDivider {
         this.rows = (int) Math.floor(image.getHeight()/this.high);
 
         //Scalate the original image based on the size and number of the square blocks.
-        int scaledWide = (wide * columns);
-        int scaledHigh = (high * rows);
+        int scaledWide = (this.wide * columns);
+        int scaledHigh = (this.high * rows);
         Bitmap scaledImage = Bitmap.createScaledBitmap(image, scaledWide, scaledHigh, true);
 
         imageDivider(scaledImage);
     }
 
     /**
-     * Divides the image provided in the number indicated of square blocks base on an specific image High and Wide.
+     * Divides the image provided in the number indicated of square blocks based on a specific image High and Wide.
      * @param high
      * @param wide
      */
     public void divideImageInSquares(int high, int wide){
-        Log.d(tag, "divideImageInSqueares");
-
+        Log.d(TAG, "divideImageInSquares");
+        Log.d(TAG, "Wide: " + wide + " High: "+ high);
         //Empty image arrayList.
         images = new ArrayList<Bitmap>();
 
         //Calculate the area of the square blocks.
+        Log.d(TAG, "ImageH: " + image.getHeight() + " ImageW: " + image.getWidth());
         int imageArea = high * wide;
         int partArea = imageArea / denominator;
         this.wide = this.high = (int) Math.floor(Math.sqrt(partArea));
@@ -143,12 +151,41 @@ public class ImageDivider {
         //Calculate the number of rows and columns base on the size of the image and the size of the squares blocks.
         this.columns = (int) Math.floor(wide/this.wide);
         this.rows = (int) Math.floor(high/this.high);
+        Log.d(TAG, "Pieces: " + this.denominator  +" Cols: " +columns + " Rows: " + rows);
 
         //Scalate the original image based on the size and number of the square blocks.
         int scaledWide = (this.wide * columns);
         int scaledHigh = (this.high * rows);
         Bitmap scaledImage = Bitmap.createScaledBitmap(image, scaledWide, scaledHigh, true);
+        imageDivider(scaledImage);
+    }
 
+    /**
+     * Divides the image provided in the number indicated of square blocks based on a specific image High and Wide.
+     * @param dp
+     */
+    public void divideImageInSquares(DisplayMetrics dp){
+        Log.d(TAG, "divideImageInSquares");
+        Log.d(TAG, "Wide: " + wide + " High: "+ high);
+        //Empty image arrayList.
+        images = new ArrayList<Bitmap>();
+
+        //Calculate the area of the square blocks.
+        Log.d(TAG, "ImageH: " + image.getScaledHeight(dp.heightPixels) + " ImageW: " + image.getScaledWidth(dp.widthPixels));
+        Log.d(TAG, "dpH: " + dp.heightPixels + " dpW: " + dp.widthPixels);
+        int imageArea = image.getScaledHeight(dp.densityDpi) * image.getScaledWidth(dp.densityDpi);
+        int partArea = imageArea / denominator;
+        this.wide = this.high = (int) Math.floor(Math.sqrt(partArea));
+
+        //Calculate the number of rows and columns base on the size of the image and the size of the squares blocks.
+        this.columns = (int) Math.floor(image.getScaledWidth(dp.densityDpi)/this.wide);
+        this.rows = (int) Math.floor(image.getScaledHeight(dp.densityDpi)/this.high);
+        Log.d(TAG, "Pieces: " + this.denominator  +" Cols: " +columns + " Rows: " + rows);
+
+        //Scalate the original image based on the size and number of the square blocks.
+        int scaledWide = (this.wide * columns);
+        int scaledHigh = (this.high * rows);
+        Bitmap scaledImage = Bitmap.createScaledBitmap(image, scaledWide, scaledHigh, true);
         imageDivider(scaledImage);
     }
     /**
@@ -158,7 +195,7 @@ public class ImageDivider {
      * @return MCD of the two integers.
      */
     private int mCD(int x, int y){
-        Log.d(tag, "divideImageInSquares");
+        Log.d(TAG, "divideImageInSquares");
         if(y == 0){
             return x;
         }

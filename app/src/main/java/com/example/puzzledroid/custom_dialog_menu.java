@@ -39,7 +39,7 @@ public class custom_dialog_menu {
             @Override
             public void onClick(View view) {
                 if (userNameCheck(userName, context)) {
-                    intrfc.Result(userName.getText().toString(), 8, R.drawable.level1);
+                    intrfc.Result(userName.getText().toString(), 24, R.drawable.level1);
                     dialog.dismiss();
                 }
             }
@@ -48,7 +48,7 @@ public class custom_dialog_menu {
             @Override
             public void onClick(View view) {
                 if (userNameCheck(userName, context)) {
-                    intrfc.Result(userName.getText().toString(), 18, R.drawable.level2);
+                    intrfc.Result(userName.getText().toString(), 32, R.drawable.level2);
                     dialog.dismiss();
                 }
 
@@ -58,7 +58,7 @@ public class custom_dialog_menu {
             @Override
             public void onClick(View view) {
                 if (userNameCheck(userName, context)) {
-                    intrfc.Result(userName.getText().toString(), 32, R.drawable.level3);
+                    intrfc.Result(userName.getText().toString(), 64, R.drawable.level3);
                     dialog.dismiss();
                 }
             }

@@ -156,7 +156,7 @@ public class PuzzlePieces {
      * Randomize the puzzlePieces order of the pieces collection.
      */
     public void shuffle(){
-        Log.d(TAG,"shuflle");
+        //Log.d(TAG,"shuflle");
         int passes = this.pieces.size() * 10;
         try {
             for(int i = passes; i>=0; i--){

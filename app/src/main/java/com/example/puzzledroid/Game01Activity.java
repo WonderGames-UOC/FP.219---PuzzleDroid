@@ -3,7 +3,6 @@ package com.example.puzzledroid;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -48,7 +47,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
     private SoundPool soundPool;
     private Sounds sounds;
 
-    DisplayMetrics displayMetrics;
+    DisplayMetrics dp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -200,9 +199,16 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         Log.d(TAG, "genPuzzle");
         PuzzlePieces puzzleBlocks = new PuzzlePieces();
 
+        //Determine the display size
+        DisplayMetrics dp = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dp);
+
         //Divide the image
         ImageDivider images = new ImageDivider(numOfPieces, image);
+        //images.divideImage();
         images.divideImageInSquares();
+        //images.divideImageInSquares(dp);
+        //images.divideImageInSquares((int)(dp.heightPixels*0.96), dp.widthPixels);
         this.rows = images.getRows();
         this.columns = images.getColumns();
 
@@ -237,9 +243,14 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
 
         //Define the wide & high of the imageview of each block based on the current wide of screen.
         //https://stackoverflow.com/questions/4743116/get-screen-width-and-height-in-android
-        displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int imageViewWide = (int) ((displayMetrics.widthPixels / columns) * 0.93); //TODO Base on the screen width (needs adjustment for screen rotation)
+        dp = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dp);
+        float ratio = dp.heightPixels / dp.widthPixels;
+        int imageViewWide = (int) ((dp.widthPixels / columns) * 0.93); //TODO Base on the screen width (needs adjustment for screen rotation)
+        if(ratio < 2){ //Adaptation to shorten screens
+            imageViewWide = (int)(imageViewWide * 0.8);
+
+        }
         int imageViewHigh = imageViewWide; //Square blocks
         Log.d(TAG, "Wide: " + imageViewWide + " High: " + imageViewHigh);
         LinearLayout.LayoutParams imgViewParams = new LinearLayout.LayoutParams(
@@ -248,7 +259,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         );
 
         //Set left and right margins of the rows layouts to center the images in the screen.
-        int sideMarginLayout = (displayMetrics.widthPixels - (imageViewWide * columns)) / 2;
+        int sideMarginLayout = (dp.widthPixels - (imageViewWide * columns)) / 2;
         childLpParams.setMargins(sideMarginLayout,0,sideMarginLayout,0);
 
 
