@@ -223,13 +223,17 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         mainLp.removeAllViewsInLayout(); //Remove all from mainLayout (allows reset)
 
         //Define the wide & high of the imageview of each block based on the current wide and high of the parent layout.
-        int imageViewWide = displayMetrics.widthPixels / columns; //TODO Base on the screen width (need adjustment for screen rotation)
+        int imageViewWide = (int) ((displayMetrics.widthPixels / columns) * 0.93); //TODO Base on the screen width (needs adjustment for screen rotation)
         int imageViewHigh = imageViewWide; //Square blocks
         //int imageViewHigh = mainLp.getHeight() / rows;
         LinearLayout.LayoutParams imgViewParams = new LinearLayout.LayoutParams(
                 imageViewWide,
                 imageViewHigh
         );
+
+        int sideMarginLayout = (displayMetrics.widthPixels - (imageViewWide) * columns)/2;
+        childLpParams.setMargins(sideMarginLayout,0,sideMarginLayout,0);
+
         Log.d(TAG, "Wide: " + imageViewWide + " High: " + imageViewHigh);
 
         //Padding base on display density.
@@ -244,6 +248,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         for (puzzlePiece block :blocks.getPieces()
              ) {
             if(col == columns){ //New linear layout when last column reach.
+                childLp.setBackgroundColor(Color.WHITE);
                 mainLp.addView(childLp, childLpParams);
                 childLp = new LinearLayout(this);
                 col = 0; //As a new row is started, the column counter is set to zero.
@@ -259,8 +264,9 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
             childLp.addView(imageView,imgViewParams);
             col++;
         }
+        childLp.setBackgroundColor(Color.WHITE);
         mainLp.addView(childLp, childLpParams);
         mainLp.setBackgroundResource(0);    //Background image off.
-        mainLp.setBackgroundColor(Color.WHITE); //White backgound for better contrast.
+        mainLp.setBackgroundColor(Color.BLACK); //White backgound for better contrast.
     }
 }
