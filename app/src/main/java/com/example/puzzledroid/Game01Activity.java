@@ -257,16 +257,20 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
             imageView = new ImageView(this);
             imageView.setTag(block.getPosition());
             imageView.setImageBitmap(block.getImage());
-            imageView.setPadding(0,0,size,size); //Padding on the right and bottom of each block.
+            if(col == 0){
+                imageView.setPadding(size,0,size,size); //Padding on the right, left and bottom for each block.
+            }else{
+                imageView.setPadding(0,0,size,size); //Padding on the right and bottom of each block.
+            }
             imageView.setOnClickListener(this);
 
             //Insert the imageView in the layout of the row.
             childLp.addView(imageView,imgViewParams);
             col++;
         }
-        childLp.setBackgroundColor(Color.WHITE);
+        childLp.setBackgroundColor(Color.WHITE); //Better contrast for the separation lines.
         mainLp.addView(childLp, childLpParams);
         mainLp.setBackgroundResource(0);    //Background image off.
-        mainLp.setBackgroundColor(Color.BLACK); //White backgound for better contrast.
+        mainLp.setBackgroundColor(Color.BLACK); //Black background smooths image downsize on sides.
     }
 }
