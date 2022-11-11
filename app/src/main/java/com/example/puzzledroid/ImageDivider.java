@@ -1,21 +1,20 @@
 package com.example.puzzledroid;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import java.util.ArrayList;
 
-public class imageDivider {
+public class ImageDivider {
     final private String tag = "imageDivider";
     private int rows, columns, high, wide, denominator;
     private Bitmap image;
     private ArrayList<Bitmap> images;
 
     //Constructors
-    public imageDivider(){
+    public ImageDivider(){
     }
-    public imageDivider(int denominator, Bitmap image){
+    public ImageDivider(int denominator, Bitmap image){
         this.image = image;
         this.denominator = denominator;
         validDenominator();

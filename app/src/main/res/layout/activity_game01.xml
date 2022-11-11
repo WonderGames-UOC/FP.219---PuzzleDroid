@@ -20,57 +20,58 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0"></LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/view_buttons"
-        android:layout_width="0dp"
-        android:layout_height="56dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.11"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+    <!-- BUTTONS FOR TESTING
+        <LinearLayout
+            android:id="@+id/view_buttons"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.11"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <Button
-            android:id="@+id/button_x4"
-            style="@style/Widget.MaterialComponents.Button"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="x8" />
+            <Button
+                android:id="@+id/button_x4"
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="x8" />
 
-        <Button
-            android:id="@+id/button_x8"
-            style="@style/Widget.MaterialComponents.Button"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="x18"
-            android:textColor="#FBF7F6"
-            android:visibility="visible" />
+            <Button
+                android:id="@+id/button_x8"
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="x18"
+                android:textColor="#FBF7F6"
+                android:visibility="visible" />
 
-        <Button
-            android:id="@+id/button_x16"
-            style="@style/Widget.MaterialComponents.Button"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="16dp"
-            android:text="x32"
-            android:visibility="visible" />
+            <Button
+                android:id="@+id/button_x16"
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="16dp"
+                android:text="x32"
+                android:visibility="visible" />
 
     </LinearLayout>
-
+-->
     <Chronometer
         android:id="@+id/chronometer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="4dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
         android:background="#CCA60000"
         android:radius="4dp"
         android:textColor="@color/white"
         android:textSize="20sp"
         android:visibility="visible"
-        app:layout_constraintEnd_toEndOf="@+id/view_buttons"
-        app:layout_constraintTop_toBottomOf="@+id/view_buttons" />
-
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

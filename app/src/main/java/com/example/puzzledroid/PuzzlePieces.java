@@ -6,15 +6,15 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class puzzlePieces {
+public class PuzzlePieces {
     final String TAG = "puzzlePieces";
     private ArrayList<puzzlePiece> pieces;
     private puzzlePiece pieceA;
     private puzzlePiece pieceB;
 
     //Constructors
-    public puzzlePieces(){}
-    public puzzlePieces(ArrayList<puzzlePiece> pieces) {
+    public PuzzlePieces(){}
+    public PuzzlePieces(ArrayList<puzzlePiece> pieces) {
         this.pieces = pieces;
     }
     //Getters & Setters
