@@ -1,6 +1,9 @@
 package com.example.puzzledroid;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
@@ -10,6 +13,7 @@ import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -17,7 +21,8 @@ import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import dbHelper.SQLiteHelper;
-
+import android.view.Menu;
+import android.widget.TextView;
 
 
 public class Game01Activity extends AppCompatActivity implements OnClickListener {
@@ -56,6 +61,9 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game01);
+
+        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setCustomView(R.layout.custom_actionbar);
 
 
         //Game sounds (Sounds config directly on the class).
@@ -138,6 +146,28 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
             }
         });
 
+
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_game, menu);
+        TextView txtTimer = new TextView(Game01Activity.this);
+        txtTimer.setText("HOla");
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_settings_game) {
+            exitGame();
+        }
+        return super.onOptionsItemSelected(item);
+        };
+
+    public void exitGame() {
+        Intent i = new Intent(this, MainActivity.class);
+        startActivity(i);
     }
     public void onClick(View v){
         Log.d(TAG, "onClick: ");
