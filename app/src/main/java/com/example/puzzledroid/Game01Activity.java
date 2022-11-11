@@ -2,6 +2,8 @@ package com.example.puzzledroid;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
@@ -78,17 +80,17 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         //Set initial background image
         findViewById(R.id.puzzle_view).setBackground(getDrawable(imgId));
 
-        //creacion de cronometro
-        chronometer = findViewById(R.id.chronometer);
-
         //TODO: Eliminar botones y definir la división de la imagen en base al nivel seleccionado.
         this.puzzleBlocks = genPuzzle(numBlocks, transformToBitmap(getDrawable(imgId)));
         imagePrinter(puzzleBlocks);
-        Timer.resetTimer(chronometer);
-        counter.reset();
-        Timer.startChronometer(chronometer);
         try {
-            ((TextView) findViewById(R.id.counter)).setText(Integer.toString(counter.getMovements()));
+            //creacion de cronometro
+            chronometer = findViewById(R.id.txtabTimer);
+            ((TextView) findViewById(R.id.txtabMoves)).setText("Moves: " + Integer.toString(counter.getMovements()));
+
+            Timer.resetTimer(chronometer);
+            counter.reset();
+            Timer.startChronometer(chronometer);
         }catch (Exception e){
             Log.d(TAG, e.getMessage());
         }
@@ -123,7 +125,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                 this.puzzleBlocks.swapPiecesById(this.selector.getSelBlockA(), this.selector.getSelBlockB());
                 this.counter.add();
                 try {
-                    ((TextView) findViewById(R.id.counter)).setText(Integer.toString(counter.getMovements()));
+                    ((TextView) findViewById(R.id.txtabMoves)).setText("Moves: " + Integer.toString(counter.getMovements()));
                 }catch (Exception e){
                     Log.d(TAG, e.getMessage());
                 }

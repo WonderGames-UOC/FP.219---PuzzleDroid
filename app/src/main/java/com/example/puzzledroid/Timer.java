@@ -26,4 +26,12 @@ public class Timer {
         pauseOffset = 0;
         offsetString = pauseOffset+"";
     }
+
+    public String getOffsetString() {
+        return offsetString;
+    }
+
+    public void setOffsetString(String offsetString) {
+        this.offsetString = offsetString;
+    }
 }

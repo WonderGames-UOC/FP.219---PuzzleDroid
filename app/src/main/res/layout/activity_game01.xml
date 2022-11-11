@@ -62,7 +62,7 @@
         app:layout_constraintVertical_bias="0.0">
 
     </LinearLayout>
-
+<!--
     <Chronometer
         android:id="@+id/chronometer"
         android:layout_width="wrap_content"
@@ -98,5 +98,5 @@
         android:visibility="visible"
         app:layout_constraintEnd_toStartOf="@+id/chronometer"
         app:layout_constraintTop_toTopOf="parent" />
-
+-->
 </androidx.constraintlayout.widget.ConstraintLayout>
