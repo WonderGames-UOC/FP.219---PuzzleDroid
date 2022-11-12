@@ -1,4 +1,4 @@
-package com.example.puzzledroid;
+package gameMechanics;
 
 import android.os.SystemClock;
 import android.util.Log;

@@ -1,29 +1,29 @@
-package com.example.puzzledroid;
+package gameMechanics;
 
 import android.graphics.Bitmap;
 
-public class puzzlePiece {
+public class PuzzlePiece {
     final String tag = "puzzlePiece";
     private int orgX, orgY, currentX, currentY, position;
     private Bitmap image;
 
     //Constructors
-    public puzzlePiece(){}
-    public puzzlePiece(Bitmap image, int pos){
+    public PuzzlePiece(){}
+    public PuzzlePiece(Bitmap image, int pos){
         this.image = image;
         this.position = pos;
     }
-    public puzzlePiece(int orgX, int orgY, Bitmap image){
+    public PuzzlePiece(int orgX, int orgY, Bitmap image){
         this.orgX = orgX;
         this.orgY = orgY;
         this.image = image;
     }
-    public puzzlePiece(int orgX, int orgY, Bitmap image, int currentX, int currentY){
+    public PuzzlePiece(int orgX, int orgY, Bitmap image, int currentX, int currentY){
         this.orgX = orgX;
         this.orgY = orgY;
         this.image = image;
     }
-    public puzzlePiece(int orgX, int orgY, Bitmap image, int currentX, int currentY, int position){
+    public PuzzlePiece(int orgX, int orgY, Bitmap image, int currentX, int currentY, int position){
         this.orgX = orgX;
         this.orgY = orgY;
         this.image = image;

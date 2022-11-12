@@ -9,5 +9,10 @@
         android:orderInCategory="100"
         android:title="Exit"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/reset_game"
+        android:orderInCategory="100"
+        android:title="Reset"
+        app:showAsAction="never" />
 
 </menu>

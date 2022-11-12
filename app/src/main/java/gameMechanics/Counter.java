@@ -1,4 +1,4 @@
-package com.example.puzzledroid;
+package gameMechanics;
 
 public class Counter {
     private int movements;
