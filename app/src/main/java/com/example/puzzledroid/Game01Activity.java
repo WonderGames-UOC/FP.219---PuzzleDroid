@@ -6,10 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.ColorFilter;
-import android.graphics.LightingColorFilter;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.SoundPool;
 import android.os.Bundle;
@@ -25,8 +22,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.sql.Time;
-
 import dbHelper.SQLiteHelper;
 
 
@@ -36,7 +31,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
 
     //Game data
     private Chronometer chronometer;
-    private Timer Timer = new Timer();
+    private final Timer Timer = new Timer();
 
     //¡¡NO BORRAR!! Etiqueta para el depurador.
     private final String TAG = "Game01Activity";
@@ -44,14 +39,15 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
     //Game mechanics variables.
     private PuzzlePieces puzzleBlocks;
     private int rows, columns;
-    private Selector selector = new Selector();
-    private Counter counter = new Counter();
+    private Selector selector;
+    private Counter counter;
     private String userName;
 
     //Sound variables.
     private SoundPool soundPool;
     private Sounds sounds;
 
+    //Print parameters
     DisplayMetrics dp;
 
     @Override
@@ -71,8 +67,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         this.soundPool =  sounds.getSoundPool();
 
 
-        //TODO: Obtener la imagen del nivel seleccionado
-        //Receive data from custom_dialog_menu
+        //Gathers the info selected by the user
         Bundle data = getIntent().getExtras();
         int imgId, numBlocks;
         try{
@@ -87,16 +82,25 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         //Set initial background image
         findViewById(R.id.puzzle_view).setBackground(getDrawable(imgId));
 
+        //Init variables
+        this.selector = new Selector();
+        this.counter = new Counter();
+
         //Starts the puzzle
-        this.puzzleBlocks = genPuzzle(numBlocks, transformToBitmap(getDrawable(imgId)));
+        startPuzzle(numBlocks, getDrawable(imgId));
+    }
+
+    private void startPuzzle(int divisions, Drawable image){
+        Log.d(TAG, "startPuzzle");
+        this.puzzleBlocks = genPuzzle(divisions, transformToBitmap(image));
         imagePrinter(puzzleBlocks);
         try {
             //creacion de cronometro
             chronometer = findViewById(R.id.txtabTimer);
-            ((TextView) findViewById(R.id.txtabMoves)).setText("Moves: " + Integer.toString(counter.getMovements()));
-
+            //Starts the counter and crono.
+            ((TextView) findViewById(R.id.txtabMoves)).setText("Movements: " + Integer.toString(counter.getMovements()));
             Timer.resetTimer(chronometer);
-            counter.reset();
+            this.counter.reset();
             Timer.startChronometer(chronometer);
         }catch (Exception e){
             Log.d(TAG, e.getMessage());
@@ -132,7 +136,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                 this.puzzleBlocks.swapPiecesById(this.selector.getSelBlockA(), this.selector.getSelBlockB());
                 this.counter.add();
                 try {
-                    ((TextView) findViewById(R.id.txtabMoves)).setText("Moves: " + Integer.toString(counter.getMovements()));
+                    ((TextView) findViewById(R.id.txtabMoves)).setText("Movements: " + Integer.toString(counter.getMovements()));
                 }catch (Exception e){
                     Log.d(TAG, e.getMessage());
                 }
@@ -298,7 +302,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         LinearLayout childLp = new LinearLayout(this);
         ImageView imageView;
         int col = 0;
-        for (puzzlePiece block :blocks.getPieces()
+        for (PuzzlePiece block :blocks.getPieces()
         ) {
             if(col == columns){ //New linear layout when last column reach.
                 childLp.setBackgroundColor(Color.WHITE);

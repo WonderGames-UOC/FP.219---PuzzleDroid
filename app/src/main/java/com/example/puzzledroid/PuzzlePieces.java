@@ -8,29 +8,29 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class PuzzlePieces {
     final String TAG = "puzzlePieces";
-    private ArrayList<puzzlePiece> pieces;
-    private puzzlePiece pieceA;
-    private puzzlePiece pieceB;
+    private ArrayList<PuzzlePiece> pieces;
+    private PuzzlePiece pieceA;
+    private PuzzlePiece pieceB;
 
     //Constructors
     public PuzzlePieces(){}
-    public PuzzlePieces(ArrayList<puzzlePiece> pieces) {
+    public PuzzlePieces(ArrayList<PuzzlePiece> pieces) {
         this.pieces = pieces;
     }
     //Getters & Setters
-    public puzzlePiece getPieceA() {
+    public PuzzlePiece getPieceA() {
         return pieceA;
     }
-    public void setPieceA(puzzlePiece pieceA) {
+    public void setPieceA(PuzzlePiece pieceA) {
         this.pieceA = pieceA;
     }
-    public puzzlePiece getPieceB() {
+    public PuzzlePiece getPieceB() {
         return pieceB;
     }
-    public void setPieceB(puzzlePiece pieceB) {
+    public void setPieceB(PuzzlePiece pieceB) {
         this.pieceB = pieceB;
     }
-    public ArrayList<puzzlePiece> getPieces(){
+    public ArrayList<PuzzlePiece> getPieces(){
         return this.pieces;
     }
 
@@ -42,16 +42,16 @@ public class PuzzlePieces {
     public int genPiecesCollection(ArrayList<Bitmap> images){
         Log.d(TAG, "genPiecesCollection");
         try{
-            this.pieces = new ArrayList<puzzlePiece>();
+            this.pieces = new ArrayList<PuzzlePiece>();
             if(images.size() < 2){
                 return 1;
             }
-            puzzlePiece piece = new puzzlePiece();
+            PuzzlePiece piece = new PuzzlePiece();
             int pos = 0;
             for(Bitmap img:images
             ){
                 //puzzlePiece(int orgX, int orgY, Bitmap image, int currentX, int currentY, int position){}
-                piece = new puzzlePiece(img, pos);
+                piece = new PuzzlePiece(img, pos);
                 this.pieces.add(piece);
                 pos++;
             }
@@ -67,14 +67,14 @@ public class PuzzlePieces {
      * @param pos: index position on the collection of the puzzlePiece.
      * @return a puzzlePiece of the pieces collection of position pos or an empty puzzlePiece if there is an error.
      */
-    public puzzlePiece getPieceByPos(int pos){
+    public PuzzlePiece getPieceByPos(int pos){
         Log.d(TAG, "getPieceByPos");
         try {
             pieces.get(pos);
         }catch (Exception e){
             Log.d(TAG, e.getMessage());
         }
-        return new puzzlePiece();
+        return new PuzzlePiece();
     }
 
     /**
@@ -138,7 +138,7 @@ public class PuzzlePieces {
         Log.d(TAG,"checkresult");
         try{
             int pos = 0;
-            for(puzzlePiece piece:pieces
+            for(PuzzlePiece piece:pieces
             ){
                 if(piece.getPosition() != pos){
                     return 0;
