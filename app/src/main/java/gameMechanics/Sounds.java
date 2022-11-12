@@ -1,9 +1,11 @@
-package com.example.puzzledroid;
+package gameMechanics;
 
 import android.content.Context;
 import android.media.AudioAttributes;
 import android.media.SoundPool;
 import android.util.Log;
+
+import com.example.puzzledroid.R;
 
 //TODO: Sound effects greetings
 //Sound Effect from <a href="https://pixabay.com/sound-effects/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=music&amp;utm_content=92097">Pixabay</a>

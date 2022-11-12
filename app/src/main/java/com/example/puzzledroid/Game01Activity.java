@@ -23,7 +23,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import dbHelper.SQLiteHelper;
-
+import gameMechanics.Counter;
+import gameMechanics.ImageDivider;
+import gameMechanics.PuzzlePiece;
+import gameMechanics.PuzzlePieces;
+import gameMechanics.Selector;
+import gameMechanics.Sounds;
+import gameMechanics.Timer;
 
 
 public class Game01Activity extends AppCompatActivity implements OnClickListener {
@@ -31,7 +37,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
 
     //Game data
     private Chronometer chronometer;
-    private final Timer Timer = new Timer();
+    private final gameMechanics.Timer Timer = new Timer();
 
     //¡¡NO BORRAR!! Etiqueta para el depurador.
     private final String TAG = "Game01Activity";
