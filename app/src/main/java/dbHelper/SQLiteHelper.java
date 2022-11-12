@@ -26,7 +26,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 "Date text, " +
                 "Time text, " +
                 "Pic text, " +
-                "PuzzRes integer);";
+                "PuzzRes integer," +
+                "Moves integer);";
 
         sqLiteDatabase.execSQL(query);
 
