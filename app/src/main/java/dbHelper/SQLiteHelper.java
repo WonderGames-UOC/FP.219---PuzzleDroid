@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -14,13 +15,13 @@ import java.util.List;
 import util.HighScore;
 
 public class SQLiteHelper extends SQLiteOpenHelper {
+    private final String TAG = "SQLiteHelper";
     public SQLiteHelper(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
     }
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-
         String query = "CREATE TABLE HighScores (" +
                 "_ID integer primary key autoincrement, " +
                 "User text, " +
@@ -29,14 +30,31 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 "Pic text, " +
                 "PuzzRes integer," +
                 "Moves integer);";
-
         sqLiteDatabase.execSQL(query);
-
     }
-
-    @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-
+    private void updateDB(SQLiteDatabase sqLiteDatabase){
+        Log.d(TAG, "updateDB");
+        String dropQuery = "DROP TABLE HighScores";
+        String query = "CREATE TABLE HighScores (" +
+                "_ID integer primary key autoincrement, " +
+                "User text, " +
+                "Date text, " +
+                "Time text, " +
+                "Pic text, " +
+                "PuzzRes integer," +
+                "Moves integer);";
+        try {
+            sqLiteDatabase.execSQL(dropQuery);
+            sqLiteDatabase.execSQL(query);
+        }catch (Exception e){
+            Log.d(TAG, e.getMessage() + "\r\n" + e.getCause());
+        }
+    }
+    public void onDowngrade(SQLiteDatabase db, int a, int b){
+        Log.d(TAG, "onDowngrade");
+    }
+    public void onUpgrade(SQLiteDatabase db, int a, int b){
+        Log.d(TAG, "onUpgrade");
     }
 
     // Método para la apertura de la BD
@@ -58,7 +76,14 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         content.put("Pic", highScore.getPic());
         content.put("PuzzRes", highScore.getPuzzres());
         content.put("Moves", highScore.getMoves());
-        this.getWritableDatabase().insert("HighScores", null, content);
+        try{
+            //this.getWritableDatabase().insert("HighScores", null, content);
+            this.getWritableDatabase().insertOrThrow("HighScores", null, content);
+        }catch (Exception e){
+            Log.d(TAG, e.getMessage() + "\r\n" + e.getCause());
+            updateDB(this.getWritableDatabase());
+            insert_HS_Row(highScore);
+        }
         this.close();
     }
 
