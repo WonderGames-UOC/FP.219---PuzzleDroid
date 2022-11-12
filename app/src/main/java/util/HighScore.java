@@ -3,40 +3,40 @@ package util;
 
 
 public class HighScore {
-    private int _ID;
+    private String _ID;
     private String user;
     private String date;
     private String time;
     private String pic;
     private String puzzres;
+    private String moves;
 
 
     // Constructor para la instanciación de objetos HACIA la base de datos.
-    public HighScore(String user, String date, String time, String pic, String puzzres) {
-        this._ID = 0;
+    public HighScore(String user, String date, String time, String pic, String puzzres, String moves) {
+        this._ID = null;
         this.user = user;
         this.date = date;
         this.time = time;
         this.pic = pic;
         this.puzzres = puzzres;
+        this.moves = moves;
     }
     // Constructor para instaciación de objetos DESDE la base de datos
-    public HighScore(int _ID, String user, String date, String time, String pic, String puzzres) {
-        this._ID = _ID;
+    public HighScore(String _ID, String user, String date, String time, String pic, String puzzres, String moves) {
+        this._ID = null;
         this.user = user;
         this.date = date;
         this.time = time;
         this.pic = pic;
         this.puzzres = puzzres;
+        this.moves = moves;
     }
 
-    public int get_ID() {
+    public String get_ID() {
         return _ID;
     }
 
-    public void set_ID(int _ID) {
-        this._ID = _ID;
-    }
 
     public String getUser() {
         return user;
@@ -78,6 +78,13 @@ public class HighScore {
         this.puzzres = puzzres;
     }
 
+    public String getMoves() {
+        return moves;
+    }
+
+    public void setMoves(String moves) {
+        this.moves = moves;
+    }
 
     @Override
     public String toString() {

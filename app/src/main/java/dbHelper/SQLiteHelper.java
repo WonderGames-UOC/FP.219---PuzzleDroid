@@ -55,6 +55,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         content.put("Time", highScore.getTime());
         content.put("Pic", highScore.getPic());
         content.put("PuzzRes", highScore.getPuzzres());
+        content.put("Moves", highScore.getMoves());
         this.getWritableDatabase().insert("HighScores", null, content);
         this.close();
     }
@@ -65,12 +66,13 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         List <HighScore> hs = new ArrayList<>();
         if (cursor.moveToFirst()){
             do {
-                hs.add(new HighScore(cursor.getInt(0), // _ID
+                hs.add(new HighScore(cursor.getString(0), // _ID
                         cursor.getString(1), // user
                         cursor.getString(2), // date
                         cursor.getString(3), // time
                         cursor.getString(4), // pic
-                        cursor.getString(5)));  // puzzres
+                        cursor.getString(5),  // puzzres
+                        cursor.getString(6))); // moves
             }while (cursor.moveToNext());
         }
         cursor.close();

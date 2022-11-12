@@ -24,6 +24,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
 import dbHelper.SQLiteHelper;
 import gameMechanics.Counter;
 import gameMechanics.ImageDivider;
@@ -32,6 +37,7 @@ import gameMechanics.PuzzlePieces;
 import gameMechanics.Selector;
 import gameMechanics.Sounds;
 import gameMechanics.Timer;
+import util.HighScore;
 
 
 public class Game01Activity extends AppCompatActivity implements OnClickListener {
@@ -165,6 +171,17 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
 
                     Log.d(TAG, Timer.offsetString);
                     //INSERT TIME AND COUNTER IN DB
+
+                    HighScore highScore = new HighScore(userName,
+                            getDate(),
+                            miliReturn(Integer.parseInt(String.valueOf(Timer.offsetString))),
+                            String.valueOf(imgId),
+                            String.valueOf(numBlocks),
+                            String.valueOf(counter.getMovements()));
+                    sqLiteHelper.insert_HS_Row(highScore);
+
+
+
                 }
                 this.selector.resetSelection();
                 break;
@@ -398,5 +415,21 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
             }
         }
         return id;
+    }
+
+    public String getDate(){
+        String ret;
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");
+        ret = String.valueOf(dateFormat.format(calendar.getTime()));
+        return ret;
+
+    }
+
+    public String miliReturn(int millis){
+        String hms = String.format("%02d:%02d",
+                TimeUnit.MILLISECONDS.toMinutes(millis) % TimeUnit.HOURS.toMinutes(1),
+                TimeUnit.MILLISECONDS.toSeconds(millis) % TimeUnit.MINUTES.toSeconds(1));
+        return hms;
     }
 }
