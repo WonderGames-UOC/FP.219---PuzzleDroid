@@ -58,7 +58,7 @@ public class custom_dialog_menu {
             @Override
             public void onClick(View view) {
                 if (userNameCheck(userName, context)) {
-                    intrfc.Result(userName.getText().toString(), 64, R.drawable.level3);
+                    intrfc.Result(userName.getText().toString(), 128, R.drawable.level3);
                     dialog.dismiss();
                 }
             }

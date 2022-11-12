@@ -153,6 +153,19 @@ public class PuzzlePieces {
     }
 
     /**
+     * Returns true if the piece is in the correct pos.
+     * @param id
+     * @return
+     */
+    public boolean checkPiece(int id){
+        int pos = getPieceIndexById(id);
+        if(pos == id){
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Randomize the puzzlePieces order of the pieces collection.
      */
     public void shuffle(){

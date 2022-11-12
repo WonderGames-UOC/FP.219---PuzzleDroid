@@ -6,7 +6,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.LightingColorFilter;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.SoundPool;
 import android.os.Bundle;
@@ -305,6 +308,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
             }
             //Insert in the imageView the image of the block and set the padding.
             imageView = new ImageView(this);
+            imageView.setBackgroundColor(Color.RED);
             imageView.setTag(block.getPosition());
             imageView.setImageBitmap(block.getImage());
             if(col == 0){
@@ -313,6 +317,11 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                 imageView.setPadding(0,0,size,size); //Padding on the right and bottom of each block.
             }
             imageView.setOnClickListener(this);
+            if(blocks.checkPiece(block.getPosition())){
+                //imageView.setColorFilter( new LightingColorFilter(3,2));
+                imageView.setBackgroundColor(Color.TRANSPARENT);
+            }
+
 
             //Insert the imageView in the layout of the row.
             childLp.addView(imageView,imgViewParams);
