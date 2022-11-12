@@ -40,12 +40,12 @@ public class HighScores extends AppCompatActivity {
 
         if (highScores.size() > 0){
             for (HighScore hs:highScores){
-                int _ID = hs.get_ID();
+                //String _ID = hs.get_ID().toString();
                 String user = hs.getUser();
                 String date = hs.getDate();
                 String time = hs.getTime();
                 String pic = hs.getPic();
-                String puzzres = hs.getPuzzres();
+                String puzzres = String.valueOf(hs.getPuzzres());
 
                 String textViewContent = time + " | " + user + " | " + date + " | " + puzzres;
 
