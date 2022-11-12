@@ -4,12 +4,14 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.SoundPool;
 import android.os.Bundle;
+import android.text.Layout;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -28,6 +30,13 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import dbHelper.SQLiteHelper;
+import gameMechanics.Counter;
+import gameMechanics.ImageDivider;
+import gameMechanics.PuzzlePiece;
+import gameMechanics.PuzzlePieces;
+import gameMechanics.Selector;
+import gameMechanics.Sounds;
+import gameMechanics.Timer;
 import util.HighScore;
 
 
@@ -36,7 +45,8 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
 
     //Game data
     private Chronometer chronometer;
-    private Timer Timer = new Timer();
+    private final gameMechanics.Timer Timer = new Timer();
+    int imgId, numBlocks;
 
     //¡¡NO BORRAR!! Etiqueta para el depurador.
     private final String TAG = "Game01Activity";
@@ -44,21 +54,24 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
     //Game mechanics variables.
     private PuzzlePieces puzzleBlocks;
     private int rows, columns;
-    private Selector selector = new Selector();
-    private Counter counter = new Counter();
+    private Selector selector;
+    private Counter counter;
     private String userName;
-    int imgId, numBlocks;
 
     //Sound variables.
     private SoundPool soundPool;
     private Sounds sounds;
 
+    //Print parameters
     DisplayMetrics dp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //¡¡NO BORRAR!! Registro para el depurador.
         Log.d(TAG, "onCreate");
+
+        //https://stackoverflow.com/questions/2730855/prevent-screen-rotation-on-android
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT); //Cancel screen rotation.
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game01);
@@ -72,12 +85,11 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         this.soundPool =  sounds.getSoundPool();
 
 
-        //TODO: Obtener la imagen del nivel seleccionado
-        //Receive data from custom_dialog_menu
+        //Gathers the info selected by the user
         Bundle data = getIntent().getExtras();
         try{
-            imgId = (int) data.getInt("imgId");
-            numBlocks = (int)data.getInt("puzzres");
+            this.imgId = (int) data.getInt("imgId");
+            this.numBlocks = (int)data.getInt("puzzres");
             userName = data.getString("userName");
         }catch (Exception e){
             imgId = R.drawable.level1;
@@ -87,16 +99,25 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         //Set initial background image
         findViewById(R.id.puzzle_view).setBackground(getDrawable(imgId));
 
+        //Init variables
+        this.selector = new Selector();
+        this.counter = new Counter();
+
         //Starts the puzzle
-        this.puzzleBlocks = genPuzzle(numBlocks, transformToBitmap(getDrawable(imgId)));
+        startPuzzle(numBlocks, getDrawable(imgId));
+    }
+
+    private void startPuzzle(int divisions, Drawable image){
+        Log.d(TAG, "startPuzzle");
+        this.puzzleBlocks = genPuzzle(divisions, transformToBitmap(image));
         imagePrinter(puzzleBlocks);
         try {
             //creacion de cronometro
             chronometer = findViewById(R.id.txtabTimer);
-            ((TextView) findViewById(R.id.txtabMoves)).setText("Moves: " + Integer.toString(counter.getMovements()));
-
+            //Starts the counter and crono.
+            ((TextView) findViewById(R.id.txtabMoves)).setText("Movements: " + Integer.toString(counter.getMovements()));
             Timer.resetTimer(chronometer);
-            counter.reset();
+            this.counter.reset();
             Timer.startChronometer(chronometer);
         }catch (Exception e){
             Log.d(TAG, e.getMessage());
@@ -132,31 +153,30 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                 this.puzzleBlocks.swapPiecesById(this.selector.getSelBlockA(), this.selector.getSelBlockB());
                 this.counter.add();
                 try {
-                    ((TextView) findViewById(R.id.txtabMoves)).setText("Moves: " + Integer.toString(counter.getMovements()));
+                    ((TextView) findViewById(R.id.txtabMoves)).setText("Movements: " + Integer.toString(counter.getMovements()));
                 }catch (Exception e){
                     Log.d(TAG, e.getMessage());
                 }
                 this.soundPool.play(this.sounds.getSwapSound(), 1, 1, 1, 0, (float) 1.5 );
-                //Print the new order of blocks and reset the selector variable.
-                imagePrinter(puzzleBlocks);
+
+                //Print the new order of blocks and reset the selector variable. Use light print for better performance.
+                //imagePrinter(puzzleBlocks);
+                lightPrint(this.selector.getSelBlockA(), this.selector.getSelBlockB());
+
+                //Victoty condition check-
                 if(this.puzzleBlocks.checkResult() > 0){
                     this.soundPool.play(this.sounds.getVictorySound(),1, 1, 3, 0, (float) 1.5 );
                     Timer.pauseChronometer(chronometer);
-                    //para acceder al tiempo hacer Timer.offsetString, aparecera en milisegundos
-
                     Log.d(TAG, Timer.offsetString);
-                    //INSERT TIME AND COUNTER IN DB
 
+                    //INSERT TIME AND COUNTER IN DB
                     HighScore highScore = new HighScore(userName,
                             getDate(),
                             miliReturn(Integer.parseInt(String.valueOf(Timer.offsetString))),
-                            String.valueOf(imgId),
-                            String.valueOf(numBlocks),
+                            String.valueOf(this.imgId),
+                            String.valueOf(this.numBlocks),
                             String.valueOf(counter.getMovements()));
                     sqLiteHelper.insert_HS_Row(highScore);
-
-
-
                 }
                 this.selector.resetSelection();
                 break;
@@ -174,18 +194,39 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings_game) {
-            exitGame();
+        switch (id){
+            case R.id.action_settings_game:{
+                exitGame();
+                break;
+            }
+            case R.id.reset_game:{
+                resetGame();
+                break;
+            }
+            default:{
+                break;
+            }
         }
-
         return super.onOptionsItemSelected(item);
     }
+
     // Método para lanzar la pantalla de ayuda.
     private void exitGame() {
         Intent i = new Intent(this, MainActivity.class);
         startActivity(i);
     }
+
+    /**
+     * Restarts the current puzzle game
+     */
+    private void resetGame(){
+        this.puzzleBlocks.shuffle();
+        Timer.resetTimer(this.chronometer);
+        counter.reset();
+        imagePrinter(this.puzzleBlocks);
+        Timer.startChronometer(this.chronometer);
+    }
+
 
 
     //TODO: create class to work with any kind of image or drawable
@@ -236,7 +277,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         return puzzleBlocks;
     }
 
-    //TODO: move this function to a class.
+    //TODO: move these functions to a class. All this need a huge refactor.
     private void imagePrinter(PuzzlePieces blocks){
         Log.d(TAG, "imagePrinter");
 
@@ -288,7 +329,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         LinearLayout childLp = new LinearLayout(this);
         ImageView imageView;
         int col = 0;
-        for (puzzlePiece block :blocks.getPieces()
+        for (PuzzlePiece block :blocks.getPieces()
         ) {
             if(col == columns){ //New linear layout when last column reach.
                 childLp.setBackgroundColor(Color.WHITE);
@@ -298,6 +339,8 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
             }
             //Insert in the imageView the image of the block and set the padding.
             imageView = new ImageView(this);
+            imageView.setId(View.generateViewId()); //Autogenerated unique ID. (API 17). https://stackoverflow.com/questions/8460680/how-can-i-assign-an-id-to-a-view-programmatically
+            imageView.setBackgroundColor(Color.RED);
             imageView.setTag(block.getPosition());
             imageView.setImageBitmap(block.getImage());
             if(col == 0){
@@ -306,6 +349,11 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                 imageView.setPadding(0,0,size,size); //Padding on the right and bottom of each block.
             }
             imageView.setOnClickListener(this);
+            if(blocks.checkPiece(block.getPosition())){
+                //imageView.setColorFilter( new LightingColorFilter(3,2));
+                imageView.setBackgroundColor(Color.TRANSPARENT);
+            }
+
 
             //Insert the imageView in the layout of the row.
             childLp.addView(imageView,imgViewParams);
@@ -315,6 +363,53 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         mainLp.addView(childLp, childLpParams);
         mainLp.setBackgroundResource(0);    //Background image off.
         mainLp.setBackgroundColor(Color.GRAY); //Black background smooths image downsize on sides.
+    }
+    private void lightPrint(int posA, int posB){
+        int viewA, viewB; //stores the views ID
+
+        //Instantiate the swapped puzzle pieces.
+        PuzzlePiece pieceA = this.puzzleBlocks.getPieceA();
+        PuzzlePiece pieceB = this.puzzleBlocks.getPieceB();
+
+        //Obtain the view by its tag
+        viewA = getImageViewByTag(String.valueOf(pieceA.getPosition()));
+        viewB = getImageViewByTag(String.valueOf(pieceB.getPosition()));
+
+        //Substitute pieceA values with those of pieceB
+        ImageView vA = findViewById(viewA);
+        vA.setImageBitmap(pieceB.getImage());
+        vA.setTag(pieceB.getPosition());
+        vA.setBackgroundColor(Color.RED);
+
+        //Substitute pieceB values with those of pieceA
+        ImageView vB = findViewById(viewB);
+        vB.setImageBitmap(pieceA.getImage());
+        vB.setTag(pieceA.getPosition());
+        vB.setBackgroundColor(Color.RED);
+
+        //SetBackground color if piece is in the correct position.
+        if(puzzleBlocks.checkPiece(posB)){
+            vA.setBackgroundColor(Color.WHITE);
+        }
+        if(puzzleBlocks.checkPiece(posA)){
+            vB.setBackgroundColor(Color.WHITE);
+        }
+    }
+    private int getImageViewByTag(String tag){
+        int id = -1;
+        LinearLayout mainLp = (LinearLayout) findViewById(R.id.puzzle_view);
+        for(int i = 0; i < mainLp.getChildCount(); i++){
+            LinearLayout rowLayout = (LinearLayout) mainLp.getChildAt(i);
+            for(int j = 0; j < rowLayout.getChildCount();j++){
+                View v = rowLayout.getChildAt(j);
+                String vTag = v.getTag().toString();
+                if(vTag == tag) {
+                    id = v.getId();
+                    return id;
+                }
+            }
+        }
+        return id;
     }
 
     public String getDate(){
