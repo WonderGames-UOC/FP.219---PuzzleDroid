@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 import dbHelper.SQLiteHelper;
@@ -409,13 +410,13 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
             for(int j = 0; j < rowLayout.getChildCount();j++){
                 View v = rowLayout.getChildAt(j);
                 String vTag = v.getTag().toString();
-                if(vTag == tag) {
+                if(vTag.equals(tag)) {
                     id = v.getId();
                     return id;
                 }
             }
         }
-        return id;
+        return id; //TODO Error control from this return.
     }
 
     public String getDate(){
