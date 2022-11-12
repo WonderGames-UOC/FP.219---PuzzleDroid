@@ -20,6 +20,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
+
         String query = "CREATE TABLE HighScores (" +
                 "_ID integer primary key autoincrement, " +
                 "User text, " +

@@ -170,11 +170,19 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                     Log.d(TAG, Timer.offsetString);
 
                     //INSERT TIME AND COUNTER IN DB
+                    String level = "";
+                    switch (this.numBlocks){
+                        case 24: level = "Easy";break;
+                        case 32: level = "Medium";break;
+                        case 128: level = "Hard";break;
+                        default:
+                            level = "Nightmare";break;
+                    }
                     HighScore highScore = new HighScore(userName,
                             getDate(),
                             miliReturn(Integer.parseInt(String.valueOf(Timer.offsetString))),
                             String.valueOf(this.imgId),
-                            String.valueOf(this.numBlocks),
+                            String.valueOf(level),
                             String.valueOf(counter.getMovements()));
                     sqLiteHelper.insert_HS_Row(highScore);
                 }
