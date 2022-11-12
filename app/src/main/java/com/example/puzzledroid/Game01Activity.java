@@ -46,6 +46,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
     //Game data
     private Chronometer chronometer;
     private final gameMechanics.Timer Timer = new Timer();
+    int imgId, numBlocks;
 
     //¡¡NO BORRAR!! Etiqueta para el depurador.
     private final String TAG = "Game01Activity";
@@ -86,10 +87,9 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
 
         //Gathers the info selected by the user
         Bundle data = getIntent().getExtras();
-        int imgId, numBlocks;
         try{
-            imgId = (int) data.getInt("imgId");
-            numBlocks = (int)data.getInt("puzzres");
+            this.imgId = (int) data.getInt("imgId");
+            this.numBlocks = (int)data.getInt("puzzres");
             userName = data.getString("userName");
         }catch (Exception e){
             imgId = R.drawable.level1;
@@ -167,21 +167,16 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                 if(this.puzzleBlocks.checkResult() > 0){
                     this.soundPool.play(this.sounds.getVictorySound(),1, 1, 3, 0, (float) 1.5 );
                     Timer.pauseChronometer(chronometer);
-                    //para acceder al tiempo hacer Timer.offsetString, aparecera en milisegundos
-
                     Log.d(TAG, Timer.offsetString);
-                    //INSERT TIME AND COUNTER IN DB
 
+                    //INSERT TIME AND COUNTER IN DB
                     HighScore highScore = new HighScore(userName,
                             getDate(),
                             miliReturn(Integer.parseInt(String.valueOf(Timer.offsetString))),
-                            String.valueOf(imgId),
-                            String.valueOf(numBlocks),
+                            String.valueOf(this.imgId),
+                            String.valueOf(this.numBlocks),
                             String.valueOf(counter.getMovements()));
                     sqLiteHelper.insert_HS_Row(highScore);
-
-
-
                 }
                 this.selector.resetSelection();
                 break;
