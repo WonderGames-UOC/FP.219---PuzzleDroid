@@ -6,9 +6,16 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 
 public class custom_dialog_menu {
@@ -20,6 +27,10 @@ public class custom_dialog_menu {
 
     private final returnDialogMenu intrfc;
     public Intent intent = new Intent();
+
+
+
+
     public custom_dialog_menu(Context context, returnDialogMenu actividad) {
 
         intrfc = actividad;
@@ -28,56 +39,88 @@ public class custom_dialog_menu {
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
         dialog.setContentView(R.layout.custom_dialog_menu);
 
-
         final TextView userName = (TextView) dialog.findViewById(R.id.txt_UserEnter);
-        ImageView lvl1 = (ImageView) dialog.findViewById(R.id.imageView_Lvl1);
-        ImageView lvl2 = (ImageView) dialog.findViewById(R.id.imageView_Lvl2);
-        ImageView lvl3 = (ImageView) dialog.findViewById(R.id.imageView_Lvl3);
         ((TextView) dialog.findViewById(R.id.txt_UserEnter)).setTextColor(Color.BLACK); //Text color for white background.
 
-        lvl1.setOnClickListener(new View.OnClickListener() {
+
+
+        // Botones selección de imágenes
+        Button imgDefault = (Button) dialog.findViewById(R.id.btnDefaultSelect);
+        Button imgCamera = (Button) dialog.findViewById(R.id.btnCameraSelect);
+        Button imgLibrary = (Button) dialog.findViewById(R.id.btnLibrarySelect);
+
+        imgDefault.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                int puzzres = radioButtonCheck(dialog);
                 if (userNameCheck(userName, context)) {
-                    intrfc.Result(userName.getText().toString(), 24, R.drawable.level1);
+                    intrfc.Result(userName.getText().toString(), puzzres, imageRandomReturn());
                     dialog.dismiss();
                 }
             }
         });
-        lvl2.setOnClickListener(new View.OnClickListener() {
+        imgCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                int puzzres = radioButtonCheck(dialog);
                 if (userNameCheck(userName, context)) {
-                    intrfc.Result(userName.getText().toString(), 32, R.drawable.level2);
+                    intrfc.Result(userName.getText().toString(), puzzres, R.drawable.level2);
                     dialog.dismiss();
                 }
 
             }
         });
-        lvl3.setOnClickListener(new View.OnClickListener() {
+        imgLibrary.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                int puzzres = radioButtonCheck(dialog);
                 if (userNameCheck(userName, context)) {
-                    intrfc.Result(userName.getText().toString(), 128, R.drawable.level3);
+                    intrfc.Result(userName.getText().toString(), puzzres, R.drawable.level3);
                     dialog.dismiss();
                 }
             }
         });
-
-
         dialog.show();
-
-
     }
-
+    // Función de comprobación del nombre de ususario.
     public boolean userNameCheck(TextView userName, Context context) {
         if (userName.getText().toString().equals("")) {
-            Toast.makeText(context, "Please, insert a valid user name", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Please, enter a valid user name", Toast.LENGTH_SHORT).show();
             return false;
         } else {
             return true;
         }
     }
+
+    // Función que devuelve la resolución del puzzle según los radio buttons.
+    public int radioButtonCheck (Dialog dialog){
+        int puzzres = 18;
+        // Botones seleccción de Dificultad
+        RadioButton radioButtonMedium = (RadioButton) dialog.findViewById(R.id.rbtnMediu);
+        RadioButton radioButtonHard = (RadioButton) dialog.findViewById(R.id.rbtnHard);
+
+        if (radioButtonMedium.isChecked()) {
+            puzzres = 32;
+        }
+
+        if (radioButtonHard.isChecked()) {
+            puzzres = 128;
+        }
+
+        return puzzres;
+    }
+
+    // Función  que devuelve una imagen aleatoria de las propuestas inicialmente para el juego.
+    public int imageRandomReturn(){
+        List<Integer> image = Arrays.asList(R.drawable.level1, R.drawable.level2, R.drawable.level3);
+        Random random = new Random();
+
+        return image.get(random.nextInt(image.size()));
+    }
+
+
+
+
 
 }
 
