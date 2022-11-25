@@ -1,15 +1,18 @@
 package com.example.puzzledroid;
 
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.MediaScannerConnection;
 import android.media.SoundPool;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -21,10 +24,19 @@ import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
+
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
+
 import dbHelper.SQLiteHelper;
 import gameMechanics.Counter;
 import gameMechanics.ImageDivider;
@@ -64,6 +76,15 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
     //Print parameters
     DisplayMetrics dp;
 
+    //CAMERA & GALLERY
+    private  final int TAKE_PICTURE = 1;
+    private  final int MEDIA_PICTURE = 0;
+
+    private String currentPhotoPath;
+    private Uri photoURI;
+    private Bitmap bitmap;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //¡¡NO BORRAR!! Registro para el depurador.
@@ -84,26 +105,42 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         this.soundPool =  sounds.getSoundPool();
 
 
-        //Gathers the info selected by the user
+        //Gets the info selected by the user and stores it for the game start
         Bundle data = getIntent().getExtras();
         try{
             this.imgId = (int) data.getInt("imgId");
             this.numBlocks = (int)data.getInt("puzzres");
             userName = data.getString("userName");
-        }catch (Exception e){
+            Log.i(TAG, "User selection: " + String.valueOf(imgId) + " / " + String.valueOf(numBlocks) + " / " + userName );
+            switch (numBlocks){
+                case 128:
+                    Log.d(TAG, "Camera");
+                    //Camera
+                default:
+                    //Set initial background image
+                    findViewById(R.id.puzzle_view).setBackground(getDrawable(imgId));
+
+                    //Init variables
+                    this.selector = new Selector();
+                    this.counter = new Counter();
+
+                    //Starts the puzzle
+                    startPuzzle(numBlocks, getDrawable(imgId));
+                    break;
+            }
+        }catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+
             imgId = R.drawable.level1;
             numBlocks = 4;
+            //Set initial background image
+            findViewById(R.id.puzzle_view).setBackground(getDrawable(imgId));
+            //Init variables
+            this.selector = new Selector();
+            this.counter = new Counter();
+            //Starts the puzzle
+            startPuzzle(numBlocks, getDrawable(imgId));
         }
-
-        //Set initial background image
-        findViewById(R.id.puzzle_view).setBackground(getDrawable(imgId));
-
-        //Init variables
-        this.selector = new Selector();
-        this.counter = new Counter();
-
-        //Starts the puzzle
-        startPuzzle(numBlocks, getDrawable(imgId));
     }
 
     private void startPuzzle(int divisions, Drawable image){
@@ -119,7 +156,23 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
             this.counter.reset();
             Timer.startChronometer(chronometer);
         }catch (Exception e){
-            Log.d(TAG, e.getMessage());
+            Log.e(TAG, e.getMessage());
+        }
+    }
+    private void startPuzzle(int divisions, Bitmap image){
+        Log.d(TAG, "startPuzzle");
+        this.puzzleBlocks = genPuzzle(divisions, image);
+        imagePrinter(puzzleBlocks);
+        try {
+            //creacion de cronometro
+            chronometer = findViewById(R.id.txtabTimer);
+            //Starts the counter and crono.
+            ((TextView) findViewById(R.id.txtabMoves)).setText("Movements: " + Integer.toString(counter.getMovements()));
+            Timer.resetTimer(chronometer);
+            this.counter.reset();
+            Timer.startChronometer(chronometer);
+        }catch (Exception e){
+            Log.e(TAG, e.getMessage());
         }
     }
 
@@ -154,7 +207,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                 try {
                     ((TextView) findViewById(R.id.txtabMoves)).setText("Movements: " + Integer.toString(counter.getMovements()));
                 }catch (Exception e){
-                    Log.d(TAG, e.getMessage());
+                    Log.e(TAG, e.getMessage());
                 }
                 this.soundPool.play(this.sounds.getSwapSound(), 1, 1, 1, 0, (float) 1.5 );
 
@@ -248,7 +301,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
             Bitmap bm = bmDrawable.getBitmap();
             return  bm;
         }catch (Exception e){
-            Log.d(TAG,e.getMessage());
+            Log.e(TAG,e.getMessage());
         }
         return null;
     }
@@ -433,5 +486,94 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                 TimeUnit.MILLISECONDS.toMinutes(millis) % TimeUnit.HOURS.toMinutes(1),
                 TimeUnit.MILLISECONDS.toSeconds(millis) % TimeUnit.MINUTES.toSeconds(1));
         return hms;
+    }
+
+    /****************************************************
+     *
+     * CAMERA & GALLERY RANDOM
+     *
+     ****************************************************/
+    /*
+     * This function creates a unique file name and sets a file path for the camera image.
+     * FILE ACCESS PERMISSIONS are defined in the AndroidManifest.xml
+     * FILE path DIRECTORY_PICTURES is defined in @XML/file_paths.xml
+     */
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmSS").format(new Date());
+        String imageFileName = "JPEG" + timeStamp + "_";
+        //File storageDir = getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES); //Directory of the app.
+        File image = File.createTempFile(
+                imageFileName,
+                ".jpg",
+                storageDir
+        );
+        currentPhotoPath = image.getAbsolutePath();
+        return  image;
+    }
+    /*
+     *This fn prepares and stats the camera intent.
+     */
+    private void cameraIntent(){
+        //Set the intent for the camera "MediaStore.ACTION_IMAGE_CAPTURE"
+        Intent launchCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        //Create media file to store the image get with the camera.
+        if(launchCamera.resolveActivity(getPackageManager()) != null){
+            File photoFile = null;
+            try{
+                photoFile = createImageFile();
+            }catch (IOException e){
+                Log.e(TAG, e.getMessage());
+            }
+            if(photoFile != null){
+                //Get and store the URI of the image file.
+                photoURI = FileProvider.getUriForFile(this, "WonderGames.fileprovider",photoFile);
+                //I pass the URI of the file to the intent to allow the camera store the picture there.
+                launchCamera.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                //Callback - start the intent and wait for the result => onActivityResult- TAKE_PICTURE (INT) is the ID.
+                startActivityForResult(launchCamera, TAKE_PICTURE);
+            }
+        }
+    }
+    /*
+     * This method receives the result of the intent launched by startActivityForResult.
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case TAKE_PICTURE:
+                    try {
+                        MediaScannerConnection.scanFile(this, new String[]{currentPhotoPath}, null,
+                                new MediaScannerConnection.OnScanCompletedListener() {
+                                    @Override
+                                    public void onScanCompleted(String s, Uri uri) {
+                                        Log.d(TAG, currentPhotoPath);
+                                        bitmap = BitmapFactory.decodeFile(currentPhotoPath);
+                                    }
+                                });
+                    } catch (Exception e) {
+                        Toast toast = Toast.makeText(this, "Error obteniendo la imagen...", Toast.LENGTH_SHORT);
+                        toast.show();
+                        Log.e(TAG, e.getMessage());
+                    }
+                    break;
+                case MEDIA_PICTURE:
+
+                    break;
+                default:
+                    break;
+            }
+            //Set initial background image
+            //findViewById(R.id.puzzle_view).setBackground(getDrawable(imgId));
+
+            //Init variables
+            this.selector = new Selector();
+            this.counter = new Counter();
+
+            //Starts the puzzle
+            startPuzzle(numBlocks, bitmap);
+        }
     }
 }

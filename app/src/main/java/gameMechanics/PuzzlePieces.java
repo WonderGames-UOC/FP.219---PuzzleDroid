@@ -56,7 +56,7 @@ public class PuzzlePieces {
                 pos++;
             }
         }catch (Exception e){
-            Log.d(TAG, e.getMessage());
+            Log.e(TAG, e.getMessage());
             return 1;
         }
         return 0;
@@ -68,11 +68,10 @@ public class PuzzlePieces {
      * @return a puzzlePiece of the pieces collection of position pos or an empty puzzlePiece if there is an error.
      */
     public PuzzlePiece getPieceByPos(int pos){
-        Log.d(TAG, "getPieceByPos");
         try {
             pieces.get(pos);
         }catch (Exception e){
-            Log.d(TAG, e.getMessage());
+            Log.e(TAG, e.getMessage());
         }
         return new PuzzlePiece();
     }
@@ -84,14 +83,13 @@ public class PuzzlePieces {
      * @return returns 0 if no error. Otherwise returns 1.
      */
     private int swapPieces(int posA, int posB){
-        Log.d(TAG, "swapPieces");
         try {
             this.pieceA = pieces.get(posA);
             this.pieceB = pieces.get(posB);
             pieces.set(posA, pieceB);
             pieces.set(posB, pieceA);
         }catch (Exception e){
-            Log.d(TAG, e.getMessage());
+            Log.e(TAG, e.getMessage());
             return 1;
         }
         return 0; //Success.
@@ -103,12 +101,11 @@ public class PuzzlePieces {
      * @param idB
      */
     public void swapPiecesById(int idA, int idB){
-        Log.d(TAG, "swapPiecesById");
         int posA, posB = 0;
         posA = getPieceIndexById(idA);
         posB = getPieceIndexById(idB);
         if(posA < 0 | posB < 0){
-            Log.d(TAG, Integer.toString(posA) +" "+ Integer.toString(posB) );
+            Log.e(TAG, Integer.toString(posA) +" "+ Integer.toString(posB) );
             return;
         }
         swapPieces(posA, posB);
@@ -120,13 +117,13 @@ public class PuzzlePieces {
      * @return
      */
     private int getPieceIndexById(int id){
-        Log.d(TAG, "getPieceById");
+
         for(int i = 0; i < this.pieces.size(); i++){
             if(pieces.get(i).getPosition() == id){
                 return i;
             }
         }
-        Log.d(TAG, Integer.toString(id) + " not found.");
+        Log.e(TAG, Integer.toString(id) + " not found.");
         return -1;
     }
 
@@ -146,7 +143,7 @@ public class PuzzlePieces {
                 pos++;
             }
         }catch (Exception e){
-            Log.d(TAG, e.getMessage());
+            Log.e(TAG, e.getMessage());
             return  -1;
         }
         return 1;
@@ -181,7 +178,7 @@ public class PuzzlePieces {
                 shuffle();
             }
         }catch (Exception e){
-            Log.d(TAG,e.getMessage());
+            Log.e(TAG,e.getMessage());
         }
     }
 }
