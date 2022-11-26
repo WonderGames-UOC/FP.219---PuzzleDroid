@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.media.MediaScannerConnection;
 import android.media.SoundPool;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -110,14 +111,13 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         this.sounds = new Sounds(this);
         this.soundPool =  sounds.getSoundPool();
 
-
-
         listen.observe(this, new Observer<Bitmap>() {
             @Override
             public void onChanged(Bitmap b) {
                 selector = new Selector();
                 counter = new Counter();
                 startPuzzle(numBlocks, b);
+                FullScreencall();
             }
         });
 
@@ -398,9 +398,9 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         dp = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dp);
         float ratio = dp.heightPixels / dp.widthPixels;
-        int imageViewWide = (int) ((dp.widthPixels / columns) * 0.93); //TODO Base on the screen width (needs adjustment for screen rotation)
+        int imageViewWide = (int) ((dp.widthPixels / columns) *1 ); //TODO Base on the screen width (needs adjustment for screen rotation)
         if(ratio < 2){ //Adaptation to shorten screens
-            imageViewWide = (int)(imageViewWide * 0.8);
+            imageViewWide = (int)(imageViewWide) * 1;
 
         }
         int imageViewHigh = imageViewWide; //Square blocks
@@ -604,6 +604,19 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         }else{
             Log.e(TAG, "onActivity RESULT NOT OK");
             onErrorLaunchErrPuzzle();
+        }
+    }
+    //Hide navigation bar.
+    //https://stackoverflow.com/a/27804505
+    public void FullScreencall() {
+        if(Build.VERSION.SDK_INT > 11 && Build.VERSION.SDK_INT < 19) { // lower api
+            View v = this.getWindow().getDecorView();
+            v.setSystemUiVisibility(View.GONE);
+        } else if(Build.VERSION.SDK_INT >= 19) {
+            //for new api versions.
+            View decorView = getWindow().getDecorView();
+            int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+            decorView.setSystemUiVisibility(uiOptions);
         }
     }
 }

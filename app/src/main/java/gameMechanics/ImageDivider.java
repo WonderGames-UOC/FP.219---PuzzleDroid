@@ -129,7 +129,7 @@ public class ImageDivider {
             case 10:
                 break;
             default:
-                this.denominator = 32;
+                this.denominator = 6;
         }
         int numOfBlocks = (int) (Math.pow(denominator,2)/2);
         this.rows = denominator;
