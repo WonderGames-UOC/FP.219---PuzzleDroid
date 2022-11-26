@@ -29,6 +29,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 
 import java.io.File;
 import java.io.IOException;
@@ -84,6 +86,9 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
     private Uri photoURI;
     private Bitmap bitmap;
 
+    //This listener sets an observable that will launch the puzzle when the bitmap is loaded.
+    MutableLiveData<Bitmap> listen = new MutableLiveData<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,6 +110,16 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         this.soundPool =  sounds.getSoundPool();
 
 
+
+        listen.observe(this, new Observer<Bitmap>() {
+            @Override
+            public void onChanged(Bitmap b) {
+                selector = new Selector();
+                counter = new Counter();
+                startPuzzle(numBlocks, b);
+            }
+        });
+
         //Gets the info selected by the user and stores it for the game start
         Bundle data = getIntent().getExtras();
         try{
@@ -116,6 +131,8 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                 case 128:
                     Log.d(TAG, "Camera");
                     //Camera
+                    cameraIntent();
+                    break;
                 default:
                     //Set initial background image
                     findViewById(R.id.puzzle_view).setBackground(getDrawable(imgId));
@@ -131,18 +148,20 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         }catch (Exception e) {
             Log.e(TAG, e.getMessage());
 
-            imgId = R.drawable.level1;
-            numBlocks = 4;
-            //Set initial background image
-            findViewById(R.id.puzzle_view).setBackground(getDrawable(imgId));
-            //Init variables
-            this.selector = new Selector();
-            this.counter = new Counter();
-            //Starts the puzzle
-            startPuzzle(numBlocks, getDrawable(imgId));
+            onErrorLaunchErrPuzzle();
         }
     }
-
+    private void onErrorLaunchErrPuzzle(){
+        imgId = R.drawable.level1;
+        numBlocks = 4;
+        //Set initial background image
+        findViewById(R.id.puzzle_view).setBackground(getDrawable(imgId));
+        //Init variables
+        this.selector = new Selector();
+        this.counter = new Counter();
+        //Starts the puzzle
+        startPuzzle(numBlocks, getDrawable(imgId));
+    }
     private void startPuzzle(int divisions, Drawable image){
         Log.d(TAG, "startPuzzle");
         this.puzzleBlocks = genPuzzle(divisions, transformToBitmap(image));
@@ -551,6 +570,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                                     public void onScanCompleted(String s, Uri uri) {
                                         Log.d(TAG, currentPhotoPath);
                                         bitmap = BitmapFactory.decodeFile(currentPhotoPath);
+                                        listen.postValue(BitmapFactory.decodeFile(currentPhotoPath));
                                     }
                                 });
                     } catch (Exception e) {
@@ -565,15 +585,9 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                 default:
                     break;
             }
-            //Set initial background image
-            //findViewById(R.id.puzzle_view).setBackground(getDrawable(imgId));
-
-            //Init variables
-            this.selector = new Selector();
-            this.counter = new Counter();
-
-            //Starts the puzzle
-            startPuzzle(numBlocks, bitmap);
+        }else{
+            Log.e(TAG, "onActivity RESULT NOT OK");
+            onErrorLaunchErrPuzzle();
         }
     }
 }
