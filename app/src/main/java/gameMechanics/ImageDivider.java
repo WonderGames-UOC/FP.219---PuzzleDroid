@@ -119,9 +119,17 @@ public class ImageDivider {
         int partArea = imageArea / denominator;
         this.wide = this.high = (int) Math.floor(Math.sqrt(partArea));
 
+        //Colums must be the narrow part of the image.
+        int wideSide = image.getWidth();
+        int narrowSide = image.getHeight();
+        if(narrowSide > wideSide){
+             wideSide = narrowSide;
+             narrowSide = image.getWidth();
+        }
+
         //Calculate the number of rows and columns base on the size of the image and the size of the squares blocks.
-        this.columns = (int) Math.floor(image.getWidth()/this.wide);
-        this.rows = (int) Math.floor(image.getHeight()/this.high);
+        this.columns = (int) Math.floor(narrowSide/this.wide);
+        this.rows = (int) Math.floor(wideSide/this.high);
 
         //Scalate the original image based on the size and number of the square blocks.
         int scaledWide = (this.wide * columns);
