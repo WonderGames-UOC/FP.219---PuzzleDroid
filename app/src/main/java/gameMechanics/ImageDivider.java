@@ -1,6 +1,7 @@
 package gameMechanics;
 
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
@@ -8,7 +9,7 @@ import java.util.ArrayList;
 
 public class ImageDivider {
     final private String TAG = "imageDivider";
-    private int rows, columns, high, wide, denominator;
+    private int rows, columns, high, wide, denominator, barHight, sHight, sWidth;
     private Bitmap image;
     private ArrayList<Bitmap> images;
 
@@ -110,32 +111,124 @@ public class ImageDivider {
      */
     public void divideImageInSquares(){
         Log.d(TAG, "divideImageInSqueares");
+        //Rows are always double of columns.
+        //Denominator variable sets the num of rows.
+        // Starts dividing the screen in squares. If screen hight(wide)/width (narrow) ratio < 2, then the size of the square is reduced to fit all the blocks in the hight of the screen,
+        // if the ratio > 2, then is reduced to fit all the blocks in the width of the screen.
+        //Image will be first cut to match the ratio of the screen, then scaled and divided.
+        //Image is rotated to better fit the screen.
 
         //Empty image arrayList.
         images = new ArrayList<Bitmap>();
 
+        //Numbre of blocks
+        switch (this.denominator){ //Limits the denominator values.
+            case 4:
+            case 8:
+            case 6:
+            case 10:
+                break;
+            default:
+                this.denominator = 32;
+        }
+        int numOfBlocks = (int) (Math.pow(denominator,2)/2);
+        this.rows = denominator;
+        this.columns = denominator / 2;
+
+        //Screen wide and narrow dimensions
+        DisplayMetrics dp = new DisplayMetrics();
+        int sHight = this.sHight - barHight; //Action bar high.
+        int sWidth = this.sWidth;
+        float sRatio = (float)sHight/(float)sWidth;
+
+        Log.d(TAG, "sRatio: " + sRatio +
+                "\n sHight: " + sHight +
+                "\n sWidth: " + sWidth);
+
+        //Divide screen in squares Nx2N format.
+        if(sRatio < 2){//Screen width need adjustment
+            float correctionFactor = 1 - (2-sRatio) /2;
+
+            sWidth = (int) Math.round((float) sWidth *  correctionFactor);
+        }
+        if(sRatio > 2){//Screen high needs adjustment
+            float correctionFactor = 1 - (sRatio - 2) /2;
+            sHight = (int) Math.round((float) sHight * correctionFactor);
+        }
+        sRatio = (float)sHight / (float) sWidth;
+
         //Calculate the area of the square blocks.
-        int imageArea = image.getHeight() * image.getWidth();
-        int partArea = imageArea / denominator;
-        this.wide = this.high = (int) Math.floor(Math.sqrt(partArea));
+        int sArea = sHight * sWidth;
+        int blockArea = (int) Math.round(Math.sqrt(sArea/numOfBlocks));
+        int blockSize = (int) Math.floor(blockArea / 2);
+
+        Log.d(TAG, "Screen Area: " + sArea +
+                "\n Block Area: " + Math.round(Math.sqrt(sArea/numOfBlocks)) +
+                "\n (cast) Block Area: " + blockArea +
+                "\n Block Size: " + blockSize);
+
+        //block size and target image width and hight
+        this.high = this.wide = blockSize;
+        int iNewWidth = this.columns * blockSize;
+        int iNewHight = this.rows * blockSize;
+
+        //IMAGE TREATMENT
+        //Image wide and narrow dimensiones
+        int iWide = image.getWidth();
+        int iNarrow = image.getHeight();
+        int iOffsetW = 0;
+        int iOffsetN = 0;
 
         //Colums must be the narrow part of the image.
-        int wideSide = image.getWidth();
-        int narrowSide = image.getHeight();
-        if(narrowSide > wideSide){
-             wideSide = narrowSide;
-             narrowSide = image.getWidth();
+        if(iNarrow > iWide){
+            iWide = iNarrow;
+            iNarrow = image.getWidth();
+        }
+        float iRatio = (float)iWide / (float)iNarrow;
+
+        Log.d(TAG, "iRatio: " + iRatio +
+                "\n iWide: " + iWide +
+                "\n iNarrow: " + iNarrow);
+
+
+        //Adjust image to fit screen
+        if(iRatio > sRatio){
+            Log.d(TAG, "Set new image wide.");
+            //Fix image narrow to screen width
+            //Cut image wide to match (image narrow * screen Ratio).
+            int newIWide = (int) Math.floor(iNarrow * sRatio);
+            iOffsetW = (int) Math.floor((iWide - newIWide)/2);
+            iWide = newIWide;
+        }else{
+            Log.d(TAG, "Set new image high.");
+            //Fix image wide to screen width
+            //Cut image narrow match (image Wide / Screen Ratio)
+            int newINarrow = (int) Math.floor(iWide / sRatio);
+            iOffsetN = (int) Math.round((iNarrow-newINarrow)/2);
+            iNarrow = newINarrow;
         }
 
-        //Calculate the number of rows and columns base on the size of the image and the size of the squares blocks.
-        this.columns = (int) Math.floor(narrowSide/this.wide);
-        this.rows = (int) Math.floor(wideSide/this.high);
+        //Get an image chunk that match the screen proportions.
+        Bitmap bm;
+        Matrix matrix = new Matrix();
+        matrix.postRotate(90);
+        //Bitmap.createBitmap(image, x, y, wide, high);
+        Log.d(TAG, "Narrow: " + (iOffsetN + iNarrow-1) +
+                "\n Wide: " + (iOffsetW + iWide));
+        if(image.getHeight() > image.getWidth()){
+            Log.d(TAG, "iWide vs image.Hight: " + (iWide+iOffsetW) + " vs " + image.getHeight() +
+                    "\n iNarrow vs image.Width: " + (iNarrow+iOffsetN) + " vs " + image.getWidth());
+            bm = Bitmap.createBitmap(this.image, iOffsetN+0, iOffsetW+0, iNarrow+0, iWide+0);
+        }else {
+            Log.d(TAG, "iWide vs image.Width: " + (iWide+iOffsetW) + " vs " + image.getWidth() +
+                    "\n iNarrow vs image.Hight: " + (iNarrow+iOffsetN) + " vs " + image.getHeight());
+            bm = Bitmap.createBitmap(this.image,  iOffsetW+0,iOffsetN+0, iWide+0, iNarrow-0);
+            bm = Bitmap.createBitmap(this.image, 0,0, bm.getWidth(),bm.getHeight(),matrix, true);
+        }
+        this.image = bm;
 
-        //Scalate the original image based on the size and number of the square blocks.
-        int scaledWide = (this.wide * columns);
-        int scaledHigh = (this.high * rows);
-        Bitmap scaledImage = Bitmap.createScaledBitmap(image, scaledWide, scaledHigh, true);
-
+        //Scalate the image based on the screen size and number of the square blocks.
+        Bitmap scaledImage = Bitmap.createScaledBitmap(image, iNewWidth, iNewHight, true);
         imageDivider(scaledImage);
     }
 
@@ -251,5 +344,29 @@ public class ImageDivider {
     }
     public ArrayList<Bitmap> getImages() {
         return images;
+    }
+
+    public int getBarHight() {
+        return barHight;
+    }
+
+    public void setBarHight(int barHight) {
+        this.barHight = barHight;
+    }
+
+    public int getsHight() {
+        return sHight;
+    }
+
+    public void setsHight(int sHight) {
+        this.sHight = sHight;
+    }
+
+    public int getsWidth() {
+        return sWidth;
+    }
+
+    public void setsWidth(int sWidth) {
+        this.sWidth = sWidth;
     }
 }

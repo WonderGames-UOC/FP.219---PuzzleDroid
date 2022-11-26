@@ -15,6 +15,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -128,6 +129,8 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
             userName = data.getString("userName");
             Log.i(TAG, "User selection: " + String.valueOf(imgId) + " / " + String.valueOf(numBlocks) + " / " + userName );
             switch (numBlocks){
+                case 24:
+                case 32:
                 case 128:
                     Log.d(TAG, "Camera");
                     //Camera
@@ -335,12 +338,25 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         Log.d(TAG, "genPuzzle");
         PuzzlePieces puzzleBlocks = new PuzzlePieces();
 
-        //Determine the display size
+        //Get the display size
         DisplayMetrics dp = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dp);
 
+        //Get the high of the action bar bar high
+        int barHigh = 0;
+        TypedValue tv = new TypedValue();
+        if (getTheme().resolveAttribute(androidx.appcompat.R.attr.actionBarSize, tv, true)) {
+            barHigh = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
+        }
+        //The action bar high is needed to ajust the screen high to one available, so is subtracted.
+
+        Log.d(TAG, "ActionBar size: " + String.valueOf(barHigh) + "\nDp.H: " + dp.heightPixels + "\nDp.W: " + dp.widthPixels);
+
         //Divide the image
         ImageDivider images = new ImageDivider(numOfPieces, image);
+        images.setBarHight(barHigh);
+        images.setsHight(dp.heightPixels);
+        images.setsWidth(dp.widthPixels);
         //images.divideImage();
         images.divideImageInSquares();
         //images.divideImageInSquares(dp);

@@ -42,7 +42,8 @@
         </activity>
         <activity
             android:name=".Game01Activity"
-            android:exported="false">
+            android:exported="false"
+            android:theme="@style/Theme.Game">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
