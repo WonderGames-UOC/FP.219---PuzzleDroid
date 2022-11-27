@@ -138,12 +138,12 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
             switch (numBlocks){
                 case 24:
                 case 32:
-                    RandomImageSelector rndSel = new RandomImageSelector(this);
+                    RandomImageSelector rndSel = new RandomImageSelector(this, executorService);
                     //rndSel.alternative();
-                    //rndSel.setRisCallback(this.onReturnImagePath(""));
+                    rndSel.setCallback(this::onReturnImagePath);
                     //rndSel.rndImg();
-                    //rndSel.rndImgAlt();
-                    onReturnImagePath(rndSel.rndImg2());
+                    rndSel.rndImgAlt();
+                    //onReturnImagePath(rndSel.rndImg2());
 
                     break;
                 case 128:

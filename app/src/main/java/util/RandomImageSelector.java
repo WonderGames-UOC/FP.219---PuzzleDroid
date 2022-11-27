@@ -14,8 +14,9 @@ import java.util.concurrent.Executor;
 
 public class RandomImageSelector {
     //https://guides.codepath.com/android/Accessing-the-Camera-and-Stored-Media
-    public RandomImageSelector(Context context){
+    public RandomImageSelector(Context context, Executor executor){
         this.context = context;
+        this.executor = executor;
     }
     private final String TAG = "RandomImageSelector";
     private Context context;
@@ -26,7 +27,9 @@ public class RandomImageSelector {
     private String[] folders = {Environment.DIRECTORY_DCIM};
     private String path;
 
-    RIS_Callback risCallback;
+    private final Executor executor;
+
+    RIS_Callback callback;
 
 
     private ArrayList<String> getAllImages(){
@@ -37,15 +40,9 @@ public class RandomImageSelector {
             }
         return imagesPath;
     }
-    public void setRisCallback(RIS_Callback risCallback){
-        this.risCallback = risCallback;
+    public void setCallback(RIS_Callback callback){
+        this.callback = callback;
     }
-    Executor executor = new Executor() {
-        @Override
-        public void execute(Runnable command) {
-
-        }
-    };
 
     public ArrayList<String> alternative(){
         Uri uri;
@@ -93,7 +90,7 @@ public class RandomImageSelector {
             protected void onPostExecute(String aVoid) {
                 super.onPostExecute(aVoid);
                 Log.d(TAG, "onPostExecute");
-                risCallback.onReturnImagePath(aVoid);
+                callback.onReturnImagePath(aVoid);
             }
 
             @Override
@@ -104,13 +101,12 @@ public class RandomImageSelector {
             }
         };
     }
-
     public void rndImgAlt() {
         executor.execute(new Runnable() {
             @Override
             public void run() {
                 String rData = rndImg2();
-                risCallback.onReturnImagePath(rData);
+                callback.onReturnImagePath(rData);
             }
         });
     }
