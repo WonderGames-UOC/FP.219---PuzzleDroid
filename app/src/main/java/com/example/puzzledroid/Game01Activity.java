@@ -39,6 +39,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import dbHelper.SQLiteHelper;
@@ -50,9 +52,10 @@ import gameMechanics.Selector;
 import gameMechanics.Sounds;
 import gameMechanics.Timer;
 import util.HighScore;
+import util.RandomImageSelector;
 
 
-public class Game01Activity extends AppCompatActivity implements OnClickListener {
+public class Game01Activity extends AppCompatActivity implements OnClickListener, RandomImageSelector.RIS_Callback{
     SQLiteHelper sqLiteHelper = new SQLiteHelper(this, "BD1_HighScores", null, 1);
 
     //Game data
@@ -91,6 +94,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
     //This listener sets an observable that will launch the puzzle when the bitmap is loaded.
     MutableLiveData<Bitmap> listen = new MutableLiveData<>();
 
+    ExecutorService executorService = Executors.newFixedThreadPool(4);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +114,9 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         //Game sounds (Sounds config directly on the class).
         this.sounds = new Sounds(this);
         this.soundPool =  sounds.getSoundPool();
+
+
+
 
         listen.observe(this, new Observer<Bitmap>() {
             @Override
@@ -131,6 +138,14 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
             switch (numBlocks){
                 case 24:
                 case 32:
+                    RandomImageSelector rndSel = new RandomImageSelector(this);
+                    //rndSel.alternative();
+                    //rndSel.setRisCallback(this.onReturnImagePath(""));
+                    //rndSel.rndImg();
+                    //rndSel.rndImgAlt();
+                    onReturnImagePath(rndSel.rndImg2());
+
+                    break;
                 case 128:
                     Log.d(TAG, "Camera");
                     //Camera
@@ -579,25 +594,9 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case TAKE_PICTURE:
-                    try {
-                        MediaScannerConnection.scanFile(this, new String[]{currentPhotoPath}, null,
-                                new MediaScannerConnection.OnScanCompletedListener() {
-                                    @Override
-                                    public void onScanCompleted(String s, Uri uri) {
-                                        Log.d(TAG, currentPhotoPath);
-                                        bitmap = BitmapFactory.decodeFile(currentPhotoPath);
-                                        listen.postValue(BitmapFactory.decodeFile(currentPhotoPath));
-                                    }
-                                });
-                    } catch (Exception e) {
-                        Toast toast = Toast.makeText(this, "Error obteniendo la imagen...", Toast.LENGTH_SHORT);
-                        toast.show();
-                        Log.e(TAG, e.getMessage());
-                    }
+                    scanFile();
                     break;
-                case MEDIA_PICTURE:
 
-                    break;
                 default:
                     break;
             }
@@ -606,6 +605,37 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
             onErrorLaunchErrPuzzle();
         }
     }
+
+    /*
+    Scans an image file an converts it into a Bitmap.
+     */
+    private void scanFile(){
+        try {
+            MediaScannerConnection.scanFile(this, new String[]{currentPhotoPath}, null,
+                    new MediaScannerConnection.OnScanCompletedListener() {
+                        @Override
+                        public void onScanCompleted(String s, Uri uri) {
+                            Log.d(TAG, currentPhotoPath);
+                            bitmap = BitmapFactory.decodeFile(currentPhotoPath);
+                            listen.postValue(BitmapFactory.decodeFile(currentPhotoPath));
+                        }
+                    });
+        } catch (Exception e) {
+            Toast toast = Toast.makeText(this, "Error obteniendo la imagen...", Toast.LENGTH_SHORT);
+            toast.show();
+            Log.e(TAG, e.getMessage());
+        }
+    }
+
+    @Override
+    public void onReturnImagePath(String path) {
+        Log.d(TAG, "returnImagePath");
+        currentPhotoPath = path;
+        Log.d(TAG, currentPhotoPath);
+        scanFile();
+        return;
+    }
+
     //Hide navigation bar.
     //https://stackoverflow.com/a/27804505
     public void FullScreencall() {
