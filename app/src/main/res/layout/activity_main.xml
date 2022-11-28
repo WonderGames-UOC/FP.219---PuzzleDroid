@@ -11,6 +11,8 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
+
+
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="190dp"
@@ -34,6 +36,16 @@
         app:layout_constraintStart_toEndOf="@+id/imageView"
         app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
+    <Button
+        android:id="@+id/recentScoresButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="52dp"
+        android:layout_marginStart="52dp"
+        android:text="@string/button_recent_scores"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button" /> />
     <Button
         android:id="@+id/button2"
         android:layout_width="0dp"
