@@ -94,17 +94,17 @@ public class custom_dialog_menu {
 
     // Función que devuelve la resolución del puzzle según los radio buttons.
     public int radioButtonCheck (Dialog dialog){
-        int puzzres = 18;
+        int puzzres = 4;
         // Botones seleccción de Dificultad
         RadioButton radioButtonMedium = (RadioButton) dialog.findViewById(R.id.rbtnMediu);
         RadioButton radioButtonHard = (RadioButton) dialog.findViewById(R.id.rbtnHard);
 
         if (radioButtonMedium.isChecked()) {
-            puzzres = 32;
+            puzzres = 6;
         }
 
         if (radioButtonHard.isChecked()) {
-            puzzres = 128;
+            puzzres = 8;
         }
 
         return puzzres;
