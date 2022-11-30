@@ -12,6 +12,7 @@
     <string name="puzzledroid_game">PuzzleDroid game.</string>
     <string name="button_play">Play</string>
     <string name="button_scores">High Scores</string>
+    <string name="button_recent_scores">Recent Scores</string>
     <string name="puzzlebot_logo">puzzlebot_logo</string>
     <string name="title_activity_img_chunks">imgChunks</string>
 

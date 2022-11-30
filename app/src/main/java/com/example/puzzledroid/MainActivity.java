@@ -1,32 +1,28 @@
 package com.example.puzzledroid;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
-
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.util.Log;
-
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
-
-import com.example.puzzledroid.databinding.ActivityMainBinding;
-
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.navigation.ui.AppBarConfiguration;
+
+import com.example.puzzledroid.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity implements custom_dialog_menu.returnDialogMenu {
 
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
     Context context = this;
-    Button play, hs;
+    Button play, hs, rs;
     String tag = "MainActivity";
 
     @Override
@@ -37,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
         setContentView(binding.getRoot());
         play = findViewById(R.id.button);
         hs = findViewById(R.id.button2);
+        rs = findViewById(R.id.recentScoresButton);
 
         //NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         //appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
@@ -57,6 +54,21 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
                 hScores();
             }
         });
+
+        rs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(tag,"Recent Scores Click");
+                rScores();
+            }
+        });
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel("notifChannel", "Notification Channel", NotificationManager.IMPORTANCE_DEFAULT);
+
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(channel);
+        }
     }
 // Método para lanzar la pantalla de juego.
     private void startGame(String userName, int puzzres, int imgId) {
@@ -70,6 +82,11 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
     private void hScores(){
         Intent j = new Intent(this, HighScores.class);
         startActivity(j);
+    }
+
+    private void rScores(){
+        Intent r = new Intent(this, CalendarScores.class);
+        startActivity(r);
     }
 
     @Override

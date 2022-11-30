@@ -1,5 +1,13 @@
 package com.example.puzzledroid;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+
+import android.app.Notification;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
@@ -44,6 +52,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import dbHelper.SQLiteHelper;
+import gameMechanics.CalendarData;
 import gameMechanics.Counter;
 import gameMechanics.ImageDivider;
 import gameMechanics.PuzzlePiece;
@@ -61,7 +70,12 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
     //Game data
     private Chronometer chronometer;
     private final gameMechanics.Timer Timer = new Timer();
+    private final CalendarData CalendarData = new CalendarData();
     int imgId, numBlocks;
+
+    public static Context context;
+
+    private NotificationManagerCompat notificationManager;
 
     //¡¡NO BORRAR!! Etiqueta para el depurador.
     private final String TAG = "Game01Activity";
@@ -100,7 +114,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
     protected void onCreate(Bundle savedInstanceState) {
         //¡¡NO BORRAR!! Registro para el depurador.
         Log.d(TAG, "onCreate");
-
+        context = this.getApplicationContext();
         //https://stackoverflow.com/questions/2730855/prevent-screen-rotation-on-android
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT); //Cancel screen rotation.
 
@@ -115,6 +129,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         this.sounds = new Sounds(this);
         this.soundPool =  sounds.getSoundPool();
 
+        notificationManager = NotificationManagerCompat.from(this);
 
 
 
@@ -274,7 +289,30 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                             String.valueOf(level),
                             String.valueOf(counter.getMovements()));
                     sqLiteHelper.insert_HS_Row(highScore);
+                    CalendarData.saveScoreInCalendar(context, highScore);
+
+
+                    //crear y lanzar la notificación
+
+                    //al hacer click en la notificación veremos las scores
+                    Intent intent = new Intent(this, CalendarScores.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+
+
+                    //creacion de la notificación
+                    NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "notifChannel" )
+                            .setSmallIcon(R.drawable.puzzledroid_logo_notitle)
+                            .setContentTitle("New score")
+                            .setContentText(level + " " + counter.getMovements())
+                            .setContentIntent(pendingIntent)
+                            .setAutoCancel(true);
+
+                    //lanzamos notificación
+                    notificationManager.notify(1, builder.build());
                 }
+
+
                 this.selector.resetSelection();
                 break;
         }
