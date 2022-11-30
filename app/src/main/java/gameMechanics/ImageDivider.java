@@ -141,7 +141,8 @@ public class ImageDivider {
         int sWidth = this.sWidth;
         float sRatio = (float)sHight/(float)sWidth;
 
-        Log.d(TAG, "sRatio: " + sRatio +
+        Log.d(TAG, "Current Screen dimension:"
+                + "\nsRatio: " + sRatio +
                 "\n sHight: " + sHight +
                 "\n sWidth: " + sWidth);
 
@@ -162,7 +163,8 @@ public class ImageDivider {
         int blockArea = (int) Math.round(Math.sqrt(sArea/numOfBlocks));
         int blockSize = (int) Math.floor(blockArea / 2);
 
-        Log.d(TAG, "Screen Area: " + sArea +
+        Log.d(TAG, "Blocks dimensions:"
+                +"\nScreen Area: " + sArea +
                 "\n Block Area: " + Math.round(Math.sqrt(sArea/numOfBlocks)) +
                 "\n (cast) Block Area: " + blockArea +
                 "\n Block Size: " + blockSize);
@@ -186,21 +188,24 @@ public class ImageDivider {
         }
         float iRatio = (float)iWide / (float)iNarrow;
 
-        Log.d(TAG, "iRatio: " + iRatio +
+        Log.d(TAG, "Original Image Dimension:" +
+                "\niRatio: " + iRatio +
                 "\n iWide: " + iWide +
                 "\n iNarrow: " + iNarrow);
 
 
         //Adjust image to fit screen
         if(iRatio > sRatio){
-            Log.d(TAG, "Set new image wide.");
+            Log.d(TAG, "Adjust image wide to scree:" +
+                    "\niRatio: " + iRatio +" > " + sRatio);
             //Fix image narrow to screen width
             //Cut image wide to match (image narrow * screen Ratio).
             int newIWide = (int) Math.floor(iNarrow * sRatio);
             iOffsetW = (int) Math.floor((iWide - newIWide)/2);
             iWide = newIWide;
         }else{
-            Log.d(TAG, "Set new image high.");
+            Log.d(TAG, "Adjust image narrow:" +
+                    "\niRatio: " + iRatio + "<= " + sRatio);
             //Fix image wide to screen width
             //Cut image narrow match (image Wide / Screen Ratio)
             int newINarrow = (int) Math.floor(iWide / sRatio);
@@ -213,14 +218,15 @@ public class ImageDivider {
         Matrix matrix = new Matrix();
         matrix.postRotate(90);
         //Bitmap.createBitmap(image, x, y, wide, high);
-        Log.d(TAG, "Narrow: " + (iOffsetN + iNarrow-1) +
+        Log.d(TAG, "Image chuck that fits the screen dimensions: "+
+                "\nNarrow: " + (iOffsetN + iNarrow-1) +
                 "\n Wide: " + (iOffsetW + iWide));
         if(image.getHeight() > image.getWidth()){
-            Log.d(TAG, "iWide vs image.Hight: " + (iWide+iOffsetW) + " vs " + image.getHeight() +
+            Log.d(TAG, "Image cut orientation:" + "\niWide vs image.Hight: " + (iWide+iOffsetW) + " vs " + image.getHeight() +
                     "\n iNarrow vs image.Width: " + (iNarrow+iOffsetN) + " vs " + image.getWidth());
             bm = Bitmap.createBitmap(this.image, iOffsetN+0, iOffsetW+0, iNarrow+0, iWide+0);
         }else {
-            Log.d(TAG, "iWide vs image.Width: " + (iWide+iOffsetW) + " vs " + image.getWidth() +
+            Log.d(TAG, "Image cut orientation:" + "\niWide vs image.Width: " + (iWide+iOffsetW) + " vs " + image.getWidth() +
                     "\n iNarrow vs image.Hight: " + (iNarrow+iOffsetN) + " vs " + image.getHeight());
             bm = Bitmap.createBitmap(this.image,  iOffsetW+0,iOffsetN+0, iWide+0, iNarrow-0);
             bm = Bitmap.createBitmap(this.image, 0,0, bm.getWidth(),bm.getHeight(),matrix, true);
@@ -238,7 +244,7 @@ public class ImageDivider {
      * @param wide
      */
     public void divideImageInSquares(int high, int wide){
-        Log.d(TAG, "divideImageInSquares");
+        Log.d(TAG, "divideImageInSquares: ");
         Log.d(TAG, "Wide: " + wide + " High: "+ high);
         //Empty image arrayList.
         images = new ArrayList<Bitmap>();
