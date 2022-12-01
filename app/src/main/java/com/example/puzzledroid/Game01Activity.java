@@ -1,11 +1,5 @@
 package com.example.puzzledroid;
 
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
-
-import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -38,6 +32,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.FileProvider;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
@@ -51,6 +47,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import Settings.Params;
 import dbHelper.SQLiteHelper;
 import gameMechanics.CalendarData;
 import gameMechanics.Counter;
@@ -150,26 +147,14 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
             this.numBlocks = (int)data.getInt("puzzres");
             userName = data.getString("userName");
             Log.i(TAG, "User selection: " + String.valueOf(imgId) + " / " + String.valueOf(numBlocks) + " / " + userName );
-            switch (numBlocks){
-                case 24:
-                case 32:
-                    RandomImageSelector rndSel = new RandomImageSelector(this, executorService);
-                    //rndSel.alternative();
-                    rndSel.setCallback(this::onReturnImagePath);
-                    //rndSel.rndImg();
-                    rndSel.rndImgAlt();
-                    //onReturnImagePath(rndSel.rndImg2());
+            switch (imgId){
+                case Params.DEFAULT:
+                    Log.d(TAG, "DEFAULT");
 
-                    break;
-                case 128:
-                    Log.d(TAG, "Camera");
-                    //Camera
-                    cameraIntent();
-                    break;
-                default:
-                    //Set initial background image
-                    findViewById(R.id.puzzle_view).setBackground(getDrawable(imgId));
-
+                    findViewById(R.id.puzzle_view).setBackground(
+                            getDrawable(
+                                    imgId = Params.imageRandomReturn()
+                            ));
                     //Init variables
                     this.selector = new Selector();
                     this.counter = new Counter();
@@ -177,12 +162,33 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                     //Starts the puzzle
                     startPuzzle(numBlocks, getDrawable(imgId));
                     break;
+                case Params.GALLERY:
+                    try {
+                        Log.d(TAG, "GALLERY");
+                        RandomImageSelector rndSel = new RandomImageSelector(this, executorService);
+                        rndSel.setCallback(this);
+                        rndSel.rndImgAlt();
+                    }catch (Exception e){
+
+                    }
+
+                    break;
+                case Params.CAMERA:
+                    Log.d(TAG, "Camera");
+                    cameraIntent();
+                    break;
+                default:
+                    //Set initial background image
+                    findViewById(R.id.puzzle_view).setBackground(getDrawable(imgId));
+                    //Starts the puzzle
+                    startPuzzle(numBlocks, getDrawable(imgId));
+                    break;
             }
         }catch (Exception e) {
             Log.e(TAG, e.getMessage());
-
             onErrorLaunchErrPuzzle();
         }
+        FullScreencall();
     }
     private void onErrorLaunchErrPuzzle(){
         imgId = R.drawable.level1;
@@ -194,6 +200,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         this.counter = new Counter();
         //Starts the puzzle
         startPuzzle(numBlocks, getDrawable(imgId));
+        FullScreencall();
     }
     private void startPuzzle(int divisions, Drawable image){
         Log.d(TAG, "startPuzzle");
@@ -665,7 +672,6 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         }
     }
 
-    @Override
     public void onReturnImagePath(String path) {
         Log.d(TAG, "returnImagePath");
         currentPhotoPath = path;

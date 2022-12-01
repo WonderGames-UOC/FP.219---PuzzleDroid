@@ -7,6 +7,8 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
+import Settings.Params;
+
 public class ImageDivider {
     final private String TAG = "imageDivider";
     private int rows, columns, high, wide, denominator, barHight, sHight, sWidth;
@@ -129,7 +131,7 @@ public class ImageDivider {
             case 10:
                 break;
             default:
-                this.denominator = 6;
+                this.denominator = Params.EASY;
         }
         int numOfBlocks = (int) (Math.pow(denominator,2)/2);
         this.rows = denominator;
@@ -160,22 +162,21 @@ public class ImageDivider {
 
         //Calculate the area of the square blocks.
         int sArea = sHight * sWidth;
-        int blockArea = (int) Math.round(Math.sqrt(sArea/numOfBlocks));
-        int blockSize = (int) Math.floor(blockArea / 2);
+        int blockArea = sArea/numOfBlocks;
+        int blockSize = (int) Math.floor(Math.sqrt(blockArea));
 
         Log.d(TAG, "Blocks dimensions:"
                 +"\nScreen Area: " + sArea +
-                "\n Block Area: " + Math.round(Math.sqrt(sArea/numOfBlocks)) +
-                "\n (cast) Block Area: " + blockArea +
+                "\n Block Area: " + blockArea +
                 "\n Block Size: " + blockSize);
 
-        //block size and target image width and hight
+        //Define the image with and high based on the size of the blocks and the númber of rows and cols.
         this.high = this.wide = blockSize;
         int iNewWidth = this.columns * blockSize;
         int iNewHight = this.rows * blockSize;
 
         //IMAGE TREATMENT
-        //Image wide and narrow dimensiones
+        //Image wide and narrow dimensions
         int iWide = image.getWidth();
         int iNarrow = image.getHeight();
         int iOffsetW = 0;

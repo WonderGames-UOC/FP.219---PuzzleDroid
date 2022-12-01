@@ -5,104 +5,117 @@
     android:id="@+id/ConstraintLayout_Dialog"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    >
+    android:padding="10dp">
 
 
     <TextView
         android:id="@+id/SelectLevel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="24dp"
         android:gravity="center"
-        android:text="@string/select_level"
+        android:text="Select Difficulty"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txt_UserEnter" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="188dp"
-        android:clipToPadding="true"
-        android:padding="4dp"
+    <TextView
+        android:id="@+id/selectImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="116dp"
+        android:gravity="center"
+        android:text="Select Image"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txt_UserEnter" />
+
+    <RadioGroup
+        android:id="@+id/rbtnDifficulty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="154dp"
+        android:longClickable="true"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.454"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/imageView_Lvl3"
-            android:layout_width="100dp"
-            android:layout_height="200dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/level3" />
-
-        <ImageView
-            android:id="@+id/imageView_Lvl2"
-            android:layout_width="100dp"
-            android:layout_height="200dp"
-            android:cropToPadding="false"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0"
-            app:srcCompat="@drawable/level2" />
-
-        <ImageView
-            android:id="@+id/imageView_Lvl1"
-            android:layout_width="100dp"
-            android:layout_height="200dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/level1" />
-
-        <TextView
-            android:id="@+id/textView4"
+        <RadioButton
+            android:id="@+id/rbtnEasy"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="27dp"
-            android:layout_marginEnd="322dp"
             android:text="Easy"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView_Lvl1"
-            app:layout_constraintVertical_bias="0.2" />
+            android:checked="true"/>
 
-        <TextView
-            android:id="@+id/textView5"
+        <RadioButton
+            android:id="@+id/rbtnMediu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Medium"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView_Lvl2"
-            app:layout_constraintVertical_bias="0.2" />
+            tools:layout_editor_absoluteX="64dp"
+            tools:layout_editor_absoluteY="308dp" />
 
-        <TextView
-            android:id="@+id/textView7"
+        <RadioButton
+            android:id="@+id/rbtnHard"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Hard"
-            android:textSize="20sp"
+            android:layout_gravity="right"
+            android:foregroundGravity="right"
+            android:text="Hard" />
+
+    </RadioGroup>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="244dp"
+        android:clipToPadding="false"
+        android:foregroundGravity="center_horizontal"
+        android:padding="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <Button
+            android:id="@+id/btnDefaultSelect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:gravity="center_vertical"
+            android:text="Default"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btnCameraSelect"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/btnCameraSelect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="Camera"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btnLibrarySelect"
+            app:layout_constraintStart_toEndOf="@+id/btnDefaultSelect" />
+
+        <Button
+            android:id="@+id/btnLibrarySelect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="8dp"
+            android:gravity="center_horizontal|center_vertical"
+            android:text="REEL"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.915"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView_Lvl3"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintStart_toEndOf="@+id/btnCameraSelect" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -110,8 +123,8 @@
         android:id="@+id/txt_UserEnter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="68dp"
-        android:gravity="center_horizontal"
+        android:layout_marginTop="48dp"
+        android:gravity="center_horizontal|center_vertical"
         android:hint="@string/enter_user_name"
         android:textColorHint="@android:color/darker_gray"
         android:textSize="20sp"
@@ -133,5 +146,13 @@
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        app:barrierDirection="top"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="213dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
