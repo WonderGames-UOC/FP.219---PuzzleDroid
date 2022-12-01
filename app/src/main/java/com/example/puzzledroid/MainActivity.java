@@ -4,6 +4,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,8 +12,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.navigation.ui.AppBarConfiguration;
 
 import com.example.puzzledroid.databinding.ActivityMainBinding;
@@ -24,6 +27,16 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
     Context context = this;
     Button play, hs, rs;
     String tag = "MainActivity";
+
+
+    //definimos que permisos queremos pedir
+    int PERMISSION_ALL = 1;
+    String[] PERMISSIONS = {
+            android.Manifest.permission.READ_CALENDAR,
+            android.Manifest.permission.WRITE_CALENDAR,
+            android.Manifest.permission.ACCESS_MEDIA_LOCATION,
+            android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,11 +85,17 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
     }
 // Método para lanzar la pantalla de juego.
     private void startGame(String userName, int puzzres, int imgId) {
-        Intent i = new Intent(this, Game01Activity.class);
-        i.putExtra("userName", userName.toString());
-        i.putExtra("puzzres", puzzres);
-        i.putExtra("imgId", imgId);
-        startActivity(i);
+        if (!hasPermissions(this, PERMISSIONS)) {
+            ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
+            Toast.makeText(this, "Permissions are required in order to run this app!", Toast.LENGTH_SHORT).show();
+
+        } else {
+            Intent i = new Intent(this, Game01Activity.class);
+            i.putExtra("userName", userName.toString());
+            i.putExtra("puzzres", puzzres);
+            i.putExtra("imgId", imgId);
+            startActivity(i);
+        }
     }
     // Método para lanzar la pantalla de puntuaciones.
     private void hScores(){
@@ -85,8 +104,13 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
     }
 
     private void rScores(){
-        Intent r = new Intent(this, CalendarScores.class);
-        startActivity(r);
+        if (!hasPermissions(this, PERMISSIONS)) {
+            ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
+           Toast.makeText(this, "Permissions are required in order to run this app!", Toast.LENGTH_SHORT).show();
+        } else {
+            Intent r = new Intent(this, CalendarScores.class);
+            startActivity(r);
+        }
     }
 
     @Override
@@ -118,5 +142,19 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
     @Override
     public void Result(String username, int puzzres, int imgId) {
         startGame(username, puzzres, imgId);
+    }
+
+
+    //hacer checkeo de los permisos
+    public static boolean hasPermissions(Context context, String... permissions) {
+        if (context != null && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                    Log.d("no permission: ", permission);
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }
