@@ -55,8 +55,12 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
             @Override
             public void onClick(View view)
             {
-                Log.d(tag, "onClick");
-                new custom_dialog_menu(context, MainActivity.this);
+                if (!hasPermissions(context, PERMISSIONS)) {
+                    askForPermissions();
+                } else {
+                    Log.d(tag, "onClick");
+                    new custom_dialog_menu(context, MainActivity.this);
+                }
             }
         });
 
@@ -85,17 +89,13 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
     }
 // Método para lanzar la pantalla de juego.
     private void startGame(String userName, int puzzres, int imgId) {
-        if (!hasPermissions(this, PERMISSIONS)) {
-            ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
-            Toast.makeText(this, "Permissions are required in order to run this app!", Toast.LENGTH_SHORT).show();
 
-        } else {
             Intent i = new Intent(this, Game01Activity.class);
             i.putExtra("userName", userName.toString());
             i.putExtra("puzzres", puzzres);
             i.putExtra("imgId", imgId);
             startActivity(i);
-        }
+
     }
     // Método para lanzar la pantalla de puntuaciones.
     private void hScores(){
@@ -105,8 +105,7 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
 
     private void rScores(){
         if (!hasPermissions(this, PERMISSIONS)) {
-            ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
-           Toast.makeText(this, "Permissions are required in order to run this app!", Toast.LENGTH_SHORT).show();
+            askForPermissions();
         } else {
             Intent r = new Intent(this, CalendarScores.class);
             startActivity(r);
@@ -150,11 +149,17 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
         if (context != null && permissions != null) {
             for (String permission : permissions) {
                 if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
-                    Log.d("no permission: ", permission);
+                    Log.d("No permission ", permission);
                     return false;
                 }
             }
         }
         return true;
     }
+
+    public void askForPermissions() {
+        Toast.makeText(this, "Permissions are required in order to run this app!", Toast.LENGTH_SHORT).show();
+        ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
+    }
+
 }
