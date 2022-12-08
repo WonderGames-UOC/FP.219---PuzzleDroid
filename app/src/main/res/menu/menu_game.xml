@@ -5,14 +5,17 @@
     tools:context="com.example.puzzledroid.Game01Activity">
 
     <item
-        android:id="@+id/action_settings_game"
-        android:orderInCategory="100"
-        android:title="Exit"
-        app:showAsAction="never" />
+        android:id="@+id/musicONOFF"
+        android:title="Music ON" />
     <item
         android:id="@+id/reset_game"
         android:orderInCategory="100"
         android:title="Reset"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_settings_game"
+        android:orderInCategory="100"
+        android:title="Exit"
         app:showAsAction="never" />
 
 </menu>

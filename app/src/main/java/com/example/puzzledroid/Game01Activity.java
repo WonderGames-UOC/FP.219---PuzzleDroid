@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
 import android.media.MediaScannerConnection;
 import android.media.SoundPool;
 import android.net.Uri;
@@ -57,6 +58,7 @@ import gameMechanics.PuzzlePieces;
 import gameMechanics.Selector;
 import gameMechanics.Sounds;
 import gameMechanics.Timer;
+import util.Audio;
 import util.HighScore;
 import util.RandomImageSelector;
 
@@ -90,6 +92,10 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
     //Sound variables.
     private SoundPool soundPool;
     private Sounds sounds;
+
+    //Music variables
+    private MediaPlayer mediaPlayer;
+    private Audio audio;
 
     //Print parameters
     DisplayMetrics dp;
@@ -127,6 +133,10 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         this.soundPool =  sounds.getSoundPool();
 
         notificationManager = NotificationManagerCompat.from(this);
+
+        // Music:
+        mediaPlayer = null;
+        audio = new Audio();
 
 
 
@@ -283,9 +293,9 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                     //INSERT TIME AND COUNTER IN DB
                     String level = "";
                     switch (this.numBlocks){
-                        case 24: level = "Easy";break;
-                        case 32: level = "Medium";break;
-                        case 128: level = "Hard";break;
+                        case Params.EASY: level = "Easy";break;
+                        case Params.MEDIUM: level = "Medium";break;
+                        case Params.HARD: level = "Hard";break;
                         default:
                             level = "Nightmare";break;
                     }
@@ -345,6 +355,14 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                 resetGame();
                 break;
             }
+            case R.id.musicONOFF:{
+                try {
+                    musicOnOff();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+            }
             default:{
                 break;
             }
@@ -352,21 +370,46 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         return super.onOptionsItemSelected(item);
     }
 
-    // Método para lanzar la pantalla de ayuda.
+    /** FUNCIONES MENU ACTION BAR
+     *
+     *
+     */
+    // Exit game.
     private void exitGame() {
         Intent i = new Intent(this, MainActivity.class);
         startActivity(i);
     }
 
-    /**
-     * Restarts the current puzzle game
-     */
+
+    // Restarts the current puzzle game
     private void resetGame(){
         this.puzzleBlocks.shuffle();
         Timer.resetTimer(this.chronometer);
         counter.reset();
         imagePrinter(this.puzzleBlocks);
         Timer.startChronometer(this.chronometer);
+    }
+
+    // Music on/off
+    private void musicOnOff() throws IOException {
+        try {
+            if (mediaPlayer == null) {
+                mediaPlayer.create(this, audio.TRACK1).setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    @Override
+                    public void onPrepared(MediaPlayer mediaPlayer) {
+                        mediaPlayer.start();
+                    }
+                });
+
+            } else {
+                if (mediaPlayer.isPlaying()) {
+                    mediaPlayer.pause();
+                } else {
+                    mediaPlayer.start();
+                }
+            }
+
+        }catch (Exception e){};
     }
 
 
