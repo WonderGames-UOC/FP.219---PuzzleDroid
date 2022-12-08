@@ -24,6 +24,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -70,7 +72,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
     private final CalendarData CalendarData = new CalendarData();
     int imgId, numBlocks;
 
-    public static Context context;
+    public Context context;
 
     private NotificationManagerCompat notificationManager;
 
@@ -373,7 +375,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
 
     //TODO: create class to work with any kind of image or drawable
     /**
-     * Transform a drawable ot a bitmap image. Needs improvement for product 2.
+     * Transform a drawable to a bitmap image. Needs improvement for product 2.
      * @param img
      * @return
      */
@@ -530,17 +532,37 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         viewA = getImageViewByTag(String.valueOf(pieceA.getPosition()));
         viewB = getImageViewByTag(String.valueOf(pieceB.getPosition()));
 
-        //Substitute pieceA values with those of pieceB
+        //Get the imageViews of the blocks
         ImageView vA = findViewById(viewA);
-        vA.setImageBitmap(pieceB.getImage());
-        vA.setTag(pieceB.getPosition());
-        vA.setBackgroundColor(COLORBAD);
-
-        //Substitute pieceB values with those of pieceA
         ImageView vB = findViewById(viewB);
-        vB.setImageBitmap(pieceA.getImage());
-        vB.setTag(pieceA.getPosition());
-        vB.setBackgroundColor(COLORBAD);
+
+        //Animation decrease
+        Animation increase = AnimationUtils.loadAnimation(context, R.anim.increase_blocks);
+        Animation decrease = AnimationUtils.loadAnimation(context, R.anim.reduce_blocks);
+        decrease.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                vB.startAnimation(decrease);
+            }
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                //Substitute pieceA values with those of pieceB
+                vA.setImageBitmap(pieceB.getImage());
+                vA.setTag(pieceB.getPosition());
+                vA.setBackgroundColor(COLORBAD);
+                //Substitute pieceB values with those of pieceA
+                vB.setImageBitmap(pieceA.getImage());
+                vB.setTag(pieceA.getPosition());
+                vB.setBackgroundColor(COLORBAD);
+                //Increase Animation
+                vA.startAnimation(increase);
+                vB.startAnimation(increase);
+            }
+            @Override
+            public void onAnimationRepeat(Animation animation) {}
+        });
+
+        vA.startAnimation(decrease);
 
         //SetBackground color if piece is in the correct position.
         if(puzzleBlocks.checkPiece(posB)){
@@ -607,7 +629,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         return  image;
     }
     /*
-     *This fn prepares and stats the camera intent.
+     *This fn prepares and starts the camera intent.
      */
     private void cameraIntent(){
         //Set the intent for the camera "MediaStore.ACTION_IMAGE_CAPTURE"
