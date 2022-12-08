@@ -373,7 +373,6 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                                 item.setTitle(audio.musicON);
                             }
                         },700);
-
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -416,20 +415,17 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                     @Override
                     public void onPrepared(MediaPlayer mp) {
                         mediaPlayer = mp;
+                        mediaPlayer.setLooping(true);
                         mediaPlayer.start();
-
                     }
                 });
-
             }
             if (mediaPlayer.isPlaying()) {
                 mediaPlayer.pause();
                 ret = false;
             }else{
                 mediaPlayer.start();
-
             }
-
         }catch (Exception e){};
         return ret;
     }
