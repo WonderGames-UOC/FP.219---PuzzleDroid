@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -357,7 +358,23 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
             }
             case R.id.musicONOFF:{
                 try {
-                    musicOnOff();
+                    if (musicOnOff()) {
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                item.setTitle(audio.musicOFF);
+                            }
+                        },700);
+
+                    }else{
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                item.setTitle(audio.musicON);
+                            }
+                        },700);
+
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -391,25 +408,30 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
     }
 
     // Music on/off
-    private void musicOnOff() throws IOException {
+    private boolean musicOnOff() throws IOException {
+        boolean ret = true;
         try {
             if (mediaPlayer == null) {
                 mediaPlayer.create(this, audio.TRACK1).setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                     @Override
-                    public void onPrepared(MediaPlayer mediaPlayer) {
+                    public void onPrepared(MediaPlayer mp) {
+                        mediaPlayer = mp;
                         mediaPlayer.start();
+
                     }
                 });
 
-            } else {
-                if (mediaPlayer.isPlaying()) {
-                    mediaPlayer.pause();
-                } else {
-                    mediaPlayer.start();
-                }
+            }
+            if (mediaPlayer.isPlaying()) {
+                mediaPlayer.pause();
+                ret = false;
+            }else{
+                mediaPlayer.start();
+
             }
 
         }catch (Exception e){};
+        return ret;
     }
 
 
