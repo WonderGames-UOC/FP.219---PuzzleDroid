@@ -61,6 +61,7 @@ import gameMechanics.Sounds;
 import gameMechanics.Timer;
 import util.Audio;
 import util.HighScore;
+import util.MusicPlayer;
 import util.RandomImageSelector;
 
 
@@ -93,10 +94,8 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
     //Sound variables.
     private SoundPool soundPool;
     private Sounds sounds;
-
-    //Music variables
-    private MediaPlayer mediaPlayer;
     private Audio audio;
+    private MusicPlayer musicPlayer ;
 
     //Print parameters
     DisplayMetrics dp;
@@ -136,8 +135,8 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         notificationManager = NotificationManagerCompat.from(this);
 
         // Music:
-        mediaPlayer = null;
-        audio = new Audio();
+        this.audio = new Audio();
+        this.musicPlayer = new MusicPlayer();
 
 
 
@@ -357,25 +356,21 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                 break;
             }
             case R.id.musicONOFF:{
-                try {
-                    if (musicOnOff()) {
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                item.setTitle(audio.musicOFF);
-                            }
-                        },700);
+                if (musicOnOff()) {
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            item.setTitle(audio.musicOFF);
+                        }
+                    },700);
 
-                    }else{
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                item.setTitle(audio.musicON);
-                            }
-                        },700);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
+                }else{
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            item.setTitle(audio.musicON);
+                        }
+                    },700);
                 }
                 break;
             }
@@ -407,27 +402,8 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
     }
 
     // Music on/off
-    private boolean musicOnOff() throws IOException {
-        boolean ret = true;
-        try {
-            if (mediaPlayer == null) {
-                mediaPlayer.create(this, audio.TRACK1).setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                    @Override
-                    public void onPrepared(MediaPlayer mp) {
-                        mediaPlayer = mp;
-                        mediaPlayer.setLooping(true);
-                        mediaPlayer.start();
-                    }
-                });
-            }
-            if (mediaPlayer.isPlaying()) {
-                mediaPlayer.pause();
-                ret = false;
-            }else{
-                mediaPlayer.start();
-            }
-        }catch (Exception e){};
-        return ret;
+    private boolean musicOnOff(){
+        return musicPlayer.audioPlay();
     }
 
 
