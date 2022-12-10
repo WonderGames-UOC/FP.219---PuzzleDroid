@@ -5,12 +5,10 @@
     android:id="@+id/imageView_game01Activity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Game01Activity"
-
     android:screenOrientation="portrait"
-    >
-    <!-- https://stackoverflow.com/questions/2730855/prevent-screen-rotation-on-android -->
 
+    tools:context=".Game01Activity">
+    <!-- https://stackoverflow.com/questions/2730855/prevent-screen-rotation-on-android -->
 
 
     <!-- BUTTONS FOR TESTING
@@ -54,6 +52,7 @@
 
     </LinearLayout>
 -->
+
     <LinearLayout
         android:id="@+id/puzzle_view"
         android:layout_width="0dp"
@@ -62,47 +61,67 @@
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"></LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/final_layout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintVertical_bias="1.0">
 
+        <ImageView
+            android:id="@+id/final_img"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center|fill"
+            tools:srcCompat="@tools:sample/avatars" />
     </LinearLayout>
-<!--
-    <Chronometer
-        android:id="@+id/chronometer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:background="#CCA60000"
-        android:radius="4dp"
-        android:textColor="@color/white"
-        android:textSize="20sp"
-        android:visibility="visible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <!--
+        <Chronometer
+            android:id="@+id/chronometer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:background="#CCA60000"
+            android:radius="4dp"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/counter"
-        android:layout_width="66dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="24dp"
-        android:background="#CCA60000"
-        android:clickable="false"
-        android:editable="false"
-        android:ems="10"
-        android:inputType="text"
-        android:paddingRight="@dimen/fab_margin"
-        android:radius="4dp"
-        android:singleLine="true"
-        android:text="0"
-        android:textAlignment="textEnd"
-        android:textColor="@color/white"
-        android:textSize="20sp"
-        android:visibility="visible"
-        app:layout_constraintEnd_toStartOf="@+id/chronometer"
-        app:layout_constraintTop_toTopOf="parent" />
--->
+        <EditText
+            android:id="@+id/counter"
+            android:layout_width="66dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="24dp"
+            android:background="#CCA60000"
+            android:clickable="false"
+            android:editable="false"
+            android:ems="10"
+            android:inputType="text"
+            android:paddingRight="@dimen/fab_margin"
+            android:radius="4dp"
+            android:singleLine="true"
+            android:text="0"
+            android:textAlignment="textEnd"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:visibility="visible"
+            app:layout_constraintEnd_toStartOf="@+id/chronometer"
+            app:layout_constraintTop_toTopOf="parent" />
+    -->
 </androidx.constraintlayout.widget.ConstraintLayout>

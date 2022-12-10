@@ -1,5 +1,7 @@
 package com.example.puzzledroid;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -43,8 +45,10 @@ import androidx.lifecycle.Observer;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -71,8 +75,10 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
     private final gameMechanics.Timer Timer = new Timer();
     private final CalendarData CalendarData = new CalendarData();
     int imgId, numBlocks;
+    Bitmap image;
 
     public Context context;
+    private LinearLayout layout;
 
     private NotificationManagerCompat notificationManager;
 
@@ -85,7 +91,8 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
     private Selector selector;
     private Counter counter;
     private String userName;
-    //TODO move this settings to DB or XML.
+
+    //TODO move this settings to DB or XML. Param class??
     private final int COLORGOOD = Color.WHITE;
     private final int COLORBAD = Color.GRAY;
 
@@ -144,6 +151,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
 
         //Gets the info selected by the user and stores it for the game start
         Bundle data = getIntent().getExtras();
+        layout = (LinearLayout) findViewById(R.id.puzzle_view);
         try{
             this.imgId = (int) data.getInt("imgId");
             this.numBlocks = (int)data.getInt("puzzres");
@@ -152,17 +160,13 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
             switch (imgId){
                 case Params.DEFAULT:
                     Log.d(TAG, "DEFAULT");
-
-                    findViewById(R.id.puzzle_view).setBackground(
-                            getDrawable(
-                                    imgId = Params.imageRandomReturn()
-                            ));
+                    layout.setBackgroundColor(COLORGOOD);
                     //Init variables
                     this.selector = new Selector();
                     this.counter = new Counter();
 
                     //Starts the puzzle
-                    startPuzzle(numBlocks, getDrawable(imgId));
+                    startPuzzle(numBlocks, getDrawable(Params.imageRandomReturn()));
                     break;
                 case Params.GALLERY:
                     try {
@@ -171,32 +175,37 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                         rndSel.setCallback(this);
                         rndSel.rndImgAlt();
                     }catch (Exception e){
-
+                        Log.e(TAG, e.getMessage());
+                        onErrorLaunchErrPuzzle();
                     }
-
                     break;
                 case Params.CAMERA:
                     Log.d(TAG, "Camera");
-                    cameraIntent();
+                    try{
+                        cameraIntent();
+                    }catch (Exception e){
+                        Log.e(TAG,e.getMessage());
+                        onErrorLaunchErrPuzzle();
+                    }
                     break;
                 default:
                     //Set initial background image
-                    findViewById(R.id.puzzle_view).setBackground(getDrawable(imgId));
+                    layout.setBackgroundColor(COLORGOOD);
                     //Starts the puzzle
-                    startPuzzle(numBlocks, getDrawable(imgId));
+                    startPuzzle(numBlocks, getDrawable(Params.imageRandomReturn()));
                     break;
             }
-        }catch (Exception e) {
+        }catch (Exception e) { //If error, then an error puzzle image is launch.
             Log.e(TAG, e.getMessage());
             onErrorLaunchErrPuzzle();
         }
         FullScreencall();
     }
-    private void onErrorLaunchErrPuzzle(){
-        imgId = R.drawable.level1;
-        numBlocks = 4;
+    private void onErrorLaunchErrPuzzle(){ //Loads an error puzzle image.
+        imgId = R.drawable.oops;
+        numBlocks = 2;
         //Set initial background image
-        findViewById(R.id.puzzle_view).setBackground(getDrawable(imgId));
+        //findViewById(R.id.puzzle_view).setForeground(getDrawable(imgId));
         //Init variables
         this.selector = new Selector();
         this.counter = new Counter();
@@ -234,6 +243,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
             Timer.startChronometer(chronometer);
         }catch (Exception e){
             Log.e(TAG, e.getMessage());
+            onErrorLaunchErrPuzzle();
         }
     }
 
@@ -282,12 +292,16 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                     Timer.pauseChronometer(chronometer);
                     Log.d(TAG, Timer.offsetString);
 
+                    //TODO: INSERT VICTORY ANIMATION
+                    finalAnimation(getAllBlocksImageView());
+
                     //INSERT TIME AND COUNTER IN DB
                     String level = "";
                     switch (this.numBlocks){
-                        case 24: level = "Easy";break;
-                        case 32: level = "Medium";break;
-                        case 128: level = "Hard";break;
+                        case Params.EASY: level = "Easy";break;
+                        case Params.MEDIUM: level = "Medium";break;
+                        case Params.HARD: level = "Hard";break;
+                        case Params.NIGHTMARE:
                         default:
                             level = "Nightmare";break;
                     }
@@ -302,7 +316,6 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
 
 
                     //crear y lanzar la notificación
-
                     //al hacer click en la notificación veremos las scores
                     Intent intent = new Intent(this, CalendarScores.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -326,6 +339,8 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                 break;
         }
     }
+
+    //Options menu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -372,8 +387,6 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
     }
 
 
-
-    //TODO: create class to work with any kind of image or drawable
     /**
      * Transform a drawable to a bitmap image. Needs improvement for product 2.
      * @param img
@@ -404,15 +417,16 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         DisplayMetrics dp = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dp);
 
-        //Get the high of the action bar bar high
+        //Get the high of the action bar
+        //The action bar high is needed to help to perfectly fit the img on the screen.
         int barHigh = 0;
         TypedValue tv = new TypedValue();
         if (getTheme().resolveAttribute(androidx.appcompat.R.attr.actionBarSize, tv, true)) {
             barHigh = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
         }
-        //The action bar high is needed to ajust the screen high to one available, so is subtracted.
-
         Log.d(TAG, "ActionBar size: " + String.valueOf(barHigh) + "\nDp.H: " + dp.heightPixels + "\nDp.W: " + dp.widthPixels);
+
+        //TODO: Detect none hideable navigation bars.TO ADJUST IMAGE. (We can use the layout "@+id/puzzle_view" size).
 
         //Divide the image
         ImageDivider images = new ImageDivider(numOfPieces, image);
@@ -425,6 +439,10 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         //images.divideImageInSquares((int)(dp.heightPixels*0.96), dp.widthPixels);
         this.rows = images.getRows();
         this.columns = images.getColumns();
+        this.image = images.getImage();
+
+        Log.d(TAG, "\nWIDTH: " + image.getWidth() +
+                "\nHEIGHT: " + image.getHeight());
 
         //Build the blocks
         puzzleBlocks.genPiecesCollection(images.getImages());
@@ -435,11 +453,12 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
     }
 
     //TODO: move these functions to a class. All this need a huge refactor.
+    //Method that prints all the puzzle blocks on the screen.
     private void imagePrinter(PuzzlePieces blocks){
         Log.d(TAG, "imagePrinter");
 
         //Definimos los atributos de los Linealayouts que conformarán la estructura.
-        //TODO: Definir estos parámetros fura del método.
+        //TODO: Move these params out side the method.
         LinearLayout.LayoutParams mainLpParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -521,6 +540,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         mainLp.setBackgroundResource(0);    //Background image off.
         mainLp.setBackgroundColor(Color.GRAY); //Black background smooths image downsize on sides.
     }
+    //Method that exchange the images and tags of two given ImageViews. Call whenever two blocks are selected.
     private void lightPrint(int posA, int posB){
         int viewA, viewB; //stores the views ID
 
@@ -536,7 +556,10 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         ImageView vA = findViewById(viewA);
         ImageView vB = findViewById(viewB);
 
-        //Animation decrease
+        //Blocks animations
+        //https://stackoverflow.com/questions/5321344/android-animation-wait-until-finished
+        //https://www.youtube.com/watch?v=Uteyf-THpp4
+        //mImageView.animate().rotation(180f).setDuration(5000).start()
         Animation increase = AnimationUtils.loadAnimation(context, R.anim.increase_blocks);
         Animation decrease = AnimationUtils.loadAnimation(context, R.anim.reduce_blocks);
         decrease.setAnimationListener(new Animation.AnimationListener() {
@@ -561,7 +584,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
             @Override
             public void onAnimationRepeat(Animation animation) {}
         });
-
+        //Start animation
         vA.startAnimation(decrease);
 
         //SetBackground color if piece is in the correct position.
@@ -572,6 +595,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
             vB.setBackgroundColor(COLORGOOD);
         }
     }
+    //Method that returns an ImageView by its tag attribute.
     private int getImageViewByTag(String tag){
         int id = -1;
         LinearLayout mainLp = (LinearLayout) findViewById(R.id.puzzle_view);
@@ -586,7 +610,66 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                 }
             }
         }
-        return id; //TODO Error control from this return.
+        return id; //TODO: Error control from this return. Not need it¿?
+    }
+
+    //Method to hide all the puzzle blocks ImageViews. Animation included. To be call whenever the puzzle is finished.
+    private void finalAnimation(ArrayList<View> list){
+        Log.d(TAG, "finalAnimation");
+        Random random = new Random();
+        int pos = random.ints(0,list.size()).findFirst().getAsInt();
+        View view = list.get(pos);
+        list.remove(view);
+        //Animation
+        ObjectAnimator alpha = ObjectAnimator.ofFloat(view, View.ALPHA, 1.0f, 0.0f);
+        alpha.setDuration(250);
+        alpha.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {}
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                if(list.size() > 0){
+                    finalAnimation(list);
+                }else{
+                    Log.d(TAG, "EXIT");
+                    layout.removeAllViews();
+                    imageComplete();
+                }
+            }
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+        alpha.start();
+    }
+    private ArrayList<View> getAllBlocksImageView(){
+        ArrayList<View> list = new ArrayList<View>();
+        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.puzzle_view);
+        for(int i = 0; i < linearLayout.getChildCount(); i++){
+            LinearLayout rowLayout = (LinearLayout) linearLayout.getChildAt(i);
+            for(int j = 0; j < rowLayout.getChildCount();j++){
+                list.add(rowLayout.getChildAt(j));
+            }
+        }
+        return list;
+    }
+    private void imageComplete(){
+        LinearLayout ll = findViewById(R.id.final_layout);
+        ImageView iv = findViewById(R.id.final_img);
+        iv.setImageBitmap(image);
+        iv.setClickable(false);
+        layout.setVisibility(View.GONE);
+        ll.setVisibility(View.VISIBLE);
+        ll.setBackgroundColor(COLORGOOD);
+
+        ObjectAnimator alpha2 = ObjectAnimator.ofFloat(iv, View.ALPHA, 0.0f, 1.0f);
+        alpha2.setDuration(1000);
+        alpha2.start();
     }
 
     public String getDate(){
@@ -714,5 +797,40 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
             int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
             decorView.setSystemUiVisibility(uiOptions);
         }
+    }
+}
+
+class ImageViewBlockItem {
+    private int id;
+    private String tag;
+    private Boolean state;
+
+    public ImageViewBlockItem(){
+        tag = "";
+        state = true;
+    }
+    public ImageViewBlockItem(int id, String tag){
+        this.id = id;
+        this.tag = tag;
+        state = true;
+    }
+
+    public int getId() {
+        return id;
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
+    public String getTag() {
+        return tag;
+    }
+    public void setTag(String tag) {
+        this.tag = tag;
+    }
+    public Boolean getState() {
+        return state;
+    }
+    public void setState(Boolean state) {
+        this.state = state;
     }
 }

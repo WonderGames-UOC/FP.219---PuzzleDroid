@@ -170,10 +170,10 @@ public class ImageDivider {
                 "\n Block Area: " + blockArea +
                 "\n Block Size: " + blockSize);
 
-        //Define the image with and high based on the size of the blocks and the númber of rows and cols.
+        //Define the image with and high based on the size of the blocks and the number of rows and cols.
         this.high = this.wide = blockSize;
         int iNewWidth = this.columns * blockSize;
-        int iNewHight = this.rows * blockSize;
+        int iNewHeight = this.rows * blockSize;
 
         //IMAGE TREATMENT
         //Image wide and narrow dimensions
@@ -218,7 +218,7 @@ public class ImageDivider {
         Bitmap bm;
         Matrix matrix = new Matrix();
         matrix.postRotate(90);
-        //Bitmap.createBitmap(image, x, y, wide, high);
+        //Bitmap.createBitmap(image, x, y, wide, height);
         Log.d(TAG, "Image chuck that fits the screen dimensions: "+
                 "\nNarrow: " + (iOffsetN + iNarrow-1) +
                 "\n Wide: " + (iOffsetW + iWide));
@@ -228,15 +228,16 @@ public class ImageDivider {
             bm = Bitmap.createBitmap(this.image, iOffsetN+0, iOffsetW+0, iNarrow+0, iWide+0);
         }else {
             Log.d(TAG, "Image cut orientation:" + "\niWide vs image.Width: " + (iWide+iOffsetW) + " vs " + image.getWidth() +
-                    "\n iNarrow vs image.Hight: " + (iNarrow+iOffsetN) + " vs " + image.getHeight());
+                    "\n iNarrow vs image.Height: " + (iNarrow+iOffsetN) + " vs " + image.getHeight());
             bm = Bitmap.createBitmap(this.image,  iOffsetW+0,iOffsetN+0, iWide+0, iNarrow-0);
             bm = Bitmap.createBitmap(this.image, 0,0, bm.getWidth(),bm.getHeight(),matrix, true);
         }
         this.image = bm;
 
         //Scalate the image based on the screen size and number of the square blocks.
-        Bitmap scaledImage = Bitmap.createScaledBitmap(image, iNewWidth, iNewHight, true);
+        Bitmap scaledImage = Bitmap.createScaledBitmap(image, iNewWidth, iNewHeight, true);
         imageDivider(scaledImage);
+        this.image = scaledImage;
     }
 
     /**
@@ -352,27 +353,21 @@ public class ImageDivider {
     public ArrayList<Bitmap> getImages() {
         return images;
     }
-
     public int getBarHight() {
         return barHight;
     }
-
     public void setBarHight(int barHight) {
         this.barHight = barHight;
     }
-
     public int getsHight() {
         return sHight;
     }
-
     public void setsHight(int sHight) {
         this.sHight = sHight;
     }
-
     public int getsWidth() {
         return sWidth;
     }
-
     public void setsWidth(int sWidth) {
         this.sWidth = sWidth;
     }
