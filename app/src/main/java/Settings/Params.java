@@ -23,6 +23,11 @@ public final class Params {
     public final int IMAGE_FITSCREENWIDE = 0;
     public final int IMAGE_FITSCREENHIGH = 1;
 
+    //MUSIC
+    //https://freemusicarchive.org
+    public static final int SONGA = R.raw.mind_reader_blues;
+    public static final int SONGB = R.raw.baby_please_dont_go;
+    public static final int SONGC = R.raw.somebody_knockin;
 
 
     // Función  que devuelve una imagen aleatoria de las propuestas inicialmente para el juego.

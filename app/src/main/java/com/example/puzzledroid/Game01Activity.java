@@ -54,6 +54,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import Settings.Params;
+import Settings.Player;
 import dbHelper.SQLiteHelper;
 import gameMechanics.CalendarData;
 import gameMechanics.Counter;
@@ -64,6 +65,7 @@ import gameMechanics.Selector;
 import gameMechanics.Sounds;
 import gameMechanics.Timer;
 import util.HighScore;
+import util.Music;
 import util.RandomImageSelector;
 
 
@@ -83,7 +85,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
     private NotificationManagerCompat notificationManager;
 
     //¡¡NO BORRAR!! Etiqueta para el depurador.
-    private final String TAG = "Game01Activity";
+    private final String TAG = Game01Activity.class.getSimpleName();
 
     //Game mechanics variables.
     private PuzzlePieces puzzleBlocks;
@@ -116,6 +118,39 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
 
     ExecutorService executorService = Executors.newFixedThreadPool(4);
 
+    //Music variables
+    private Player player;
+
+    @Override
+    protected void onPause() {
+        Log.d(TAG, "onPause");
+        Intent i = new Intent();
+        sendBroadcast(i.setAction("PAUSE"));
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        Log.d(TAG, "onResume");
+        Intent i = new Intent();
+        sendBroadcast(i.setAction("PLAY"));
+        super.onResume();
+    }
+
+    @Override
+    protected void onStop() {
+        Log.d(TAG, "onStop");
+        Intent i = new Intent();
+        sendBroadcast(i.setAction("PAUSE"));
+        super.onStop();
+    }
+    protected void onStart(){
+        Log.d(TAG, "onStart");
+        Intent i = new Intent();
+        sendBroadcast(i.setAction("PLAY"));
+        super.onStart();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //¡¡NO BORRAR!! Registro para el depurador.
@@ -137,8 +172,6 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
 
         notificationManager = NotificationManagerCompat.from(this);
 
-
-
         listen.observe(this, new Observer<Bitmap>() {
             @Override
             public void onChanged(Bitmap b) {
@@ -152,6 +185,16 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         //Gets the info selected by the user and stores it for the game start
         Bundle data = getIntent().getExtras();
         layout = (LinearLayout) findViewById(R.id.puzzle_view);
+        try {
+            Player.setContext(this.context);
+            Intent musicService = new Intent(
+                    getApplicationContext(), Music.class
+            );
+            startService(musicService);
+        }catch (Exception e){
+            Log.e(TAG, e.getMessage());
+        }
+
         try{
             this.imgId = (int) data.getInt("imgId");
             this.numBlocks = (int)data.getInt("puzzres");

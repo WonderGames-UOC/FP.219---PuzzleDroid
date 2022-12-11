@@ -89,7 +89,16 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+        <service
+            android:name="util.Music"
+            android:enabled="true"
+            android:exported="true"
+            >
+        </service>
 
+
+
+        <receiver android:name="util.Music" />
     </application>
 
 </manifest>

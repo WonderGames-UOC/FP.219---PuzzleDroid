@@ -23,17 +23,18 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
     private ActivityMainBinding binding;
     Context context = this;
     Button play, hs, rs;
-    String tag = "MainActivity";
+    private static String TAG = MainActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(tag, "onCreate");
+        Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         play = findViewById(R.id.button);
         hs = findViewById(R.id.button2);
         rs = findViewById(R.id.recentScoresButton);
+
 
         //NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         //appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
@@ -42,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
             @Override
             public void onClick(View view)
             {
-                Log.d(tag, "onClick");
+                Log.d(TAG, "onClick");
                 new custom_dialog_menu(context, MainActivity.this);
             }
         });
@@ -50,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
         hs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(tag,"High Scores Click");
+                Log.d(TAG,"High Scores Click");
                 hScores();
             }
         });
@@ -58,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
         rs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(tag,"Recent Scores Click");
+                Log.d(TAG,"Recent Scores Click");
                 rScores();
             }
         });
@@ -106,7 +107,6 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
         if (id == R.id.action_settings) {
             showHelpPage();
         }
-
         return super.onOptionsItemSelected(item);
     }
     // Método para lanzar la pantalla de ayuda.
