@@ -856,6 +856,9 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         sendBroadcast(i.setAction("PLAY"));
     }
 
+    public void onCtrlClick(View view){
+        view.callOnClick();
+    }
 }
 
 class ImageViewBlockItem {
