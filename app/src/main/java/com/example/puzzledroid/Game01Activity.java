@@ -119,7 +119,8 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
     ExecutorService executorService = Executors.newFixedThreadPool(4);
 
     //Music variables
-    private Player player;
+    Intent musicService;
+    Player player;
 
     @Override
     protected void onPause() {
@@ -128,7 +129,6 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         sendBroadcast(i.setAction("PAUSE"));
         super.onPause();
     }
-
     @Override
     protected void onResume() {
         Log.d(TAG, "onResume");
@@ -136,7 +136,6 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         sendBroadcast(i.setAction("PLAY"));
         super.onResume();
     }
-
     @Override
     protected void onStop() {
         Log.d(TAG, "onStop");
@@ -144,13 +143,18 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         sendBroadcast(i.setAction("PAUSE"));
         super.onStop();
     }
+    @Override
     protected void onStart(){
         Log.d(TAG, "onStart");
         Intent i = new Intent();
         sendBroadcast(i.setAction("PLAY"));
         super.onStart();
     }
-
+    @Override
+    protected void onDestroy() {
+        stopService(musicService);
+        super.onDestroy();
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //¡¡NO BORRAR!! Registro para el depurador.
@@ -186,8 +190,8 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         Bundle data = getIntent().getExtras();
         layout = (LinearLayout) findViewById(R.id.puzzle_view);
         try {
-            Player.setContext(this.context);
-            Intent musicService = new Intent(
+            player.setContext(this.context);
+            musicService = new Intent(
                     getApplicationContext(), Music.class
             );
             startService(musicService);

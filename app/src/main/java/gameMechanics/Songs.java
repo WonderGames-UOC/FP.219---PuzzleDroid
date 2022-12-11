@@ -5,13 +5,10 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.util.Log;
 
-import java.util.Observable;
-import java.util.Observer;
-
-import Settings.Params;
 import Settings.Player;
 
-public class Songs extends Thread implements Observer {
+
+public class Songs extends Thread{
     private final String TAG = Songs.class.getSimpleName();
     private Context context;
     private Player player;
@@ -19,8 +16,15 @@ public class Songs extends Thread implements Observer {
 
     public Songs() {
         Log.d(TAG, "Constructor");
-        this.context = Player.getContext();
-        mp = MediaPlayer.create(context, Params.SONGA);
+        this.context = Player.context;
+        mp = MediaPlayer.create(context, Player.selectedSong);
+        mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mp.setLooping(true);
+    }
+    public Songs(Context context) {
+        Log.d(TAG, "Constructor");
+        this.context = context;
+        mp = MediaPlayer.create(context, Player.selectedSong);
         mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mp.setLooping(true);
     }
@@ -38,17 +42,9 @@ public class Songs extends Thread implements Observer {
     public void stopMusic(){
         mp.stop();
     }
-    @Override
-    public void update(Observable observable, Object arg) {
-        player = (Player) observable;
-        Log.d(TAG, "Observable: " + player.getPlay() + " / " + player.getPause());
-        if(player.getPlay()){
-            if(player.getPause()){
-                mp.pause();
-            }else{
-                mp.start();
-            }
-        }
+    public void release(){
+        stopMusic();
+        mp.release();
     }
     public Context getContext() {
         return context;

@@ -38,7 +38,7 @@ public class Music extends Service {
     /* NOTES:
         stopSelf() => called inside the service, stops the service.
         By default a service execute itself in the main thread.
-        Second threads launch on a service should be always kill inside the method onDestroy().
+        Second threads launched on a service should be always kill inside the method onDestroy().
         Executing a service a second time create another instance of the service.
      */
     /* The subclass IntentService
@@ -52,7 +52,7 @@ public class Music extends Service {
 
     public Music() {
         Log.d(TAG, "Constructor");
-        songs = new Songs();
+
     }
 
     @Nullable
@@ -65,6 +65,7 @@ public class Music extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) { //Call whenever the service receives a call by the method startService().
         Log.d(TAG, "onStartCommand");
+        songs = new Songs(getApplicationContext());
         registerReceiver(msb, new IntentFilter("PAUSE"));
         registerReceiver(msb, new IntentFilter("PLAY"));
         play();
@@ -101,6 +102,7 @@ public class Music extends Service {
     public void onDestroy() { //It's important to kill all threads the service is managing in this method.
         Log.d(TAG, "onDestroy");
         unregisterReceiver(msb);
+        songs.release();
         super.onDestroy();
     }
 

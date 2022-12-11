@@ -30,6 +30,7 @@ public final class Params {
     public static final int SONGC = R.raw.somebody_knockin;
 
 
+
     // Función  que devuelve una imagen aleatoria de las propuestas inicialmente para el juego.
     public static int imageRandomReturn(){
         List<Integer> image = Arrays.asList(R.drawable.level1, R.drawable.level2, R.drawable.level3);
