@@ -125,29 +125,25 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
     @Override
     protected void onPause() {
         Log.d(TAG, "onPause");
-        Intent i = new Intent();
-        sendBroadcast(i.setAction("PAUSE"));
+        pauseMusic();
         super.onPause();
     }
     @Override
     protected void onResume() {
         Log.d(TAG, "onResume");
-        Intent i = new Intent();
-        sendBroadcast(i.setAction("PLAY"));
+        playMusic();
         super.onResume();
     }
     @Override
     protected void onStop() {
         Log.d(TAG, "onStop");
-        Intent i = new Intent();
-        sendBroadcast(i.setAction("PAUSE"));
+        pauseMusic();
         super.onStop();
     }
     @Override
     protected void onStart(){
         Log.d(TAG, "onStart");
-        Intent i = new Intent();
-        sendBroadcast(i.setAction("PLAY"));
+        playMusic();
         super.onStart();
     }
     @Override
@@ -845,6 +841,21 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
             decorView.setSystemUiVisibility(uiOptions);
         }
     }
+
+    //Music pause
+    private void pauseMusic(){
+        Intent i = new Intent();
+        sendBroadcast(i.setAction("PAUSE"));
+    }
+    private void stopMusic(){
+        Intent i = new Intent();
+        sendBroadcast(i.setAction("STOP"));
+    }
+    private void playMusic(){
+        Intent i = new Intent();
+        sendBroadcast(i.setAction("PLAY"));
+    }
+
 }
 
 class ImageViewBlockItem {
