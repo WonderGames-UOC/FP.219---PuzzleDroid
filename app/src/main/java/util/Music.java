@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.SoundPool;
-import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -14,9 +13,12 @@ import androidx.annotation.Nullable;
 
 import gameMechanics.Songs;
 
+//https://www.youtube.com/watch?v=r_MbozD32eo
+//https://www.develou.com/tutorial-para-crear-un-servicio-en-android/
+//https://developer.android.com/guide/components/services
 
 public class Music extends Service {
-    Handler HN = new Handler();
+
     /*
      There ara two class of services, the ones called by startService() and the ones bind to a component by bindService().
      startServices => runs until the task is completed or the destroy method is called.
@@ -102,6 +104,7 @@ public class Music extends Service {
         super.onDestroy();
     }
 
+    //https://stackoverflow.com/questions/21618757/android-how-to-stop-service-playing-music-when-pausing-app/21619248#21619248
     public class MusicServiceBroadCast extends BroadcastReceiver { //Receive instructions from Game01Activity
         @Override
         public void onReceive(Context context, Intent intent) {
