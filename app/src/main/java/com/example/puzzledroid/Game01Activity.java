@@ -182,9 +182,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
             }
         });
 
-        //Gets the info selected by the user and stores it for the game start
-        Bundle data = getIntent().getExtras();
-        layout = (LinearLayout) findViewById(R.id.puzzle_view);
+        //Music service start
         try {
             player.setContext(this.context);
             musicService = new Intent(
@@ -195,6 +193,9 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
             Log.e(TAG, e.getMessage());
         }
 
+        //Gets the info selected by the user and stores it for the game start
+        Bundle data = getIntent().getExtras();
+        layout = (LinearLayout) findViewById(R.id.puzzle_view);
         try{
             this.imgId = (int) data.getInt("imgId");
             this.numBlocks = (int)data.getInt("puzzres");

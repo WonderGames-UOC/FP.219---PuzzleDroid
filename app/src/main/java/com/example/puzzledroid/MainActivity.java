@@ -17,6 +17,8 @@ import androidx.navigation.ui.AppBarConfiguration;
 
 import com.example.puzzledroid.databinding.ActivityMainBinding;
 
+import dbHelper.SQLiteHelper;
+
 public class MainActivity extends AppCompatActivity implements custom_dialog_menu.returnDialogMenu {
 
     private AppBarConfiguration appBarConfiguration;
@@ -34,6 +36,10 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
         play = findViewById(R.id.button);
         hs = findViewById(R.id.button2);
         rs = findViewById(R.id.recentScoresButton);
+
+        Log.d(TAG, "Check files table exist.");
+        SQLiteHelper db = new SQLiteHelper(this, "BD1_HighScores", null, 1);
+        db.checkTableFilesExist();
 
 
         //NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
