@@ -3,6 +3,7 @@ package dbHelper;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
@@ -156,10 +157,12 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         }
         return res;
     }
-    public List<String> getNotUsedFiles(){
+    public List<String> getNotUsedFilesPath(){
         Log.d(TAG, "getNotUsedFiles");
+        SQLiteDatabase db = getReadableDatabase();
+        String[] arg = {"-1"};
         List<String> paths = new ArrayList<String>();
-        Cursor cursor = getReadableDatabase().rawQuery("SELECT Path FROM ImageFiles WHERE Seen < 0", null);
+        Cursor cursor = db.rawQuery("SELECT * FROM ImageFiles WHERE Seen = ?", arg);
         cursor.moveToFirst();
         for(int i = 0; i < cursor.getCount(); i++){
             paths.add(cursor.getString(0));
@@ -167,10 +170,11 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         }
         return paths;
     }
-    public List<String> getAllFiles(){
+    public List<String> getAllFilesPath(){
         Log.d(TAG, "getAllFiles");
+        SQLiteDatabase db = getReadableDatabase();
         List<String> paths = new ArrayList<String>();
-        Cursor cursor = getReadableDatabase().rawQuery("SELECT Path FROM ImageFiles", null);
+        Cursor cursor = db.rawQuery("SELECT Path FROM ImageFiles", null, null);
         cursor.moveToFirst();
         for(int i = 0; i < cursor.getCount(); i++){
             paths.add(cursor.getString(0));
@@ -178,16 +182,24 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         }
         return paths;
     }
-    public List<String> getUsedFiles(){
+    public List<String> getUsedFilesPath(){
         Log.d(TAG, "getUsedFiles");
+        String[] arg = {"0"};
         List<String> paths = new ArrayList<String>();
-        Cursor cursor = getReadableDatabase().rawQuery("SELECT Path FROM ImageFiles WHERE Seen = 0", null);
+        Cursor cursor = getReadableDatabase().rawQuery("SELECT Path FROM ImageFiles WHERE Seen = ?", null);
         cursor.moveToFirst();
         for(int i = 0; i < cursor.getCount(); i++){
             paths.add(cursor.getString(0));
             cursor.moveToNext();
         }
         return paths;
+    }
+    public Cursor getNotUsedFiles(){
+        Log.d(TAG, "getNotUsedFiles");
+        SQLiteDatabase db = getReadableDatabase();
+        String[] arg = {"-1"};
+        Cursor cursor = db.rawQuery("SELECT * FROM ImageFiles WHERE Seen = ?", arg);
+        return cursor;
     }
     public long updateFile(String path){
         Log.d(TAG, "updateFile");
@@ -223,6 +235,40 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             Log.e(TAG, "resetFiles err: " + e.getMessage());
         }
         return res;
+    }
+    public long countFilesInDb(){
+        SQLiteDatabase db = getWritableDatabase();
+        long size = 0;
+        checkTableFilesExist();
+        size = DatabaseUtils.queryNumEntries(db, "ImageFiles");
+        return  size;
+    }
+    public long countFilesInDb(int status){ //Status can be -1 not seen or 0 seen.
+        String[] arg = {String.valueOf(status)};
+        SQLiteDatabase db = getWritableDatabase();
+        long size = 0;
+        checkTableFilesExist();
+        size = DatabaseUtils.queryNumEntries(db, "ImageFiles","Seen=?", arg);
+        return  size;
+    }
+    public String getFilePath(int index){
+        SQLiteDatabase db = getReadableDatabase();
+        String[] arg = {String.valueOf(index)};
+        Cursor cursor = db.rawQuery("SELECT Path FROM ImageFiles WHERE _ID = ?", arg);
+        cursor.moveToFirst();
+        return cursor.getString(0);
+    }
+    public void setFileAsUsed(int index){
+        SQLiteDatabase db = getReadableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("Seen", 0);
+        String[] arg = {String.valueOf(index)};
+        try{
+            db.update("ImageFiles", contentValues, "_ID=?", arg);
+        }catch (Exception e){
+            Log.e(TAG, "SetFileAsUsed; " + e.getMessage());
+        }
+
     }
 }
 

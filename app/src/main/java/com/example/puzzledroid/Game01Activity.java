@@ -217,7 +217,8 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                         Log.d(TAG, "GALLERY");
                         RandomImageSelector rndSel = new RandomImageSelector(this, executorService);
                         rndSel.setCallback(this);
-                        rndSel.rndImgAlt();
+                        //rndSel.rndImgAlt();
+                        rndSel.rndImgPathFromDB();
                     }catch (Exception e){
                         Log.e(TAG, e.getMessage());
                         onErrorLaunchErrPuzzle();

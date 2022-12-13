@@ -17,7 +17,11 @@ import androidx.navigation.ui.AppBarConfiguration;
 
 import com.example.puzzledroid.databinding.ActivityMainBinding;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import dbHelper.SQLiteHelper;
+import util.RandomImageSelector;
 
 public class MainActivity extends AppCompatActivity implements custom_dialog_menu.returnDialogMenu {
 
@@ -40,7 +44,17 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
         Log.d(TAG, "Check files table exist.");
         SQLiteHelper db = new SQLiteHelper(this, "BD1_HighScores", null, 1);
         db.checkTableFilesExist();
-
+        if(db.countFilesInDb(-1) < 1){ //Check there is at least one picture not seen
+            if(db.countFilesInDb() < 1){
+                Log.d(TAG, "Loading files path in DB.");
+                ExecutorService executorService = Executors.newFixedThreadPool(2);
+                RandomImageSelector rsi = new RandomImageSelector(getApplicationContext(), executorService);
+                rsi.loadFilesInDb();
+            }else{
+                Log.d(TAG, "Reset all files to be used again.");
+                db.resetFiles();
+            }
+        }
 
         //NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         //appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();

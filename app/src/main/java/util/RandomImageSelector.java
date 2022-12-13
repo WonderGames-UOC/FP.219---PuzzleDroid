@@ -11,6 +11,9 @@ import android.util.Log;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ThreadLocalRandom;
+
+import dbHelper.SQLiteHelper;
 
 public class RandomImageSelector {
     //https://guides.codepath.com/android/Accessing-the-Camera-and-Stored-Media
@@ -111,6 +114,42 @@ public class RandomImageSelector {
         });
     }
 
+    public void loadFilesInDb(){
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                ArrayList<String> filesPath = new ArrayList<String>();
+                filesPath = dataCollector();
+                SQLiteHelper db = new SQLiteHelper(context, "BD1_HighScores", null, 1);
+                for(int i = 0; i < filesPath.size(); i++){
+                    db.insertFile(filesPath.get(i));
+                }
+                db.close();
+            }
+        });
+    }
+
+    public void rndImgPathFromDB(){
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                String res = "";
+                SQLiteHelper db = new SQLiteHelper(context, "BD1_HighScores", null, 1);
+                Cursor cursor = db.getNotUsedFiles();
+                int max = cursor.getCount();
+                cursor.moveToFirst();
+                int sel = ThreadLocalRandom.current().nextInt(0, max);
+                for(int i = sel; i > 0; i--){
+                    cursor.moveToNext();
+                    }
+                String path = cursor.getString(1);
+                db.setFileAsUsed(cursor.getInt(0));
+                cursor.close();
+                db.close();
+                callback.onReturnImagePath(path);
+            }
+        });
+    }
 
     private ArrayList<String> dataCollector(){
         Log.d(TAG, "dataCollector");
