@@ -114,6 +114,7 @@ public class RandomImageSelector {
         });
     }
 
+    //Populates the database with the path of the images found in the device.
     public void loadFilesInDb(){
         executor.execute(new Runnable() {
             @Override
@@ -129,6 +130,7 @@ public class RandomImageSelector {
         });
     }
 
+    //Selects a random image file path from the database. //TODO: need methdo to verify file still exist in the device.
     public void rndImgPathFromDB(){
         executor.execute(new Runnable() {
             @Override
@@ -151,6 +153,7 @@ public class RandomImageSelector {
         });
     }
 
+    //Gathers all the image files stored in the device. These two functions can be defined as one.
     private ArrayList<String> dataCollector(){
         Log.d(TAG, "dataCollector");
         //String[] nFolder = {"/"};

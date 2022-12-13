@@ -218,7 +218,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                         RandomImageSelector rndSel = new RandomImageSelector(this, executorService);
                         rndSel.setCallback(this);
                         //rndSel.rndImgAlt();
-                        rndSel.rndImgPathFromDB();
+                        rndSel.rndImgPathFromDB(); //Search for a random image file in the database.
                     }catch (Exception e){
                         Log.e(TAG, e.getMessage());
                         onErrorLaunchErrPuzzle();

@@ -36,6 +36,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 "Moves integer);";
         sqLiteDatabase.execSQL(query);
 
+        //Table to store images files path for the image random selector.
         query = "CREATE TABLE ImageFiles (" +
                 "_ID integer primary key autoincrement," +
                 "Path text," +
@@ -118,6 +119,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         this.close();
         return hs;
     }
+
+    //Verifies if the image file table exist and if it does not it calls the method that creates the table.
     public int checkTableFilesExist(){
         int res = -2;
         try{
@@ -131,6 +134,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         }
         return res;
     }
+    //Creates the ImageFile table.
     public long createFilesTable(SQLiteDatabase db){
         String query = "CREATE TABLE ImageFiles (" +
                 "_ID integer primary key autoincrement," +
@@ -144,6 +148,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         }
         return 0;
     }
+    //Inserts a file path into the ImageFile table.
     public long insertFile(String path){
         Log.d(TAG, "insertFile");
         ContentValues contentValues = new ContentValues();
@@ -157,6 +162,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         }
         return res;
     }
+    //Returns a string list of image files paths. Seen attribute value equal to -1.
     public List<String> getNotUsedFilesPath(){
         Log.d(TAG, "getNotUsedFiles");
         SQLiteDatabase db = getReadableDatabase();
@@ -170,6 +176,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         }
         return paths;
     }
+    //Returns all the image files path stored in database.
     public List<String> getAllFilesPath(){
         Log.d(TAG, "getAllFiles");
         SQLiteDatabase db = getReadableDatabase();
@@ -182,6 +189,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         }
         return paths;
     }
+    //Returns the used image files path. Seen status equal to 0.
     public List<String> getUsedFilesPath(){
         Log.d(TAG, "getUsedFiles");
         String[] arg = {"0"};
@@ -194,6 +202,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         }
         return paths;
     }
+    //Returns a cursor with the rows of the non used image files paths.
     public Cursor getNotUsedFiles(){
         Log.d(TAG, "getNotUsedFiles");
         SQLiteDatabase db = getReadableDatabase();
@@ -201,6 +210,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery("SELECT * FROM ImageFiles WHERE Seen = ?", arg);
         return cursor;
     }
+    //Update the status of an image file path by its path. Sets Seen attribute to 0.
     public long updateFile(String path){
         Log.d(TAG, "updateFile");
         String[] args = {path};
@@ -214,6 +224,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         }
         return  res;
     }
+    //Deletes all the rows of the table. Allows a fresh restart.
     public long deleteAllFiles(){
         Log.d(TAG, "deleteAllFiles");
         long res = -2;
@@ -224,6 +235,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         }
         return  res;
     }
+    //Restores the status of all the images files path stored to not seen.
     public long resetFiles(){
         Log.d(TAG, "resetFiles");
         long res = -2;
@@ -236,6 +248,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         }
         return res;
     }
+    //Returns the number of rows-
     public long countFilesInDb(){
         SQLiteDatabase db = getWritableDatabase();
         long size = 0;
@@ -243,6 +256,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         size = DatabaseUtils.queryNumEntries(db, "ImageFiles");
         return  size;
     }
+    //Returns the number of rows that match a certain status.
     public long countFilesInDb(int status){ //Status can be -1 not seen or 0 seen.
         String[] arg = {String.valueOf(status)};
         SQLiteDatabase db = getWritableDatabase();
@@ -251,6 +265,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         size = DatabaseUtils.queryNumEntries(db, "ImageFiles","Seen=?", arg);
         return  size;
     }
+    //Returns the path attribute by row ID.
     public String getFilePath(int index){
         SQLiteDatabase db = getReadableDatabase();
         String[] arg = {String.valueOf(index)};
@@ -258,6 +273,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         cursor.moveToFirst();
         return cursor.getString(0);
     }
+    //Update an image file path to seen by it ID number.
     public void setFileAsUsed(int index){
         SQLiteDatabase db = getReadableDatabase();
         ContentValues contentValues = new ContentValues();
