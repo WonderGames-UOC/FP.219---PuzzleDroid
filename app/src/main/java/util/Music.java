@@ -11,6 +11,7 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import Settings.Player;
 import gameMechanics.Songs;
 
 //https://www.youtube.com/watch?v=r_MbozD32eo
@@ -68,6 +69,7 @@ public class Music extends Service {
         songs = new Songs(getApplicationContext());
         registerReceiver(msb, new IntentFilter("PAUSE"));
         registerReceiver(msb, new IntentFilter("PLAY"));
+        registerReceiver(msb, new IntentFilter("STOP"));
         play();
         return super.onStartCommand(intent, flags, startId);
         //return START_NOT_STICKY; //Indicates that the service should not be restarted after destruction. Not even if there is a task pending.
@@ -79,6 +81,7 @@ public class Music extends Service {
     public void play() {
         try {
             songs.playMusic();
+            Player.isPlaying = true;
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
         }
@@ -87,10 +90,23 @@ public class Music extends Service {
     public void pause() {
         try {
             songs.pauseMusic();
+            Player.isPlaying = false;
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
         }
     }
+
+    public void stop() {
+        try {
+            songs.stopMusic();
+            Player.isPlaying = false;
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+        }
+    }
+
+
+
 
     @Override
     public void onCreate() { //It's call whenever the service is created in memory.
@@ -111,13 +127,19 @@ public class Music extends Service {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, intent.getAction());
-            if(intent.getAction().equals("PAUSE")){
+            if (intent.getAction().equals("PAUSE")){
                 Log.d(TAG, "ACTION PAUSE");
                 pause();
-            }else {
+            }
+            if (intent.getAction().equals("PLAY")){
                 Log.d(TAG, "ACTION PLAY MUSIC");
                 play();
             }
+            if (intent.getAction().equals("STOP")){
+                Log.d(TAG, "ACTION STOP");
+                stop();
+            }
+
         }
     }
 }

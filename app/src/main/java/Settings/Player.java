@@ -8,6 +8,7 @@ public final class Player extends Observable {
 
     public static Context context;
     public static int selectedSong = Params.SONGA;
+    public static boolean isPlaying;
 
     public static Context getContext() {
         return context;
