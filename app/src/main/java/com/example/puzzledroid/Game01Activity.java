@@ -185,15 +185,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         //Gets the info selected by the user and stores it for the game start
         Bundle data = getIntent().getExtras();
         layout = (LinearLayout) findViewById(R.id.puzzle_view);
-        try {
-            player.setContext(this.context);
-            musicService = new Intent(
-                    getApplicationContext(), Music.class
-            );
-            startService(musicService);
-        }catch (Exception e){
-            Log.e(TAG, e.getMessage());
-        }
+        startMusicService();
 
         try{
             this.imgId = (int) data.getInt("imgId");
@@ -405,6 +397,24 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                 resetGame();
                 break;
             }
+            case R.id.musicOnOff:{
+                if (Player.isPlaying){
+                    pauseMusic();
+                    item.setTitle("Music ON");
+                }else{
+                    playMusic();
+                    item.setTitle("Music OFF");
+                }
+                break;
+            }
+            case R.id.nextSong:{
+                stopService(musicService);
+                Player.selectedSong = Params.nextSongReturn();
+                startMusicService();
+
+                break;
+
+            }
             default:{
                 break;
             }
@@ -428,6 +438,8 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         imagePrinter(this.puzzleBlocks);
         Timer.startChronometer(this.chronometer);
     }
+
+
 
 
     /**
@@ -842,19 +854,36 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         }
     }
 
-    //Music pause
+    /**
+     * MUSIC FUNCTIONS
+     */
     private void pauseMusic(){
         Intent i = new Intent();
         sendBroadcast(i.setAction("PAUSE"));
+
     }
     private void stopMusic(){
         Intent i = new Intent();
         sendBroadcast(i.setAction("STOP"));
+
     }
     private void playMusic(){
         Intent i = new Intent();
         sendBroadcast(i.setAction("PLAY"));
+
     }
+    private void startMusicService(){
+        try {
+            player.setContext(this.context);
+            musicService = new Intent(
+                    getApplicationContext(), Music.class
+            );
+            startService(musicService);
+        }catch (Exception e){
+            Log.e(TAG, e.getMessage());
+        }
+    }
+
 
 }
 

@@ -28,8 +28,16 @@ public final class Params {
     public static final int SONGA = R.raw.mind_reader_blues;
     public static final int SONGB = R.raw.baby_please_dont_go;
     public static final int SONGC = R.raw.somebody_knockin;
+    private static int songPos = 0;
 
-
+    public static int nextSongReturn(){
+        List<Integer> ret = Arrays.asList(SONGA, SONGB, SONGC);
+        songPos++;
+        if (songPos >= ret.size()){
+            songPos = 0;
+        }
+        return ret.get(songPos);
+    }
 
     // Función  que devuelve una imagen aleatoria de las propuestas inicialmente para el juego.
     public static int imageRandomReturn(){
