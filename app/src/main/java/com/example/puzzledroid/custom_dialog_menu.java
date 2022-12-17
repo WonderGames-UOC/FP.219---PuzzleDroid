@@ -36,7 +36,7 @@ public class custom_dialog_menu {
         intrfc = actividad;
         final Dialog dialog = new Dialog(context);
         dialog.setCancelable(false);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.GRAY));
         dialog.setContentView(R.layout.custom_dialog_menu);
 
         final TextView userName = (TextView) dialog.findViewById(R.id.txt_UserEnter);
