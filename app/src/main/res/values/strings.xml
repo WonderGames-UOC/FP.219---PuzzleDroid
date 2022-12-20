@@ -22,4 +22,5 @@
     <string name="select_level">Select Level:</string>
     <string name="high_scores">High Scores</string>
     <string name="exit">Exit</string>
+    <string  name="prefs_file">com.example.puzzledroid.PREFERENCE_FILE_KEY</string>
 </resources>
