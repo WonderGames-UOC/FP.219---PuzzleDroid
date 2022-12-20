@@ -458,7 +458,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                     //creacion de la notificación
                     NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "notifChannel" )
                             .setSmallIcon(R.drawable.puzzledroid_logo_notitle)
-                            .setContentTitle("New score")
+                            .setContentTitle(getResources().getString(R.string.new_score))
                             .setContentText(level + " " + counter.getMovements())
                             .setContentIntent(pendingIntent)
                             .setAutoCancel(true);
