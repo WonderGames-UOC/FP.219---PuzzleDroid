@@ -39,7 +39,8 @@
     <string name="music_off">Music OFF</string>
     <string name="next_song">Next Song</string>
     <string name="reset">Reset</string>
-    <string name="english">ENGLISH</string>
-    <string name="spanish">SPANISH</string>
+    <string name="english" translatable="false">ENGLISH</string>
+    <string name="spanish" translatable="false">SPANISH</string>
+    <string name="new_score">New score</string>
 
 </resources>
