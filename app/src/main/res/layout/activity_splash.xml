@@ -38,7 +38,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="58dp"
         android:layout_marginBottom="25dp"
-        android:text="WELCOME!"
+        android:text="@string/welcome_mayus"
         android:textAppearance="@style/TextAppearance.AppCompat.Display2"
         app:layout_constraintBottom_toTopOf="@+id/imageView3"
         app:layout_constraintEnd_toEndOf="parent"

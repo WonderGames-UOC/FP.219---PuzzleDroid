@@ -257,7 +257,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
             //creacion de cronometro
             chronometer = findViewById(R.id.txtabTimer);
             //Starts the counter and crono.
-            ((TextView) findViewById(R.id.txtabMoves)).setText("Movements: " + Integer.toString(counter.getMovements()));
+            ((TextView) findViewById(R.id.txtabMoves)).setText(getResources().getString(R.string.moves)+": " + Integer.toString(counter.getMovements()));
             Timer.resetTimer(chronometer);
             this.counter.reset();
             Timer.startChronometer(chronometer);
@@ -273,7 +273,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
             //creacion de cronometro
             chronometer = findViewById(R.id.txtabTimer);
             //Starts the counter and crono.
-            ((TextView) findViewById(R.id.txtabMoves)).setText("Movements: " + Integer.toString(counter.getMovements()));
+            ((TextView) findViewById(R.id.txtabMoves)).setText(getResources().getString(R.string.moves)+": " + Integer.toString(counter.getMovements()));
             Timer.resetTimer(chronometer);
             this.counter.reset();
             Timer.startChronometer(chronometer);
@@ -312,7 +312,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                 this.puzzleBlocks.swapPiecesById(this.selector.getSelBlockA(), this.selector.getSelBlockB());
                 this.counter.add();
                 try {
-                    ((TextView) findViewById(R.id.txtabMoves)).setText("Movements: " + Integer.toString(counter.getMovements()));
+                    ((TextView) findViewById(R.id.txtabMoves)).setText(getResources().getString(R.string.moves)+": " + Integer.toString(counter.getMovements()));
                 }catch (Exception e){
                     Log.e(TAG, e.getMessage());
                 }

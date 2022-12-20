@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PuzzleDroid</string>
+    <string name="exit">Salir</string>
+    <string name="enter_user_name">Introduce tu nombre</string>
+    <string name="select_level">Selecciona un nivel:</string>
+    <string name="high_scores">Mejores puntuaciones</string>
+    <string name="button_play">Jugar</string>
+    <string name="button_scores">puntuaciones</string>
+    <string name="button_recent_scores">Puntuaciones Recientes</string>
+    <string name="welcome">Bienvenido!</string>
+    <string name="previous">Anterior</string>
+    <string name="next">Siguiente</string>
+    <string name="action_settings">Ayuda</string>
+    <string name="first_fragment_label">Primer fragmento</string>
+    <string name="second_fragment_label">Segundo fragmento</string>
+    <string name="welcome_mayus">BIENVENIDO!</string>
+    <string name="select_difficulty">Selecciona la dificultad</string>
+    <string name="game_settings">OPCIONES</string>
+    <string name="easy">Fácil</string>
+    <string name="medium">Medio</string>
+    <string name="hard">Difícil</string>
+    <string name="select_image">Selecciona la imagen</string>
+    <string name="default_mayus">POR DEFECTO</string>
+    <string name="camera_mayus">CÁMARA</string>
+    <string name="reel_mayus">REEL</string>
+    <string name="moves">Movimientos</string>
+    <string name="timer">Timer</string>
+    <string name="music_off">Música OFF</string>
+    <string name="next_song">Siguiente canción</string>
+    <string name="reset">Reiniciar</string>
+</resources>
