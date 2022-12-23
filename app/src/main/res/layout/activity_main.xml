@@ -31,7 +31,8 @@
             android:layout_height="match_parent"
             android:layout_gravity="center"
             android:orientation="vertical"
-            android:padding="25dp">
+            android:padding="25dp"
+            tools:visibility="visible">
 
             <Button
                 android:id="@+id/play_button"
@@ -56,6 +57,20 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/button_recent_scores" />
+
+            <Button
+                android:id="@+id/write_db"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Write DB"
+                tools:visibility="invisible" />
+
+            <Button
+                android:id="@+id/query_db"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Query DB"
+                tools:visibility="invisible" />
 
         </LinearLayout>
 

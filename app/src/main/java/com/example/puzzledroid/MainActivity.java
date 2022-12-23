@@ -26,14 +26,30 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import apirest.RestRetrofit;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements custom_dialog_menu.returnDialogMenu {
 
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
     Context context = this;
-    Button play, hs, rs, online;
+    Button play, hs, rs, online, writedb, querydb;
     private static String TAG = MainActivity.class.getSimpleName();
+    private FirebaseDatabase db = FirebaseDatabase.getInstance();
+    private FirebaseFirestore dbfs = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +61,8 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
         hs = findViewById(R.id.button2);
         rs = findViewById(R.id.recentScoresButton);
         online = findViewById(R.id.online_button);
+        writedb = findViewById(R.id.write_db);
+        querydb = findViewById(R.id.query_db);
 
 
         //NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
@@ -96,8 +114,12 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
         SharedPreferences prefs = getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE);
         String email = prefs.getString("email", null);
         Log.d(TAG, "Stored email: " + email);
+        if(email != null){
+            writedb.setVisibility(View.VISIBLE);
+        }
     }
     private void setup(){
+        SharedPreferences sp = getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE);
         online.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view){
@@ -112,6 +134,112 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
                 GoogleSignInClient googleClient = GoogleSignIn.getClient(context, googleConf);
                 startActivityForResult(googleClient.getSignInIntent(), 100 ); //Start login activity
             }
+        });
+
+        writedb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String email = sp.getString("email", null);
+                String id = sp.getString("id",null);
+                Log.d(TAG, "writeDB button");
+                DatabaseReference ref = db.getReference();
+                String ts = String.valueOf(System.currentTimeMillis());
+                ref.child("Users").child(id).child("Email").setValue(email);
+                ref.child("Users").child(id).child("LastUpdate").setValue(ts);
+                ref.child("Users")
+                        .child(id)
+                        .child("Scores").child(String.valueOf(System.currentTimeMillis())).setValue(System.currentTimeMillis());
+                Map<String, String> img = new HashMap<String, String>();
+                img.put("Image1", "URL1");
+                img.put("Image2", "URL2");
+                img.put("Image3", "URL3");
+
+                ref.child("Users").child(id).child("ImagesSeen").setValue(img);
+
+                entities.HighScores hs  = new entities.HighScores();
+                hs.setTop1(9999);
+                hs.setTop3(8888);
+                hs.setTop10(3333);
+
+                try {
+                    Call<entities.HighScores> postTopScores = RestRetrofit.postTopScores.createPost(hs);
+                    postTopScores.enqueue(new Callback<entities.HighScores>() {
+                        @Override
+                        public void onResponse(Call<entities.HighScores> call, Response<entities.HighScores> response) {
+                            Log.d(TAG,
+                                    "\nMessage: " + response.message()
+                                    //+"\nHeaders: " + response.headers()
+                                    +"\nResponse: " + response.body()
+                                    );
+                        }
+
+                        @Override
+                        public void onFailure(Call<entities.HighScores> call, Throwable t) {
+                            Log.d(TAG, t.getMessage());
+                        }
+                    });
+                }catch (Exception e){
+                    Log.d(TAG, e.getMessage());
+                }
+
+            }
+        });
+        querydb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "querydb button");
+                try{
+                    Call<entities.HighScores> getTopScores = RestRetrofit.getTopScores.listRepos();
+                    getTopScores.enqueue(new Callback<entities.HighScores>() {
+                        @Override
+                        public void onResponse(Call<entities.HighScores> call, Response<entities.HighScores> response) {
+                            if (response.isSuccessful()) {
+                               Log.d(TAG,
+                                        "\nMessage: " + response.message().toString()
+                                                + "\nHeaders: " + response.headers()
+                                                + "\nResponse: " + response.toString()
+                                                + "\nSize: " + response.body()
+                                );
+                                entities.HighScores hs = response.body();
+                                Log.d(TAG,
+                                        "\nTop1: " + hs.Top1
+                                                +"\nTop2: " + hs.Top2
+                                                +"\nTop3: " + hs.Top3
+                                                +"\nTop4: " + hs.Top4
+                                                +"\nTop5: " + hs.Top5
+                                                +"\nTop6: " + hs.Top6
+                                                +"\nTop7: " + hs.Top7
+                                                +"\nTop8: " + hs.Top8
+                                                +"\nTop9: " + hs.Top9
+                                                +"\nTop10: " + hs.Top10
+                                );
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<entities.HighScores> call, Throwable t) {
+                            Log.e(TAG, "Error: " + t.getMessage());
+                        }
+                    });
+                }catch (Exception e){
+                    Log.e(TAG, e.getMessage());
+                }
+            }
+        });
+
+        db.getReference().child("Users").child(sp.getString("id",null)).addListenerForSingleValueEvent(new ValueEventListener(){
+           @Override
+           public void onDataChange(DataSnapshot dataSnapshot){
+               if(dataSnapshot.exists()){
+                   Log.d(TAG, dataSnapshot.child("Scores").getValue().toString());
+               }else{
+                   Log.d(TAG, "User not found");
+               }
+           }
+           @Override public void onCancelled(DatabaseError databaseError){
+               Log.e(TAG, databaseError.getMessage());
+           }
+
         });
     }
     @Override
@@ -153,8 +281,14 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
                         .show();
             }
         }
+        session();
     }
-// Método para lanzar la pantalla de juego.
+
+
+
+
+
+    // Método para lanzar la pantalla de juego.
     private void startGame(String userName, int puzzres, int imgId) {
         Intent i = new Intent(this, Game01Activity.class);
         i.putExtra("userName", userName.toString());
