@@ -42,6 +42,9 @@ import androidx.core.content.FileProvider;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -182,6 +185,8 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
             }
         });
 
+        
+
         //Gets the info selected by the user and stores it for the game start
         Bundle data = getIntent().getExtras();
         layout = (LinearLayout) findViewById(R.id.puzzle_view);
@@ -200,8 +205,25 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                     this.selector = new Selector();
                     this.counter = new Counter();
 
+                    Picasso.get().load(Params.DOWNLOAD_URL).into(new Target() {
+                        @Override
+                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                            startPuzzle(numBlocks, bitmap);
+                        }
+
+                        @Override
+                        public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+
+                        }
+
+                        @Override
+                        public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                        }
+                    });
+
                     //Starts the puzzle
-                    startPuzzle(numBlocks, getDrawable(Params.imageRandomReturn()));
+                    //startPuzzle(numBlocks, getDrawable(Params.imageRandomReturn()));
                     break;
                 case Params.GALLERY:
                     try {

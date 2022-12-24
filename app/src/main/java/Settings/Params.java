@@ -33,6 +33,9 @@ public final class Params {
     public static final int SONGC = R.raw.somebody_knockin;
     private static int songPos = 0;
 
+    // FIREBASE PATHS
+    public static String DOWNLOAD_URL = "https://firebasestorage.googleapis.com/v0/b/puzzledroid-2605b.appspot.com/o/PuzzleDroidImages%2FLevel2.png?alt=media";
+
     public static int nextSongReturn(){
         List<Integer> ret = Arrays.asList(SONGA, SONGB, SONGC);
         songPos++;
