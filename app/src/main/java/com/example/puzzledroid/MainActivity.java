@@ -38,6 +38,7 @@ import com.google.gson.Gson;
 import java.util.HashMap;
 import java.util.Map;
 
+import activities.OnlineScores;
 import apirest.RestRetrofit;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
@@ -129,6 +130,7 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
             writedb.setVisibility(View.INVISIBLE);
         }
     }
+    //Setups all the online methods and buttons.
     private void setup(){
         SharedPreferences sp = getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE);
         online.setOnClickListener(new View.OnClickListener() {
@@ -149,77 +151,9 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
         topScores.setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View v) {
-
-                 //User data
-                 SharedPreferences prefs = getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE);
-                 // Get a reference to the Realtime Database
-                 FirebaseAuth mFirebaseAuth = FirebaseAuth.getInstance();// inicia o objeto mFirebaseAuth
-                 String id = prefs.getString("id", null);
-                 if(id != null){
-                     String path = "Users/"+ id + "/ImagesSeen";
-                     //db.getReference().child(path);
-                     FirebaseUser user = mFirebaseAuth.getCurrentUser();
-                     Log.d(TAG, "mFirebaseAuth: " + mFirebaseAuth.toString());
-
-                     // Define the function that will read data from the database and return the result as a Single
-                     Observable<DataSnapshot> observable = Observable.create(new ObservableOnSubscribe<DataSnapshot>() {
-                         @Override
-                         public void subscribe(@NonNull ObservableEmitter<DataSnapshot> emitter) throws Throwable {
-                             DatabaseReference ref = db.getReference(path);
-
-                             //Add a ValueEventListener
-                             ref.addValueEventListener(new ValueEventListener() {
-                                 @Override
-                                 public void onDataChange(@androidx.annotation.NonNull DataSnapshot snapshot) {
-                                     Log.d(TAG, "onDataChange");
-                                     //Emmit the result
-                                     emitter.onNext(snapshot);
-                                 }
-
-                                 @Override
-                                 public void onCancelled(@androidx.annotation.NonNull DatabaseError error) {
-                                     Log.e(TAG, "onCancelled: " + error.getMessage());
-                                     emitter.onError(error.toException());
-                                 }
-                             });
-                         }
-                     });
-                     observable.safeSubscribe(new Observer<DataSnapshot>() {
-                         @Override
-                         public void onSubscribe(@NonNull Disposable d) {
-                             Log.d(TAG, "subscriber.onSubscribre: " + d.toString());
-                         }
-
-                         @Override
-                         public void onNext(@NonNull DataSnapshot dataSnapshot) {
-                             Log.d(TAG, "Subscriber onMext: " + dataSnapshot.toString());
-                             try{
-                                 String jsonString = dataSnapshot.getValue().toString();
-                                 Log.d(TAG, "jsonString: " + jsonString);
-                                 Gson gson = new Gson();
-                                 Object imagesSeen = gson.fromJson(jsonString, Object.class);
-                                 Map<String, String> imageMap = (Map<String, String>) imagesSeen;
-                                 Log.d(TAG, ((Map<?, ?>) imagesSeen).get("Image2").toString());
-
-                                 //for(Image image:imagesSeen.getImages()){Log.d(TAG, image.getName() + " " + image.getUrl());
-
-                             }catch (Exception e){
-                                 Log.e(TAG, e.getMessage());
-                             }
-                         }
-                         @Override
-                         public void onError(@NonNull Throwable e) {
-                             Log.e(TAG, "subscriber.onError: " + e.getMessage());
-                         }
-
-                         @Override
-                         public void onComplete() {
-
-                         }
-                     });
-                 }
-
-             }//onClick(View close)
+                 Log.d(TAG, "TopScores onClick");
+                 onlineScores();
+             }
          });
         writedb.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -248,7 +182,8 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
                 hs.setTop10(3333);
 
                 try {
-                    Call<entities.HighScores> postTopScores = RestRetrofit.postTopScores.createPost(hs);
+                    RestRetrofit retrofit = new RestRetrofit();
+                    Call<entities.HighScores> postTopScores = retrofit.postTopScores.createPost(hs);
                     postTopScores.enqueue(new Callback<entities.HighScores>() {
                         @Override
                         public void onResponse(Call<entities.HighScores> call, Response<entities.HighScores> response) {
@@ -268,73 +203,82 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
                     Log.d(TAG, e.getMessage());
                 }
 
-            }
+            }//onClick(View close)
         });
         querydb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "querydb button");
-                try{
-                    Call<entities.HighScores> getTopScores = RestRetrofit.getTopScores.listRepos();
-                    getTopScores.enqueue(new Callback<entities.HighScores>() {
+
+                //User data
+                SharedPreferences prefs = getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE);
+                // Get a reference to the Realtime Database
+                FirebaseAuth mFirebaseAuth = FirebaseAuth.getInstance();// inicia o objeto mFirebaseAuth
+                String id = prefs.getString("id", null);
+                if(id != null){
+                    String path = "Users/"+ id + "/ImagesSeen";
+                    //db.getReference().child(path);
+                    FirebaseUser user = mFirebaseAuth.getCurrentUser();
+                    Log.d(TAG, "mFirebaseAuth: " + mFirebaseAuth.toString());
+
+                    // Define the function that will read data from the database and return the result as a Single
+                    Observable<DataSnapshot> observable = Observable.create(new ObservableOnSubscribe<DataSnapshot>() {
                         @Override
-                        public void onResponse(Call<entities.HighScores> call, Response<entities.HighScores> response) {
-                            if (response.isSuccessful()) {
-                               Log.d(TAG,
-                                        "\nMessage: " + response.message().toString()
-                                                + "\nHeaders: " + response.headers()
-                                                + "\nResponse: " + response.toString()
-                                                + "\nSize: " + response.body()
-                                );
-                                entities.HighScores hs = response.body();
-                                Log.d(TAG,
-                                        "\nTop1: " + hs.Top1
-                                                +"\nTop2: " + hs.Top2
-                                                +"\nTop3: " + hs.Top3
-                                                +"\nTop4: " + hs.Top4
-                                                +"\nTop5: " + hs.Top5
-                                                +"\nTop6: " + hs.Top6
-                                                +"\nTop7: " + hs.Top7
-                                                +"\nTop8: " + hs.Top8
-                                                +"\nTop9: " + hs.Top9
-                                                +"\nTop10: " + hs.Top10
-                                );
-                                String scores = "";
-                                new AlertDialog.Builder(context)
-                                        .setTitle("Online Top 10 Scores")
-                                        .setMessage(
-                                                "\t1: " + hs.Top1
-                                                        +"\n\t2: " + hs.Top2
-                                                        +"\n\t3: " + hs.Top3
-                                                        +"\n\t4: " + hs.Top4
-                                                        +"\n\t5: " + hs.Top5
-                                                        +"\n\t6: " + hs.Top6
-                                                        +"\n\t7: " + hs.Top7
-                                                        +"\n\t8: " + hs.Top8
-                                                        +"\n\t9: " + hs.Top9
-                                                        +"\n\t10: " + hs.Top10)
-                                        .setIcon(R.drawable.puzzledroid_icon)
-                                        .setNegativeButton("OK", null)
-                                        .show();
-                            }
+                        public void subscribe(@NonNull ObservableEmitter<DataSnapshot> emitter) throws Throwable {
+                            DatabaseReference ref = db.getReference(path);
+
+                            //Add a ValueEventListener
+                            ref.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@androidx.annotation.NonNull DataSnapshot snapshot) {
+                                    Log.d(TAG, "onDataChange");
+                                    //Emmit the result
+                                    emitter.onNext(snapshot);
+                                }
+
+                                @Override
+                                public void onCancelled(@androidx.annotation.NonNull DatabaseError error) {
+                                    Log.e(TAG, "onCancelled: " + error.getMessage());
+                                    emitter.onError(error.toException());
+                                }
+                            });
+                        }
+                    });
+                    observable.safeSubscribe(new Observer<DataSnapshot>() {
+                        @Override
+                        public void onSubscribe(@NonNull Disposable d) {
+                            Log.d(TAG, "subscriber.onSubscribre: " + d.toString());
                         }
 
                         @Override
-                        public void onFailure(Call<entities.HighScores> call, Throwable t) {
-                            Log.e(TAG, "Error: " + t.getMessage());
-                            new AlertDialog.Builder(context)
-                                    .setTitle("Online Top 10 Scores")
-                                    .setMessage(
-                                            "Error gathering data")
-                                    .setIcon(R.drawable.puzzledroid_icon)
-                                    .setNegativeButton("OK", null)
-                                    .show();
+                        public void onNext(@NonNull DataSnapshot dataSnapshot) {
+                            Log.d(TAG, "Subscriber onMext: " + dataSnapshot.toString());
+                            try{
+                                String jsonString = dataSnapshot.getValue().toString();
+                                Log.d(TAG, "jsonString: " + jsonString);
+                                Gson gson = new Gson();
+                                Object imagesSeen = gson.fromJson(jsonString, Object.class);
+                                Map<String, String> imageMap = (Map<String, String>) imagesSeen;
+                                Log.d(TAG, ((Map<?, ?>) imagesSeen).get("Image2").toString());
+
+                                //for(Image image:imagesSeen.getImages()){Log.d(TAG, image.getName() + " " + image.getUrl());
+
+                            }catch (Exception e){
+                                Log.e(TAG, e.getMessage());
+                            }
+                        }
+                        @Override
+                        public void onError(@NonNull Throwable e) {
+                            Log.e(TAG, "subscriber.onError: " + e.getMessage());
+                        }
+
+                        @Override
+                        public void onComplete() {
+
                         }
                     });
-                }catch (Exception e){
-                    Log.e(TAG, e.getMessage());
                 }
-            }
+            }//onClick(View close)
         });
 
         db.getReference().child("Users").child(sp.getString("id",null)).addListenerForSingleValueEvent(new ValueEventListener(){
@@ -409,6 +353,10 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
     private void hScores(){
         Intent j = new Intent(this, HighScores.class);
         startActivity(j);
+    }
+    private void onlineScores() {
+        Intent intent = new Intent(this, OnlineScores.class);
+        startActivity(intent);
     }
 
     private void rScores(){
