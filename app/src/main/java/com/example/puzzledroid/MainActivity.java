@@ -25,6 +25,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -32,11 +33,18 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.gson.Gson;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import apirest.RestRetrofit;
+import io.reactivex.rxjava3.annotations.NonNull;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.ObservableEmitter;
+import io.reactivex.rxjava3.core.ObservableOnSubscribe;
+import io.reactivex.rxjava3.core.Observer;
+import io.reactivex.rxjava3.disposables.Disposable;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -46,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
     Context context = this;
-    Button play, hs, rs, online, writedb, querydb;
+    Button play, hs, rs, online, writedb, querydb, topScores;
     private static String TAG = MainActivity.class.getSimpleName();
     private FirebaseDatabase db = FirebaseDatabase.getInstance();
     private FirebaseFirestore dbfs = FirebaseFirestore.getInstance();
@@ -63,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
         online = findViewById(R.id.online_button);
         writedb = findViewById(R.id.write_db);
         querydb = findViewById(R.id.query_db);
+        topScores = findViewById(R.id.onlineHighScoresButton);
 
 
         //NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
@@ -116,6 +125,8 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
         Log.d(TAG, "Stored email: " + email);
         if(email != null){
             writedb.setVisibility(View.VISIBLE);
+        }else{
+            writedb.setVisibility(View.INVISIBLE);
         }
     }
     private void setup(){
@@ -135,13 +146,88 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
                 startActivityForResult(googleClient.getSignInIntent(), 100 ); //Start login activity
             }
         });
+        topScores.setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View v) {
 
+                 //User data
+                 SharedPreferences prefs = getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE);
+                 // Get a reference to the Realtime Database
+                 FirebaseAuth mFirebaseAuth = FirebaseAuth.getInstance();// inicia o objeto mFirebaseAuth
+                 String id = prefs.getString("id", null);
+                 if(id != null){
+                     String path = "Users/"+ id + "/ImagesSeen";
+                     //db.getReference().child(path);
+                     FirebaseUser user = mFirebaseAuth.getCurrentUser();
+                     Log.d(TAG, "mFirebaseAuth: " + mFirebaseAuth.toString());
+
+                     // Define the function that will read data from the database and return the result as a Single
+                     Observable<DataSnapshot> observable = Observable.create(new ObservableOnSubscribe<DataSnapshot>() {
+                         @Override
+                         public void subscribe(@NonNull ObservableEmitter<DataSnapshot> emitter) throws Throwable {
+                             DatabaseReference ref = db.getReference(path);
+
+                             //Add a ValueEventListener
+                             ref.addValueEventListener(new ValueEventListener() {
+                                 @Override
+                                 public void onDataChange(@androidx.annotation.NonNull DataSnapshot snapshot) {
+                                     Log.d(TAG, "onDataChange");
+                                     //Emmit the result
+                                     emitter.onNext(snapshot);
+                                 }
+
+                                 @Override
+                                 public void onCancelled(@androidx.annotation.NonNull DatabaseError error) {
+                                     Log.e(TAG, "onCancelled: " + error.getMessage());
+                                     emitter.onError(error.toException());
+                                 }
+                             });
+                         }
+                     });
+                     observable.safeSubscribe(new Observer<DataSnapshot>() {
+                         @Override
+                         public void onSubscribe(@NonNull Disposable d) {
+                             Log.d(TAG, "subscriber.onSubscribre: " + d.toString());
+                         }
+
+                         @Override
+                         public void onNext(@NonNull DataSnapshot dataSnapshot) {
+                             Log.d(TAG, "Subscriber onMext: " + dataSnapshot.toString());
+                             try{
+                                 String jsonString = dataSnapshot.getValue().toString();
+                                 Log.d(TAG, "jsonString: " + jsonString);
+                                 Gson gson = new Gson();
+                                 Object imagesSeen = gson.fromJson(jsonString, Object.class);
+                                 Map<String, String> imageMap = (Map<String, String>) imagesSeen;
+                                 Log.d(TAG, ((Map<?, ?>) imagesSeen).get("Image2").toString());
+
+                                 //for(Image image:imagesSeen.getImages()){Log.d(TAG, image.getName() + " " + image.getUrl());
+
+                             }catch (Exception e){
+                                 Log.e(TAG, e.getMessage());
+                             }
+                         }
+                         @Override
+                         public void onError(@NonNull Throwable e) {
+                             Log.e(TAG, "subscriber.onError: " + e.getMessage());
+                         }
+
+                         @Override
+                         public void onComplete() {
+
+                         }
+                     });
+                 }
+
+             }//onClick(View close)
+         });
         writedb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String email = sp.getString("email", null);
                 String id = sp.getString("id",null);
                 Log.d(TAG, "writeDB button");
+
                 DatabaseReference ref = db.getReference();
                 String ts = String.valueOf(System.currentTimeMillis());
                 ref.child("Users").child(id).child("Email").setValue(email);
@@ -213,12 +299,36 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
                                                 +"\nTop9: " + hs.Top9
                                                 +"\nTop10: " + hs.Top10
                                 );
+                                String scores = "";
+                                new AlertDialog.Builder(context)
+                                        .setTitle("Online Top 10 Scores")
+                                        .setMessage(
+                                                "\t1: " + hs.Top1
+                                                        +"\n\t2: " + hs.Top2
+                                                        +"\n\t3: " + hs.Top3
+                                                        +"\n\t4: " + hs.Top4
+                                                        +"\n\t5: " + hs.Top5
+                                                        +"\n\t6: " + hs.Top6
+                                                        +"\n\t7: " + hs.Top7
+                                                        +"\n\t8: " + hs.Top8
+                                                        +"\n\t9: " + hs.Top9
+                                                        +"\n\t10: " + hs.Top10)
+                                        .setIcon(R.drawable.puzzledroid_icon)
+                                        .setNegativeButton("OK", null)
+                                        .show();
                             }
                         }
 
                         @Override
                         public void onFailure(Call<entities.HighScores> call, Throwable t) {
                             Log.e(TAG, "Error: " + t.getMessage());
+                            new AlertDialog.Builder(context)
+                                    .setTitle("Online Top 10 Scores")
+                                    .setMessage(
+                                            "Error gathering data")
+                                    .setIcon(R.drawable.puzzledroid_icon)
+                                    .setNegativeButton("OK", null)
+                                    .show();
                         }
                     });
                 }catch (Exception e){
@@ -242,6 +352,7 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
 
         });
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
@@ -283,8 +394,6 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
         }
         session();
     }
-
-
 
 
 

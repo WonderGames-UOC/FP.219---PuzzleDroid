@@ -72,6 +72,13 @@
                 android:text="Query DB"
                 tools:visibility="invisible" />
 
+            <Button
+                android:id="@+id/onlineHighScoresButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ONLINE TOP SCORES"
+                tools:visibility="visible" />
+
         </LinearLayout>
 
     </LinearLayout>
