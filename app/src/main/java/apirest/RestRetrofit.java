@@ -1,9 +1,6 @@
 package apirest;
 
-import java.util.List;
-
 import entities.HighScores;
-import entities.UserData;
 import io.reactivex.rxjava3.core.Observable;
 import retrofit2.Call;
 import retrofit2.Retrofit;
@@ -12,7 +9,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.PATCH;
-import retrofit2.http.Path;
 
 public class RestRetrofit {
 
@@ -26,18 +22,6 @@ public class RestRetrofit {
             .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
             .build();
 
-    public interface UsersService {
-        @GET("Users.json")
-        Call<entities.Users> listRepos();
-    }
-    public interface UserService {
-        @GET("Users/{id}.json")
-        Call<List<UserData>> listRepos(@Path("id") String id);
-    }
-    public interface UserScoresService {
-        @GET("Users/{id}/Scores.json")
-        Call<List<entities.Scores>> listRepos(@Path("id") String id);
-    }
     public interface GetTopScoresService {
         @GET("HighScores.json")
         Call<HighScores> listRepos();
@@ -51,9 +35,6 @@ public class RestRetrofit {
         Observable<HighScores> getHighScores();
     }
 
-    public UsersService usersSrv = retrofit.create(UsersService.class);
-    public UserService userSrv = retrofit.create(UserService.class);
-    public UserScoresService scores = retrofit.create(UserScoresService.class);
     public GetTopScoresService getTopScores = retrofit.create(GetTopScoresService.class);
     public PostTopScoresService postTopScores = retrofit.create(PostTopScoresService.class);
 
