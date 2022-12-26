@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
     private static String TAG = MainActivity.class.getSimpleName();
     private FirebaseDatabase db = FirebaseDatabase.getInstance();
     private FirebaseFirestore dbfs = FirebaseFirestore.getInstance();
-
+    private String email, id;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate");
@@ -117,12 +117,9 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
 
         //Exist session
         if(session()){
-            SharedPreferences prefs = getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE);
-            String email = prefs.getString("email", null);
-            String id = prefs.getString("id", null);
-            createUpdateUser(id,email);
-            setup();
+            createUpdateUser(id, email);
         }
+        setup();
     }
     //Save google credentials as preferences
     private void saveUserData(String email, String id){
@@ -134,8 +131,8 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
     //Check if there is valid credentials in the app.
     private boolean session(){
         SharedPreferences prefs = getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE);
-        String email = prefs.getString("email", null);
-        String id = prefs.getString("id", null);
+        email = prefs.getString("email", null);
+        id = prefs.getString("id", null);
         Log.d(TAG, "Stored email: " + email);
         if(email != null && id != null){
             //writedb.setVisibility(View.VISIBLE);
@@ -188,17 +185,17 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
 
     //Setups all the online methods and buttons.
     private void setup(){
-        SharedPreferences sp = getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE);
-        String email = sp.getString("email", null);
-        String id = sp.getString("id", null);
         online.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view){
                 Log.d(TAG, "PLay Online.onClick");
-                new custom_dialog_menu_online(context, MainActivity.this, id, email);
+                if(email != null || id != null ){
+                    new custom_dialog_menu_online(context, MainActivity.this, id, email);
+                }else{
+                    logInFirebase();
+                }
             }
         });
-
         topScores.setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View v) {
@@ -374,6 +371,8 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
                                     .setIcon(R.drawable.puzzledroid_icon)
                                     .setNegativeButton("GREAT", null)
                                     .show();
+                            session(); //Almacena las credenciales.
+                            play.performClick(); //Launch online play if session is started.
                         }else{
                             new AlertDialog.Builder(context)
                                     .setTitle("Firebase Login Fail")
