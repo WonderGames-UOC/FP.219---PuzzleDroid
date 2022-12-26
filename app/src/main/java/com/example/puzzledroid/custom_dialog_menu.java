@@ -2,18 +2,14 @@ package com.example.puzzledroid;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.view.View;
+//import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
 
 import Settings.Params;
 
@@ -26,7 +22,7 @@ public class custom_dialog_menu {
     }
 
     private final returnDialogMenu intrfc;
-    public Intent intent = new Intent();
+    //public Intent intent = new Intent();
 
 
 
@@ -49,35 +45,26 @@ public class custom_dialog_menu {
         Button imgCamera = (Button) dialog.findViewById(R.id.btnCameraSelect);
         Button imgLibrary = (Button) dialog.findViewById(R.id.btnLibrarySelect);
 
-        imgDefault.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int puzzres = radioButtonCheck(dialog);
-                if (userNameCheck(userName, context)) {
-                    intrfc.Result(userName.getText().toString(), puzzres, Params.DEFAULT);
-                    dialog.dismiss();
-                }
+        imgDefault.setOnClickListener(view -> {
+            int puzzres = radioButtonCheck(dialog);
+            if (userNameCheck(userName, context)) {
+                intrfc.Result(userName.getText().toString(), puzzres, Params.DEFAULT);
+                dialog.dismiss();
             }
         });
-        imgCamera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int puzzres = radioButtonCheck(dialog);
-                if (userNameCheck(userName, context)) {
-                    intrfc.Result(userName.getText().toString(), puzzres, Params.CAMERA);
-                    dialog.dismiss();
-                }
+        imgCamera.setOnClickListener(view -> {
+            int puzzres = radioButtonCheck(dialog);
+            if (userNameCheck(userName, context)) {
+                intrfc.Result(userName.getText().toString(), puzzres, Params.CAMERA);
+                dialog.dismiss();
+            }
 
-            }
         });
-        imgLibrary.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int puzzres = radioButtonCheck(dialog);
-                if (userNameCheck(userName, context)) {
-                    intrfc.Result(userName.getText().toString(), puzzres, Params.GALLERY);
-                    dialog.dismiss();
-                }
+        imgLibrary.setOnClickListener(view -> {
+            int puzzres = radioButtonCheck(dialog);
+            if (userNameCheck(userName, context)) {
+                intrfc.Result(userName.getText().toString(), puzzres, Params.GALLERY);
+                dialog.dismiss();
             }
         });
         dialog.show();
@@ -109,17 +96,6 @@ public class custom_dialog_menu {
 
         return puzzres;
     }
-
-    // Función  que devuelve una imagen aleatoria de las propuestas inicialmente para el juego.
-    public int imageRandomReturn(){
-        List<Integer> image = Arrays.asList(R.drawable.level1, R.drawable.level2, R.drawable.level3);
-        Random random = new Random();
-
-        return image.get(random.nextInt(image.size()));
-    }
-
-
-
 
 
 }
