@@ -38,6 +38,7 @@ import com.google.gson.Gson;
 import java.util.HashMap;
 import java.util.Map;
 
+import Settings.FIREBASE_PATHS;
 import activities.OnlineScores;
 import apirest.RestRetrofit;
 import io.reactivex.rxjava3.annotations.NonNull;
@@ -50,7 +51,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity implements custom_dialog_menu.returnDialogMenu {
+public class MainActivity extends AppCompatActivity implements custom_dialog_menu.returnDialogMenu, custom_dialog_menu_online.returnDialogMenuOnline {
 
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
@@ -86,7 +87,6 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
                 new custom_dialog_menu(context, MainActivity.this);
             }
         });
-
         hs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -94,7 +94,6 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
                 hScores();
             }
         });
-
         rs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -111,43 +110,87 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
         }
 
         //Exist session
-        session();
-        setup();
+        if(session()){
+            SharedPreferences prefs = getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE);
+            String email = prefs.getString("email", null);
+            String id = prefs.getString("id", null);
+            createUpdateUser(id,email);
+            setup();
+        }
     }
+    //Save google credentials as preferences
     private void saveUserData(String email, String id){
         SharedPreferences.Editor prefs = getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE).edit();
         prefs.putString("email", email);
         prefs.putString("id", id);
         prefs.apply();
     }
-    private void session(){
+    //Check if there is valid credentials in the app.
+    private boolean session(){
         SharedPreferences prefs = getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE);
         String email = prefs.getString("email", null);
+        String id = prefs.getString("id", null);
         Log.d(TAG, "Stored email: " + email);
-        if(email != null){
+        if(email != null && id != null){
             writedb.setVisibility(View.VISIBLE);
-        }else{
-            writedb.setVisibility(View.INVISIBLE);
+            return true;
         }
+        writedb.setVisibility(View.INVISIBLE);
+        return false;
     }
+    private boolean isNewUser(String id){
+        final boolean[] userExist = {false};
+        Log.d(TAG, "isNewUser: " + id);
+        DatabaseReference ref = db.getReference();
+        ref.child("Users").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@androidx.annotation.NonNull DataSnapshot snapshot) {
+                userExist[0] = snapshot.exists();
+            }
+            @Override
+            public void onCancelled(@androidx.annotation.NonNull DatabaseError error) {
+                userExist[0] = false;
+                Log.d(TAG, "isNewUser.onCancell: " + error.getMessage());
+            }
+        });
+        return userExist[0];
+    }
+    //Registers a new user or updates an existing one in the database.
+    private void createUpdateUser(String id, String email){
+        Log.d(TAG, "newUser");
+        Boolean userExist = isNewUser(id);
+        DatabaseReference ref = db.getReference();
+        if(!userExist){
+            ref.child(FIREBASE_PATHS.USERS).child(id).child(FIREBASE_PATHS.EMAIL).setValue(email);
+        }
+        ref.child(FIREBASE_PATHS.USERS).child(id).child(FIREBASE_PATHS.LASTUPDATE).setValue(FIREBASE_PATHS.getCurrentDateTime());
+    }
+    private void logInFirebase(){
+        Log.d(TAG, "online button");
+        //Setup the request
+        GoogleSignInOptions googleConf = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .requestId()
+                .build();
+        //Setup the auth client
+        GoogleSignInClient googleClient = GoogleSignIn.getClient(context, googleConf);
+        startActivityForResult(googleClient.getSignInIntent(), 100 ); //Start login activity
+    }
+
     //Setups all the online methods and buttons.
     private void setup(){
         SharedPreferences sp = getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE);
+        String email = sp.getString("email", null);
+        String id = sp.getString("id", null);
         online.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view){
-                Log.d(TAG, "online button");
-                //Setup the request
-                GoogleSignInOptions googleConf = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                        .requestIdToken(getString(R.string.default_web_client_id))
-                        .requestEmail()
-                        .requestId()
-                        .build();
-                //Setup the auth client
-                GoogleSignInClient googleClient = GoogleSignIn.getClient(context, googleConf);
-                startActivityForResult(googleClient.getSignInIntent(), 100 ); //Start login activity
+                Log.d(TAG, "PLay Online.onClick");
+                new custom_dialog_menu_online(context, MainActivity.this, id, email);
             }
         });
+
         topScores.setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View v) {
@@ -177,9 +220,9 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
                 ref.child("Users").child(id).child("ImagesSeen").setValue(img);
 
                 entities.HighScores hs  = new entities.HighScores();
-                hs.setTop1(9999);
-                hs.setTop3(8888);
-                hs.setTop10(3333);
+                hs.Top1 = 9999;
+                hs.Top2 = 8888;
+                hs.Top3 = 3333;
 
                 try {
                     RestRetrofit retrofit = new RestRetrofit();
@@ -280,7 +323,7 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
                 }
             }//onClick(View close)
         });
-
+/*
         db.getReference().child("Users").child(sp.getString("id",null)).addListenerForSingleValueEvent(new ValueEventListener(){
            @Override
            public void onDataChange(DataSnapshot dataSnapshot){
@@ -293,10 +336,12 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
            @Override public void onCancelled(DatabaseError databaseError){
                Log.e(TAG, databaseError.getMessage());
            }
-
         });
+*/
+
     }
 
+    //RequestCode 100 is for Google login response.
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
@@ -349,6 +394,14 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
         i.putExtra("imgId", imgId);
         startActivity(i);
     }
+    private void startGame(String email, int puzzres, int imgId, String id) {
+        Intent i = new Intent(this, Game01Activity.class);
+        i.putExtra("email", email.toString());
+        i.putExtra("puzzres", puzzres);
+        i.putExtra("imgId", imgId);
+        i.putExtra("Id", id);
+        startActivity(i);
+    }
     // Método para lanzar la pantalla de puntuaciones.
     private void hScores(){
         Intent j = new Intent(this, HighScores.class);
@@ -392,5 +445,9 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
     @Override
     public void Result(String username, int puzzres, int imgId) {
         startGame(username, puzzres, imgId);
+    }
+    @Override
+    public void ResultOnline(String email, int puzzres, int imgId, String Id){
+        startGame(email, puzzres, imgId, Id);
     }
 }

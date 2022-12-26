@@ -29,6 +29,13 @@ public final class Params {
     public static final int SONGB = R.raw.baby_please_dont_go;
     public static final int SONGC = R.raw.somebody_knockin;
 
+    //SCORES: BASE POINTS
+    public static final int POINTS_EASY = 1000;
+    public static final int POINTS_MEDIUM = 2000;
+    public static final int POINTS_HARD = 4000;
+    public static final int POINTS_NIGHTMARE = 8000;
+
+
 
 
     // Función  que devuelve una imagen aleatoria de las propuestas inicialmente para el juego.

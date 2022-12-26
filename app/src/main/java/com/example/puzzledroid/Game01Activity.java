@@ -34,6 +34,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
@@ -42,8 +43,16 @@ import androidx.core.content.FileProvider;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -53,9 +62,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import Settings.FIREBASE_PATHS;
 import Settings.Params;
 import Settings.Player;
+import apirest.RestRetrofit;
 import dbHelper.SQLiteHelper;
+import entities.HighScores;
 import gameMechanics.CalendarData;
 import gameMechanics.Counter;
 import gameMechanics.ImageDivider;
@@ -64,6 +76,9 @@ import gameMechanics.PuzzlePieces;
 import gameMechanics.Selector;
 import gameMechanics.Sounds;
 import gameMechanics.Timer;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import util.HighScore;
 import util.Music;
 import util.RandomImageSelector;
@@ -122,6 +137,14 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
     Intent musicService;
     Player player;
 
+    //Online mode var
+    private String email;
+    private String id;
+    private FirebaseDatabase db = FirebaseDatabase.getInstance();
+    private FirebaseFirestore dbfs = FirebaseFirestore.getInstance();
+    private int minMovements, basePoints;
+
+    //Activity methods  onCreate() ... onDestroy()
     @Override
     protected void onPause() {
         Log.d(TAG, "onPause");
@@ -153,9 +176,9 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //¡¡NO BORRAR!! Registro para el depurador.
         Log.d(TAG, "onCreate");
         context = this.getApplicationContext();
+
         //https://stackoverflow.com/questions/2730855/prevent-screen-rotation-on-android
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT); //Cancel screen rotation.
 
@@ -198,11 +221,19 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         try{
             this.imgId = (int) data.getInt("imgId");
             this.numBlocks = (int)data.getInt("puzzres");
-            userName = data.getString("userName");
+            basePoints = setBasePoints(numBlocks);
+            userName = (data.getString("userName") != null) ? data.getString("userName") : data.getString("email");
+            id = data.getString("Id");
+            Log.i(TAG, data.toString());
             Log.i(TAG, "User selection: " + String.valueOf(imgId) + " / " + String.valueOf(numBlocks) + " / " + userName );
             switch (imgId){
                 case Params.DEFAULT:
                     Log.d(TAG, "DEFAULT");
+                    //Online data
+                    email = userName;
+
+                    Log.d(TAG, email + " " + id);
+
                     layout.setBackgroundColor(COLORGOOD);
                     //Init variables
                     this.selector = new Selector();
@@ -214,6 +245,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                 case Params.GALLERY:
                     try {
                         Log.d(TAG, "GALLERY");
+                        layout.setBackgroundColor(COLORGOOD);
                         RandomImageSelector rndSel = new RandomImageSelector(this, executorService);
                         rndSel.setCallback(this);
                         rndSel.rndImgAlt();
@@ -226,6 +258,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                     Log.d(TAG, "Camera");
                     try{
                         cameraIntent();
+                        layout.setBackgroundColor(COLORGOOD);
                     }catch (Exception e){
                         Log.e(TAG,e.getMessage());
                         onErrorLaunchErrPuzzle();
@@ -259,6 +292,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
     private void startPuzzle(int divisions, Drawable image){
         Log.d(TAG, "startPuzzle");
         this.puzzleBlocks = genPuzzle(divisions, transformToBitmap(image));
+        minMovements = puzzleBlocks.countPiecesNotInPlace();
         imagePrinter(puzzleBlocks);
         try {
             //creacion de cronometro
@@ -275,6 +309,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
     private void startPuzzle(int divisions, Bitmap image){
         Log.d(TAG, "startPuzzle");
         this.puzzleBlocks = genPuzzle(divisions, image);
+        minMovements = puzzleBlocks.countPiecesNotInPlace();
         imagePrinter(puzzleBlocks);
         try {
             //creacion de cronometro
@@ -335,7 +370,15 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                     Timer.pauseChronometer(chronometer);
                     Log.d(TAG, Timer.offsetString);
 
-                    //TODO: INSERT VICTORY ANIMATION
+                    //If it is an online game it will update the user score and the top 10 scores.
+                    if(email != null && id != null){
+                        Log.d(TAG, "Online mode record");
+                        int record = weighTimeAndDifficulty(Integer.parseInt(Timer.offsetString), counter.getMovements());
+                        saveUserRecord(record);
+                        getTop10Scores(record);
+                    }
+
+                    //INSERT VICTORY ANIMATION
                     finalAnimation(getAllBlocksImageView());
 
                     //INSERT TIME AND COUNTER IN DB
@@ -376,8 +419,6 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                     //lanzamos notificación
                     notificationManager.notify(1, builder.build());
                 }
-
-
                 this.selector.resetSelection();
                 break;
         }
@@ -858,6 +899,92 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
 
     public void onCtrlClick(View view){
         view.callOnClick();
+    }
+
+    //Online mode methods
+    private void saveUserRecord(int record){
+        Log.d(TAG, "saveUserRecord");
+        String timestamp = FIREBASE_PATHS.getCurrentDateTime();
+        DatabaseReference ref = db.getReference()
+                .child(FIREBASE_PATHS.USERS)
+                .child(id);
+
+        ref.child(FIREBASE_PATHS.SCORES)
+                .child(timestamp)
+                .setValue(record);
+        ref.child(FIREBASE_PATHS.LASTUPDATE).setValue(timestamp);
+    }
+    private void updateTop10Records(HighScores highScores, int record){
+        Field[] fields = highScores.getClass().getDeclaredFields();
+        for (Field field : fields){
+            field.setAccessible(true);
+            try {
+                int value = field.getInt(highScores);
+                if(value <= record){
+                    field.setInt(highScores, record);
+                    break;
+                }
+            }catch (Throwable t){
+                Log.e(TAG, "updateTop10Records: " + t.getMessage());
+            }
+        }
+        try{
+            RestRetrofit retrofit = new RestRetrofit();
+            Call<entities.HighScores> postTopScores = retrofit.postTopScores.createPost(highScores);
+            postTopScores.enqueue(new Callback<entities.HighScores>() {
+                @Override
+                public void onResponse(Call<entities.HighScores> call, Response<entities.HighScores> response) {
+                    Log.d(TAG, "updateTop10Records.onFailure: " + response.message());
+                }
+
+                @Override
+                public void onFailure(Call<entities.HighScores> call, Throwable t) {
+                    Log.e(TAG, "updateTop10Records.onFailure: " + t.getMessage());
+                }
+            });
+        }catch (Throwable t){
+            Log.e(TAG, "updateTop10Record.POST: " + t.getMessage());
+        }
+    }
+    private void getTop10Scores(int record){
+        RestRetrofit retrofit = new RestRetrofit();
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("HighScores");
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                HighScores highScores = snapshot.getValue(HighScores.class);
+                updateTop10Records(highScores, record);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e(TAG, "getTop10Scores.onCancelled: " + error.getMessage());
+                //TODO: inform user
+            }
+        });
+    }
+    private int weighTimeAndDifficulty(int time, int movements){
+        Log.d(TAG, "weighTimeAndDifficulty");
+        int res  = 0;
+        float ratio = minMovements / movements;
+        res = (int) Math.ceil(basePoints * ratio / Math.round(time/1000));
+        Log.d(TAG,
+                "\nres: " + String.valueOf(res) +
+                        "\nratio: " + String.valueOf(ratio) +
+                        "\nmovements: " + movements +
+                        "\ntime; " + time +
+                        "\nbasicM: " + minMovements +
+                        "\nbasePoints: " + basePoints
+        );
+        return  res;
+    }
+    private int setBasePoints(int difficulty){
+        switch (difficulty){
+            case Params.POINTS_NIGHTMARE:return Params.POINTS_NIGHTMARE;
+            case Params.HARD: return Params.POINTS_HARD;
+            case Params.MEDIUM: return Params.POINTS_MEDIUM;
+            default: return Params.POINTS_EASY;
+        }
     }
 }
 
