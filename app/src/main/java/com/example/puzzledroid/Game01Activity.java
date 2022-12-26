@@ -230,8 +230,24 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                     //Init variables
                     this.selector = new Selector();
                     this.counter = new Counter();
+                    /*
+                    Picasso.get().load(Params.DOWNLOAD_URL).into(new Target() {
+                        @Override
+                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                            startPuzzle(numBlocks, bitmap);
+                        }
 
-                    //Starts the puzzle
+                        @Override
+                        public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+
+                        }
+
+                        @Override
+                        public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                        }
+                    });
+                     */
                     startPuzzle(numBlocks, getDrawable(Params.imageRandomReturn()));
                     break;
                 case Params.GALLERY:
