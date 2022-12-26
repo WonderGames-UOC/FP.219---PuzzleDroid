@@ -132,10 +132,12 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
         String id = prefs.getString("id", null);
         Log.d(TAG, "Stored email: " + email);
         if(email != null && id != null){
-            writedb.setVisibility(View.VISIBLE);
+            //writedb.setVisibility(View.VISIBLE);
+            online.setVisibility(View.VISIBLE);
             return true;
         }
-        writedb.setVisibility(View.INVISIBLE);
+            //writedb.setVisibility(View.INVISIBLE);
+            online.setVisibility(View.GONE);
         return false;
     }
     private boolean isNewUser(String id){
