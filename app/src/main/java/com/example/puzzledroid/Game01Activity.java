@@ -49,6 +49,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.io.File;
 import java.io.IOException;
@@ -232,25 +234,31 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                     //Init variables
                     this.selector = new Selector();
                     this.counter = new Counter();
-                    /*
-                    Picasso.get().load(Params.DOWNLOAD_URL).into(new Target() {
-                        @Override
-                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                            startPuzzle(numBlocks, bitmap);
-                        }
 
-                        @Override
-                        public void onBitmapFailed(Exception e, Drawable errorDrawable) {
 
-                        }
+                    if (id == null){
+                        startPuzzle(numBlocks, getDrawable(Params.imageRandomReturn()));
 
-                        @Override
-                        public void onPrepareLoad(Drawable placeHolderDrawable) {
+                    }else {
+                        Picasso.get().load(id).into(new Target() {
+                            @Override
+                            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                                startPuzzle(numBlocks, bitmap);
+                            }
 
-                        }
-                    });
-                     */
-                    startPuzzle(numBlocks, getDrawable(Params.imageRandomReturn()));
+                            @Override
+                            public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+                                startPuzzle(numBlocks, getDrawable(Params.imageRandomReturn()));
+
+                            }
+
+                            @Override
+                            public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                            }
+                        });
+                    }
+                    //startPuzzle(numBlocks, getDrawable(Params.imageRandomReturn()));
                     break;
                 case Params.GALLERY:
                     try {

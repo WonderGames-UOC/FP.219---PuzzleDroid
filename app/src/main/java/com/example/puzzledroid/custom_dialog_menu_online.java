@@ -40,7 +40,6 @@ public class custom_dialog_menu_online {
         dialog.setCancelable(false);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
         dialog.setContentView(R.layout.custom_dialog_menu_online);
-
         final TextView userName = (TextView) dialog.findViewById(R.id.txt_UserEnter);
         userName.setTextColor(Color.BLACK);//Text color for white background.
         userName.setText(email);
@@ -58,7 +57,8 @@ public class custom_dialog_menu_online {
             public void onClick(View view) {
                 Log.d(TAG, "play.onClick");
                 int puzzres = radioButtonCheck(dialog);
-                intrfc.ResultOnline(email, puzzres, Params.DEFAULT, id);
+                String img = Params.returnFirebaseImage();
+                intrfc.ResultOnline(email, puzzres, Params.DEFAULT, img);
                 dialog.dismiss();
 
             }

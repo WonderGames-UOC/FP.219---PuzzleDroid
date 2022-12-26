@@ -30,7 +30,13 @@ public final class Params {
     private static int songPos = 0;
 
     // FIREBASE PATHS
-    public static String DOWNLOAD_URL = "https://firebasestorage.googleapis.com/v0/b/puzzledroid-2605b.appspot.com/o/PuzzleDroidImages%2FLevel2.png?alt=media";
+    public static String DOWNLOAD_URL = "https://firebasestorage.googleapis.com/v0/b/puzzledroid-2605b.appspot.com/o/PuzzleDroidImages%2F";
+    public static String DOWNLOAD_ALT = "?alt=media";
+    public static String DOWNLOAD_FILE1 = "Level1.png";
+    public static String DOWNLOAD_FILE2 = "Level2.png";
+    public static String DOWNLOAD_FILE3 = "Level3.png";
+    private static int imgPos = 0;
+
 
     public static int nextSongReturn(){
         List<Integer> ret = Arrays.asList(SONGA, SONGB, SONGC);
@@ -46,6 +52,13 @@ public final class Params {
     public static final int POINTS_HARD = 4000;
     public static final int POINTS_NIGHTMARE = 8000;
 
+    // Función de retorno por orden die imágenes FIREBASE
+    public static String returnFirebaseImage(){
+        List<String> img = Arrays.asList(DOWNLOAD_FILE1,DOWNLOAD_FILE2,DOWNLOAD_FILE3);
+        Random rnd = new Random();
+
+        return DOWNLOAD_URL+img.get(rnd.nextInt(img.size()))+DOWNLOAD_ALT;
+    }
 
 
 
