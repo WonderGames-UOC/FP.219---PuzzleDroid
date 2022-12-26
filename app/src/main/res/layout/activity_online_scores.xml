@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    tools:context="activities.OnlineScores">
+
+    <LinearLayout
+        android:id="@+id/OnlineScores_title_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <FrameLayout
+            android:id="@+id/OnlineScores_title_frameLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/OnlineScores_title_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Top 10 Online Scores"
+                android:textSize="34sp" />
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+    <Space
+        android:id="@+id/OnlineScore_spacer_top"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="591dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/online_vLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/online_vLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingTop="64dp"
+        android:paddingBottom="64dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <Space
+        android:id="@+id/OnlineScore_spacer_middle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="37dp"
+        android:layout_marginBottom="554dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/OnlineScores_title_layout"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/OnlineScores_bottom_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <Button
+            android:id="@+id/OnlineScores_button_back"
+            android:layout_width="56dp"
+            android:layout_height="48dp"
+            android:text="Ok" />
+    </LinearLayout>
+
+    <!--
+    <LinearLayout
+        android:id="@+id/top2_layout"
+        android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/top2_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Top1"
+            android:textAlignment="center" />
+
+        <TextView
+            android:id="@+id/top2_score"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:text="Score" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/top3_layout"
+        android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/top3_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Top1"
+            android:textAlignment="center" />
+
+        <TextView
+            android:id="@+id/top3_score"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:text="Score" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/top4_layout"
+        android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/top4_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Top1"
+            android:textAlignment="center" />
+
+        <TextView
+            android:id="@+id/top4_score"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:text="Score" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/top5_layout"
+        android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/top5_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Top1"
+            android:textAlignment="center" />
+
+        <TextView
+            android:id="@+id/top5_score"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:text="Score" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/top6_layout"
+        android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/top6_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Top1"
+            android:textAlignment="center" />
+
+        <TextView
+            android:id="@+id/top6_score"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:text="Score" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/top7_layout"
+        android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/top7_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Top1"
+            android:textAlignment="center" />
+
+        <TextView
+            android:id="@+id/top7_score"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:text="Score" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/top8_layout"
+        android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/top8_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Top1"
+            android:textAlignment="center" />
+
+        <TextView
+            android:id="@+id/top8_score"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:text="Score" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/top9_layout"
+        android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/top9_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:text="Top1"
+            android:textAlignment="center" />
+
+        <TextView
+            android:id="@+id/top9_score"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:text="Score" />
+    </LinearLayout>
+-->
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "143715580037",
+    "project_id": "wondergames-puzzledroid",
+    "storage_bucket": "wondergames-puzzledroid.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:143715580037:android:6761453c49acefd4f091ec",
+        "android_client_info": {
+          "package_name": "com.example.puzzledroid"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "143715580037-4eelq8s6alaothbgcvnid14vhbr6l444.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvGXfKLefvwx5vICMGu8duQTjGZukaYAc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "143715580037-4eelq8s6alaothbgcvnid14vhbr6l444.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

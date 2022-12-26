@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "359317592082",
+    "firebase_url": "https://puzzledroid-2605b-default-rtdb.firebaseio.com",
+    "project_id": "puzzledroid-2605b",
+    "storage_bucket": "puzzledroid-2605b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:359317592082:android:fb3f6ad347a47936fd60cb",
+        "android_client_info": {
+          "package_name": "com.example.puzzledroid"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "359317592082-ursthig31kqimhieunpb97fmujpf4u8f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.puzzledroid",
+            "certificate_hash": "ce323f77684b7b1faaeceb87b26b0e772b3fa3f9"
+          }
+        },
+        {
+          "client_id": "359317592082-d7c24hp94f27eciipirdorlp440ob5h6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBw8CJ_ayVDKQNWnUduXWZV967f9Vx7qIQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "359317592082-d7c24hp94f27eciipirdorlp440ob5h6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -148,6 +148,30 @@ public class PuzzlePieces {
         }
         return 1;
     }
+    /**
+     * Returns the number of block not in place.
+     * Useful to determine the minimum number of movements to solve the puzzle.
+     * I will serv for punctuation.
+     * returns int
+     */
+    public int countPiecesNotInPlace(){
+        Log.d(TAG,"countPiecesNotInPlace");
+        int res = 0;
+        try{
+            int pos = 0;
+            for(PuzzlePiece piece:pieces
+            ){
+                if(piece.getPosition() != pos){
+                    res++;
+                }
+                pos++;
+            }
+        }catch (Exception e){
+            Log.e(TAG, e.getMessage());
+            return  -1;
+        }
+        return res;
+    }
 
     /**
      * Returns true if the piece is in the correct pos.

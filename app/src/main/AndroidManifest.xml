@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
     <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.READ_CALENDAR" />
     <uses-permission android:name="android.permission.WRITE_CALENDAR" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -17,6 +20,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PuzzleDroid"
         tools:targetApi="31">
+        <activity
+            android:name="activities.OnlineScores"
+            android:exported="false"
+            android:label="@string/title_activity_online_scores"
+            android:theme="@style/Theme.PuzzleDroid.NoActionBar">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="WonderGames.fileprovider"
@@ -24,10 +37,8 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths">
-            </meta-data>
+                android:resource="@xml/file_paths" />
         </provider>
-
 
         <activity
             android:name=".HighScores"
@@ -89,14 +100,11 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+
         <service
             android:name="util.Music"
             android:enabled="true"
-            android:exported="true"
-            >
-        </service>
-
-
+            android:exported="true" />
 
         <receiver android:name="util.Music" />
     </application>

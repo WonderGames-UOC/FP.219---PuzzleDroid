@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
@@ -18,66 +19,58 @@ import java.util.Random;
 import Settings.Params;
 
 
-public class custom_dialog_menu {
+public class custom_dialog_menu_online {
 
-    public interface returnDialogMenu {
-        void Result(String username, int puzzres, int imgId);
-
-        void ResultOnline(String email, int puzzres, int imgId, String id);
+    public interface returnDialogMenuOnline {
+        void ResultOnline(String email, int puzzres, int imgId,  String Id);
     }
 
-    private final returnDialogMenu intrfc;
+    private final String TAG = this.getClass().getSimpleName();
+    private final returnDialogMenuOnline intrfc;
     public Intent intent = new Intent();
+    private Context context;
 
 
 
 
-    public custom_dialog_menu(Context context, returnDialogMenu actividad) {
-
+    public custom_dialog_menu_online(Context context, returnDialogMenuOnline actividad, String id, String email) {
+        this.context = context;
         intrfc = actividad;
         final Dialog dialog = new Dialog(context);
         dialog.setCancelable(false);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.GRAY));
-        dialog.setContentView(R.layout.custom_dialog_menu);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        dialog.setContentView(R.layout.custom_dialog_menu_online);
 
         final TextView userName = (TextView) dialog.findViewById(R.id.txt_UserEnter);
-        ((TextView) dialog.findViewById(R.id.txt_UserEnter)).setTextColor(Color.BLACK); //Text color for white background.
+        userName.setTextColor(Color.BLACK);//Text color for white background.
+        userName.setText(email);
+
 
 
 
         // Botones selección de imágenes
-        Button imgDefault = (Button) dialog.findViewById(R.id.btnDefaultSelect);
-        Button imgCamera = (Button) dialog.findViewById(R.id.btnCameraSelect);
-        Button imgLibrary = (Button) dialog.findViewById(R.id.btnLibrarySelect);
+        //Button imgDefault = (Button) dialog.findViewById(R.id.btnDefaultSelect);
+        Button play = (Button) dialog.findViewById(R.id.btnCameraSelect);
+        Button back = (Button) dialog.findViewById(R.id.btnLibrarySelect);
 
-        imgDefault.setOnClickListener(new View.OnClickListener() {
+        play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.d(TAG, "play.onClick");
                 int puzzres = radioButtonCheck(dialog);
-                if (userNameCheck(userName, context)) {
-                    intrfc.Result(userName.getText().toString(), puzzres, Params.DEFAULT);
-                    dialog.dismiss();
-                }
-            }
-        });
-        imgCamera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int puzzres = radioButtonCheck(dialog);
-                if (userNameCheck(userName, context)) {
-                    intrfc.Result(userName.getText().toString(), puzzres, Params.CAMERA);
-                    dialog.dismiss();
-                }
+                intrfc.ResultOnline(email, puzzres, Params.DEFAULT, id);
+                dialog.dismiss();
 
             }
         });
-        imgLibrary.setOnClickListener(new View.OnClickListener() {
+        back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int puzzres = radioButtonCheck(dialog);
-                if (userNameCheck(userName, context)) {
-                    intrfc.Result(userName.getText().toString(), puzzres, Params.GALLERY);
+                Log.d(TAG, "back.onClick");
+                try{
                     dialog.dismiss();
+                }catch (Throwable t){
+                    Log.e(TAG, t.getMessage());
                 }
             }
         });

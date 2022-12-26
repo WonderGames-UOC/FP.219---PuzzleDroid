@@ -1,8 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/actBar"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/mpCtrl"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_gravity="center"
+        android:layout_margin="12dp"
+        android:drawablePadding="12dp"
+        android:drawableTint="#EFEFEF"
+        android:foreground="@drawable/play"
+        android:foregroundTint="#F4F2F2"
+        android:onClick="onCtrlClick" />
 
     <TextView
         android:id="@+id/txtabMoves"

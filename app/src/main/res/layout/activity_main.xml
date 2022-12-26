@@ -12,51 +12,75 @@
     tools:context=".MainActivity">
 
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="190dp"
-        android:layout_height="177dp"
-        android:layout_marginStart="16dp"
-        android:rotation="-17"
-        app:layout_constraintBottom_toTopOf="@+id/button"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/puzzledroid_logo_notitle"
-        tools:ignore="ImageContrastCheck" />
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="190dp"
+            android:layout_height="177dp"
+            android:layout_marginStart="16dp"
+            android:rotation="-17"
+            app:srcCompat="@drawable/puzzledroid_logo_notitle"
+            tools:ignore="ImageContrastCheck" />
 
-    <Button
-        android:id="@+id/button"
-        android:layout_width="340dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="35dp"
-        android:text="@string/button_play"
-        app:layout_constraintBottom_toTopOf="@+id/button2"
-        app:layout_constraintEnd_toEndOf="@+id/imageView"
-        app:layout_constraintStart_toEndOf="@+id/imageView"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            android:padding="25dp"
+            tools:visibility="visible">
 
-    <Button
-        android:id="@+id/recentScoresButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="52dp"
-        android:layout_marginStart="52dp"
-        android:text="@string/button_recent_scores"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button" /> />
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="52dp"
-        android:layout_marginEnd="52dp"
-        android:layout_marginBottom="75dp"
-        android:text="@string/button_scores"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button" />
+            <Button
+                android:id="@+id/play_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/button_play" />
+
+            <Button
+                android:id="@+id/online_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Play Online" />
+
+            <Button
+                android:id="@+id/button2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/button_scores" />
+
+            <Button
+                android:id="@+id/recentScoresButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/button_recent_scores" />
+
+            <Button
+                android:id="@+id/write_db"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Write DB"
+                tools:visibility="gone" />
+
+            <Button
+                android:id="@+id/query_db"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Query DB"
+                tools:visibility="gone" />
+
+            <Button
+                android:id="@+id/onlineHighScoresButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ONLINE TOP SCORES"
+                tools:visibility="visible" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
