@@ -5,18 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/mpCtrl"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:layout_gravity="center"
-        android:layout_margin="12dp"
-        android:drawablePadding="12dp"
-        android:drawableTint="#EFEFEF"
-        android:foreground="@drawable/play"
-        android:foregroundTint="#F4F2F2"
-        android:onClick="onCtrlClick" />
-
     <TextView
         android:id="@+id/txtabMoves"
         android:layout_width="wrap_content"

@@ -949,7 +949,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                 int value = field.getInt(highScores);
                 if(value <= record){
                     field.setInt(highScores, record);
-                    break;
+                    record = value; //Tras cambiar el valor por el record más alto, intercambiamos el valor de value para que actualice los siguientes valores de la lista.
                 }
             }catch (Throwable t){
                 Log.e(TAG, "updateTop10Records: " + t.getMessage());

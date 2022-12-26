@@ -4,6 +4,9 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class HighScores {
+    @SerializedName("Top0")
+    @Expose
+    public int Top0;
     @SerializedName("Top1")
     @Expose
     public int Top1;
@@ -31,9 +34,6 @@ public class HighScores {
     @SerializedName("Top9")
     @Expose
     public int Top9;
-    @SerializedName("Top10")
-    @Expose
-    public int Top10;
 
     public HighScores(){}
 }

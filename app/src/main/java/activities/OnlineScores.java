@@ -133,7 +133,7 @@ public class OnlineScores extends AppCompatActivity {
                                         +"\nTop7: " + hs.Top7
                                         +"\nTop8: " + hs.Top8
                                         +"\nTop9: " + hs.Top9
-                                        +"\nTop10: " + hs.Top10
+                                        +"\nTop10: " + hs.Top0
                         );
                         String scores = "";
                         new AlertDialog.Builder(context)
@@ -148,7 +148,7 @@ public class OnlineScores extends AppCompatActivity {
                                                 +"\n\t7: " + hs.Top7
                                                 +"\n\t8: " + hs.Top8
                                                 +"\n\t9: " + hs.Top9
-                                                +"\n\t10: " + hs.Top10)
+                                                +"\n\t10: " + hs.Top0)
                                 .setIcon(R.drawable.puzzledroid_icon)
                                 .setNegativeButton("OK", null)
                                 .show();

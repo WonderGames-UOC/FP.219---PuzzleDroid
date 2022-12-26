@@ -25,7 +25,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -33,30 +32,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.gson.Gson;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import dbHelper.SQLiteHelper;
-import util.RandomImageSelector;
-
-
 import Settings.FIREBASE_PATHS;
 import activities.OnlineScores;
-import apirest.RestRetrofit;
-import io.reactivex.rxjava3.annotations.NonNull;
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.ObservableEmitter;
-import io.reactivex.rxjava3.core.ObservableOnSubscribe;
-import io.reactivex.rxjava3.core.Observer;
-import io.reactivex.rxjava3.disposables.Disposable;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import dbHelper.SQLiteHelper;
+import util.RandomImageSelector;
 
 public class MainActivity extends AppCompatActivity implements custom_dialog_menu.returnDialogMenu, custom_dialog_menu_online.returnDialogMenuOnline {
 
@@ -78,8 +61,8 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
         hs = findViewById(R.id.button2);
         rs = findViewById(R.id.recentScoresButton);
         online = findViewById(R.id.online_button);
-        writedb = findViewById(R.id.write_db);
-        querydb = findViewById(R.id.query_db);
+        //writedb = findViewById(R.id.write_db);
+        //querydb = findViewById(R.id.query_db);
         topScores = findViewById(R.id.onlineHighScoresButton);
 
         Log.d(TAG, "Check files table exist.");
@@ -223,6 +206,8 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
                  onlineScores();
              }
          });
+
+/*
         writedb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -273,6 +258,8 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
 
             }//onClick(View close)
         });
+*/ //WriteDB test
+/* QUERY DB
         querydb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -348,6 +335,7 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
                 }
             }//onClick(View close)
         });
+*/ //QueryDB test
 /*
         db.getReference().child("Users").child(sp.getString("id",null)).addListenerForSingleValueEvent(new ValueEventListener(){
            @Override
@@ -362,7 +350,7 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
                Log.e(TAG, databaseError.getMessage());
            }
         });
-*/
+*/ //Database test
 
     }
 
