@@ -176,9 +176,9 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //¡¡NO BORRAR!! Registro para el depurador.
         Log.d(TAG, "onCreate");
         context = this.getApplicationContext();
-
         //https://stackoverflow.com/questions/2730855/prevent-screen-rotation-on-android
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT); //Cancel screen rotation.
 
@@ -204,6 +204,8 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                 FullScreencall();
             }
         });
+
+        
 
         //Gets the info selected by the user and stores it for the game start
         Bundle data = getIntent().getExtras();
