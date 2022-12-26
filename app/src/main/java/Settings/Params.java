@@ -1,10 +1,6 @@
 package Settings;
 
-import android.graphics.Bitmap;
-
 import com.example.puzzledroid.R;
-import com.squareup.picasso.Picasso;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
