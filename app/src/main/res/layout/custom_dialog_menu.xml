@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:gravity="center"
-        android:text="Select Difficulty"
+        android:text="@string/select_difficulty"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="116dp"
         android:gravity="center"
-        android:text="Select Image"
+        android:text="@string/select_image"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
@@ -50,14 +50,14 @@
             android:id="@+id/rbtnEasy"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Easy"
-            android:checked="true"/>
+            android:checked="true"
+            android:text="@string/easy" />
 
         <RadioButton
             android:id="@+id/rbtnMediu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Medium"
+            android:text="@string/medium"
             tools:layout_editor_absoluteX="64dp"
             tools:layout_editor_absoluteY="308dp" />
 
@@ -67,7 +67,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="right"
             android:foregroundGravity="right"
-            android:text="Hard" />
+            android:text="@string/hard" />
 
     </RadioGroup>
 
@@ -90,7 +90,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
             android:gravity="center_vertical"
-            android:text="Default"
+            android:text="@string/default_mayus"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btnCameraSelect"
             app:layout_constraintStart_toStartOf="parent" />
@@ -100,7 +100,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:text="Camera"
+            android:text="@string/camera_mayus"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btnLibrarySelect"
             app:layout_constraintStart_toEndOf="@+id/btnDefaultSelect" />
@@ -112,7 +112,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginBottom="8dp"
             android:gravity="center_horizontal|center_vertical"
-            android:text="REEL"
+            android:text="@string/reel_mayus"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/btnCameraSelect" />
@@ -138,7 +138,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:text="GAME SETTINGS"
+        android:text="@string/game_settings"
         android:textColor="@color/black"
         android:textSize="24sp"
         android:textStyle="bold"

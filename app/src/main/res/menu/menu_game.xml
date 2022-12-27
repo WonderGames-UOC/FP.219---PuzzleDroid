@@ -7,22 +7,22 @@
     <item
         android:id="@+id/musicOnOff"
         android:orderInCategory="100"
-        android:title="Music OFF"
+        android:title="@string/music_off"
         app:showAsAction="never" />
     <item
         android:id="@+id/nextSong"
         android:orderInCategory="100"
-        android:title="Next Song"
+        android:title="@string/next_song"
         app:showAsAction="never" />
     <item
         android:id="@+id/reset_game"
         android:orderInCategory="100"
-        android:title="Reset"
+        android:title="@string/reset"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_settings_game"
         android:orderInCategory="100"
-        android:title="Exit"
+        android:title="@string/exit"
         app:showAsAction="never" />
 
 </menu>
