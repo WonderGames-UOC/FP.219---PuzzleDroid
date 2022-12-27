@@ -30,4 +30,9 @@
     <string name="next_song">Siguiente canción</string>
     <string name="reset">Reiniciar</string>
     <string name="new_score">Nueva puntuación</string>
+
+    //String for preferences
+    <string name="prefs_file">com.example.puzzledroid.PREFERENCE_FILE_KEY</string>
+    <string name="title_activity_online_scores">Puntuaciones en línea</string>
+
 </resources>
