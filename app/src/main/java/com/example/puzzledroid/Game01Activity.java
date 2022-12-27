@@ -142,9 +142,11 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
     //Online mode var
     private String email;
     private String id;
+    private String img;
     private FirebaseDatabase db = FirebaseDatabase.getInstance();
     private FirebaseFirestore dbfs = FirebaseFirestore.getInstance();
     private int minMovements, basePoints;
+    private Target target;
 
     //Activity methods  onCreate() ... onDestroy()
     @Override
@@ -220,43 +222,25 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
             basePoints = setBasePoints(numBlocks);
             userName = (data.getString("userName") != null) ? data.getString("userName") : data.getString("email");
             id = data.getString("Id");
+            img = data.getString("img");
             Log.i(TAG, data.toString());
-            Log.i(TAG, "User selection: " + String.valueOf(imgId) + " / " + String.valueOf(numBlocks) + " / " + userName );
+            Log.i(TAG, "\nUser selection: " + String.valueOf(imgId) + " \n" + String.valueOf(numBlocks) + "\n" + userName );
             switch (imgId){
                 case Params.DEFAULT:
                     Log.d(TAG, "DEFAULT");
                     //Online data
                     email = userName;
-
-                    Log.d(TAG, email + " " + id);
-
                     layout.setBackgroundColor(COLORGOOD);
                     //Init variables
                     this.selector = new Selector();
                     this.counter = new Counter();
 
-
-                    if (id == null){
-                        startPuzzle(numBlocks, getDrawable(Params.imageRandomReturn()));
-
+                    if (id != null && img != null && email != null ){
+                        Log.d(TAG, "Gather image form Storage:\n" + img.toString()  + "\nId: " + id + "\nEmail: " + email);
+                        setupPicassoTarget();
+                        startOnlineGame(img);
                     }else {
-                        Picasso.get().load(id).into(new Target() {
-                            @Override
-                            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                                startPuzzle(numBlocks, bitmap);
-                            }
-
-                            @Override
-                            public void onBitmapFailed(Exception e, Drawable errorDrawable) {
-                                startPuzzle(numBlocks, getDrawable(Params.imageRandomReturn()));
-
-                            }
-
-                            @Override
-                            public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                            }
-                        });
+                        startPuzzle(numBlocks, getDrawable(Params.imageRandomReturn()));
                     }
                     //startPuzzle(numBlocks, getDrawable(Params.imageRandomReturn()));
                     break;
@@ -295,6 +279,49 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
             onErrorLaunchErrPuzzle();
         }
         FullScreencall();
+    }
+    private void setupPicassoTarget(){
+        target = new Target() {
+            @Override
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                Log.d(TAG, "onBitmapLoaded");
+                image =bitmap;
+                startPuzzle(numBlocks, image);
+            }
+
+            @Override
+            public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+                Log.e(TAG, "onBitmapFailed: " + e.getMessage());
+                onErrorLaunchErrPuzzle();
+            }
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+                Log.d(TAG, "onPreparedLoad");
+            }
+        };
+    }
+    private void startOnlineGame(String img){
+        Log.d(TAG, "startOnlineGame");
+        Picasso.get()
+                .load(img)
+                .into(target);
+        /*
+        Picasso.get().load(img).into(new Target() {
+            @Override
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+
+            }
+            @Override
+            public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+
+            }
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+            }
+        });
+         */
     }
     private void onErrorLaunchErrPuzzle(){ //Loads an error puzzle image.
         imgId = R.drawable.oops;
@@ -703,6 +730,9 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                 //Increase Animation
                 vA.startAnimation(increase);
                 vB.startAnimation(increase);
+
+                //SetBackground color if piece is in the correct position.
+                setBackgroundColor(vA, vB, posA, posB);
             }
             @Override
             public void onAnimationRepeat(Animation animation) {}
@@ -710,12 +740,17 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         //Start animation
         vA.startAnimation(decrease);
 
-        //SetBackground color if piece is in the correct position.
+    }
+    private void setBackgroundColor(ImageView vA, ImageView vB, int posA, int posB){
         if(puzzleBlocks.checkPiece(posB)){
             vA.setBackgroundColor(COLORGOOD);
+        }else{
+            vA.setBackgroundColor(COLORBAD);
         }
         if(puzzleBlocks.checkPiece(posA)){
             vB.setBackgroundColor(COLORGOOD);
+        }else {
+            vB.setBackgroundColor(COLORBAD);
         }
     }
     //Method that returns an ImageView by its tag attribute.

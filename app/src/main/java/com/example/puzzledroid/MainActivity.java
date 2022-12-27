@@ -406,11 +406,12 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
         i.putExtra("imgId", imgId);
         startActivity(i);
     }
-    private void startGame(String email, int puzzres, int imgId, String id) {
+    private void startGame(String email, int puzzres, int imgId, String img, String id) {
         Intent i = new Intent(this, Game01Activity.class);
         i.putExtra("email", email.toString());
         i.putExtra("puzzres", puzzres);
         i.putExtra("imgId", imgId);
+        i.putExtra("img", img);
         i.putExtra("Id", id);
         startActivity(i);
     }
@@ -459,7 +460,7 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
         startGame(username, puzzres, imgId);
     }
     @Override
-    public void ResultOnline(String email, int puzzres, int imgId, String Id){
-        startGame(email, puzzres, imgId, Id);
+    public void ResultOnline(String email, int puzzres, int imgId, String img, String Id){
+        startGame(email, puzzres, imgId, img, Id);
     }
 }

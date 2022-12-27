@@ -22,7 +22,7 @@ import Settings.Params;
 public class custom_dialog_menu_online {
 
     public interface returnDialogMenuOnline {
-        void ResultOnline(String email, int puzzres, int imgId,  String Id);
+        void ResultOnline(String email, int puzzres, int imgId, String img ,String Id);
     }
 
     private final String TAG = this.getClass().getSimpleName();
@@ -58,7 +58,7 @@ public class custom_dialog_menu_online {
                 Log.d(TAG, "play.onClick");
                 int puzzres = radioButtonCheck(dialog);
                 String img = Params.returnFirebaseImage();
-                intrfc.ResultOnline(email, puzzres, Params.DEFAULT, img);
+                intrfc.ResultOnline(email, puzzres, Params.DEFAULT, img, id);
                 dialog.dismiss();
 
             }

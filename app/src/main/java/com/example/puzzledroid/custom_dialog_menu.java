@@ -18,8 +18,6 @@ public class custom_dialog_menu {
 
     public interface returnDialogMenu {
         void Result(String username, int puzzres, int imgId);
-
-        void ResultOnline(String email, int puzzres, int imgId, String id);
     }
 
     private final returnDialogMenu intrfc;
