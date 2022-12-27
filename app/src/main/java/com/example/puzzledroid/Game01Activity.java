@@ -420,6 +420,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                     if(email != null && id != null){
                         Log.d(TAG, "Online mode record");
                         int record = weighTimeAndDifficulty(Integer.parseInt(Timer.offsetString), counter.getMovements());
+                        saveUserImageSeen(img);
                         saveUserRecord(record);
                         getTop10Scores(record);
                     }
@@ -533,9 +534,6 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
         imagePrinter(this.puzzleBlocks);
         Timer.startChronometer(this.chronometer);
     }
-
-
-
 
     /**
      * Transform a drawable to a bitmap image. Needs improvement for product 2.
@@ -990,6 +988,23 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
     }
 
     //Online mode methods
+    private void saveUserImageSeen(String url){
+        Log.d(TAG, "saveUserImageSeen");
+        String timestamp = FIREBASE_PATHS.getCurrentDateTime();
+        Uri uri = Uri.parse(url);
+        String fileName = uri.getLastPathSegment();
+        fileName = fileName.split("/")[1];
+
+
+        DatabaseReference ref = db.getReference()
+                .child(FIREBASE_PATHS.USERS)
+                .child(id);
+
+        ref.child(FIREBASE_PATHS.IMAGESSEEN)
+                .child(timestamp)
+                .setValue(fileName);
+        ref.child(FIREBASE_PATHS.LASTUPDATE).setValue(timestamp);
+    }
     private void saveUserRecord(int record){
         Log.d(TAG, "saveUserRecord");
         String timestamp = FIREBASE_PATHS.getCurrentDateTime();
@@ -1024,10 +1039,10 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                 public void onResponse(Call<entities.HighScores> call, Response<entities.HighScores> response) {
                     Log.d(TAG, "updateTop10Records.onFailure: " + response.message());
                 }
-
                 @Override
                 public void onFailure(Call<entities.HighScores> call, Throwable t) {
                     Log.e(TAG, "updateTop10Records.onFailure: " + t.getMessage());
+                    //TODO: inform user.
                 }
             });
         }catch (Throwable t){

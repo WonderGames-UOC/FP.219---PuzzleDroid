@@ -11,6 +11,9 @@ public final class FIREBASE_PATHS {
     public static final String IMAGESSEEN = "ImagesSeen";
     public static final String SCORES = "Scores";
     public static final String LASTUPDATE = "LastUpdate";
+    public static final String CREATION = "CreatedAt";
+
+    public static final String STORAGE_IMG = "PuzzleDroidImages";
 
     public static String getCurrentDateTime(){
         long millis = System.currentTimeMillis();

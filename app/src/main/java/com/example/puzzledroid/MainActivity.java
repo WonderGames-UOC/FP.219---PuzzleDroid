@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
 
         //Exist session
         if(session()){
-            createUpdateUser(id, email);
+            isNewUser(id, email);
         }
         setup();
     }
@@ -143,33 +143,29 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
             //online.setVisibility(View.GONE);
         return false;
     }
-    private boolean isNewUser(String id){
+    //Registers a new user or updates an existing one in the database.
+    private void isNewUser(String id, String email){
         final boolean[] userExist = {false};
         Log.d(TAG, "isNewUser: " + id);
         DatabaseReference ref = db.getReference();
-        ref.child("Users").addListenerForSingleValueEvent(new ValueEventListener() {
+        ref.child(FIREBASE_PATHS.USERS).child(id).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@androidx.annotation.NonNull DataSnapshot snapshot) {
-                userExist[0] = snapshot.exists();
+                Log.d(TAG, "isNewUser.onDataChange");
+                if(snapshot.exists()){
+                    ref.child(FIREBASE_PATHS.USERS).child(id).child(FIREBASE_PATHS.LASTUPDATE).setValue(FIREBASE_PATHS.getCurrentDateTime());
+                }else{
+                    ref.child(FIREBASE_PATHS.USERS).child(id).child(FIREBASE_PATHS.EMAIL).setValue(email);
+                    ref.child(FIREBASE_PATHS.USERS).child(id).child(FIREBASE_PATHS.CREATION).setValue(FIREBASE_PATHS.getCurrentDateTime());
+                }
             }
             @Override
             public void onCancelled(@androidx.annotation.NonNull DatabaseError error) {
-                userExist[0] = false;
                 Log.d(TAG, "isNewUser.onCancell: " + error.getMessage());
             }
         });
-        return userExist[0];
     }
-    //Registers a new user or updates an existing one in the database.
-    private void createUpdateUser(String id, String email){
-        Log.d(TAG, "newUser");
-        Boolean userExist = isNewUser(id);
-        DatabaseReference ref = db.getReference();
-        if(!userExist){
-            ref.child(FIREBASE_PATHS.USERS).child(id).child(FIREBASE_PATHS.EMAIL).setValue(email);
-        }
-        ref.child(FIREBASE_PATHS.USERS).child(id).child(FIREBASE_PATHS.LASTUPDATE).setValue(FIREBASE_PATHS.getCurrentDateTime());
-    }
+
     private void logInFirebase(){
         Log.d(TAG, "online button");
         //Setup the request
@@ -364,7 +360,6 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
                     FirebaseAuth.getInstance().signInWithCredential(credential).addOnCompleteListener(task1 -> { //Signin Firebase with the google credential.
                         if(task1.isSuccessful()){
                             saveUserData(account.getEmail(), account.getId()); //Get email and id
-
                             new AlertDialog.Builder(context)
                                     .setTitle("Firebase Login")
                                     .setMessage("ID: " + account.getId() + "\n Email: " + account.getEmail())
@@ -372,6 +367,7 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
                                     .setNegativeButton("GREAT", null)
                                     .show();
                             session(); //Almacena las credenciales.
+                            isNewUser(id, email);
                             play.performClick(); //Launch online play if session is started.
                         }else{
                             new AlertDialog.Builder(context)
