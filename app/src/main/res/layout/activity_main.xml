@@ -44,7 +44,7 @@
                 android:id="@+id/online_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Play Online"
+                android:text="@string/button_play_online"
                 tools:visibility="visible" />
 
             <Button
@@ -63,7 +63,7 @@
                 android:id="@+id/onlineHighScoresButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="ONLINE TOP SCORES"
+                android:text="@string/buttonOnline_top_scores"
                 tools:visibility="visible" />
 
         </LinearLayout>

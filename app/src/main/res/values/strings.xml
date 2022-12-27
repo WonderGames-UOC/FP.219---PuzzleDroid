@@ -47,6 +47,8 @@
     <string name="new_score">New score</string>
 
     <string name="title_activity_online_scores">OnlineScores</string>
+    <string name="buttonOnline_top_scores">ONLINE TOP SCORES</string>
+    <string name="button_play_online">Play Online</string>
 
     <!--string name="lorem_ipsum">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris
