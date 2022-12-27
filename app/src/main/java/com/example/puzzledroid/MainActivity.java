@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -360,15 +361,16 @@ public class MainActivity extends AppCompatActivity implements custom_dialog_men
                     FirebaseAuth.getInstance().signInWithCredential(credential).addOnCompleteListener(task1 -> { //Signin Firebase with the google credential.
                         if(task1.isSuccessful()){
                             saveUserData(account.getEmail(), account.getId()); //Get email and id
-                            new AlertDialog.Builder(context)
+                            /*new AlertDialog.Builder(context)
                                     .setTitle("Firebase Login")
                                     .setMessage("ID: " + account.getId() + "\n Email: " + account.getEmail())
                                     .setIcon(R.drawable.puzzledroid_icon)
                                     .setNegativeButton("GREAT", null)
-                                    .show();
+                                    .show();*/
+                            Toast.makeText(this, "Login Ok", Toast.LENGTH_SHORT).show();
                             session(); //Almacena las credenciales.
                             isNewUser(id, email);
-                            play.performClick(); //Launch online play if session is started.
+                            online.performClick(); //Launch online play if session is started.
                         }else{
                             new AlertDialog.Builder(context)
                                     .setTitle("Firebase Login Fail")
