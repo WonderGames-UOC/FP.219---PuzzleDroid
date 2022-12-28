@@ -50,7 +50,7 @@ public class custom_dialog_menu_online {
         intrfc = actividad;
         final Dialog dialog = new Dialog(context);
         dialog.setCancelable(false);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.GRAY));
         dialog.setContentView(R.layout.custom_dialog_menu_online);
         final TextView userName = (TextView) dialog.findViewById(R.id.txt_UserEnter);
         userName.setTextColor(Color.BLACK);//Text color for white background.
