@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:gravity="center"
-        android:text="Select Difficulty"
+        android:text="@string/select_difficulty_online"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
@@ -40,13 +40,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checked="true"
-            android:text="Easy" />
+            android:text="@string/easy_diff_online" />
 
         <RadioButton
             android:id="@+id/rbtnMediu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Medium"
+            android:text="@string/medium_difff_online"
             tools:layout_editor_absoluteX="64dp"
             tools:layout_editor_absoluteY="308dp" />
 
@@ -56,7 +56,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="right"
             android:foregroundGravity="right"
-            android:text="Hard" />
+            android:text="@string/hard_diff_online" />
 
     </RadioGroup>
 
@@ -78,7 +78,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginBottom="8dp"
-            android:text="Play"
+            android:text="@string/play_online"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btnLibrarySelect"
             app:layout_constraintStart_toStartOf="parent" />
@@ -90,7 +90,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginBottom="8dp"
             android:gravity="center_horizontal|center_vertical"
-            android:text="BACK"
+            android:text="@string/back_online"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/btnCameraSelect"
@@ -118,7 +118,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:text="ONLINE GAME SETTINGS"
+        android:text="@string/online_game_settings"
         android:textColor="@color/black"
         android:textSize="24sp"
         android:textStyle="bold"

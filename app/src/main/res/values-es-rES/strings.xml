@@ -36,5 +36,12 @@
     <string name="title_activity_online_scores">Puntuaciones en línea</string>
     <string name="buttonOnline_top_scores">Puntuaciones Online</string>
     <string name="button_play_online">Jugar Online</string>
+    <string name="select_difficulty_online">Selecciona Dificultad:</string>
+    <string name="back_online">Volver</string>
+    <string name="online_game_settings">OPCIONES ONLINE</string>
+    <string name="play_online">Jugar</string>
+    <string name="hard_diff_online">Difícil</string>
+    <string name="easy_diff_online">Medio</string>
+    <string name="medium_difff_online">Fácil</string>
 
 </resources>
