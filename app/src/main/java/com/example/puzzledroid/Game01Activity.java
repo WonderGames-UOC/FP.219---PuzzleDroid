@@ -424,6 +424,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                         saveUserRecord(record);
                         getTop10Scores(record);
                     }
+                    weighTimeAndDifficulty(Integer.parseInt(Timer.offsetString), counter.getMovements());
 
                     //INSERT VICTORY ANIMATION
                     finalAnimation(getAllBlocksImageView());
@@ -1069,15 +1070,25 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
     private int weighTimeAndDifficulty(int time, int movements){
         Log.d(TAG, "weighTimeAndDifficulty");
         int res  = 0;
-        float ratio = minMovements / movements;
-        res = (int) Math.ceil(basePoints * ratio / Math.round(time/1000));
+        float ratio = (float) minMovements / (float) movements;
+        int bonus = (ratio >= 1)? Math.round(ratio * (float) basePoints/2) : 0;
+        int penalization = (ratio < 1)? (int) time/10 : 0;
+        res = Math.round(basePoints) + bonus + penalization;
+        if(res < 0){
+            res = 0;
+        }
+
+        //res = (int) Math.ceil(basePoints * ratio / Math.round(time/1000));
         Log.d(TAG,
-                "\nres: " + String.valueOf(res) +
+                "Points details: "+
+                        "\nres: " + String.valueOf(res) +
+                        "\nbasePoints: " + basePoints +
                         "\nratio: " + String.valueOf(ratio) +
+                        "\nbonus: " + String.valueOf(bonus) +
                         "\nmovements: " + movements +
-                        "\ntime; " + time +
                         "\nbasicM: " + minMovements +
-                        "\nbasePoints: " + basePoints
+                        "\ntime; " + time/1000 +
+                        "\npenalization: " + penalization
         );
         return  res;
     }
