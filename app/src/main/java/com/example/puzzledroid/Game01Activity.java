@@ -424,7 +424,7 @@ public class Game01Activity extends AppCompatActivity implements OnClickListener
                         saveUserRecord(record);
                         getTop10Scores(record);
                     }
-                    weighTimeAndDifficulty(Integer.parseInt(Timer.offsetString), counter.getMovements());
+                    //weighTimeAndDifficulty(Integer.parseInt(Timer.offsetString), counter.getMovements());
 
                     //INSERT VICTORY ANIMATION
                     finalAnimation(getAllBlocksImageView());
